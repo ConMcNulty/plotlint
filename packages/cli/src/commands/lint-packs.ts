@@ -2,11 +2,15 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Command } from "commander";
 import { StateManager, chatCompletion, createLLMClient, loadWorkManifest } from "@actalk/inkos-core";
-import { builtinRegistry, PacksFileSchema, type BookRuleData, type PacksFile, type RuleConfigFile } from "@plotlint/rules";
-import { createMetricRules, metricStateRules } from "@plotlint/metrics";
-import { loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
 import {
-  bookPackCatalog, builtinPacks, GENERAL_PACK, proposeFromGenre, proposePacks, resolveBookPacks, resolvePacks, type BookPacks, type PackProposal,
+  builtinRegistry, PacksFileSchema, readRuleSetting, type BookRuleData, type PacksFile, type RuleConfigFile, type RuleSetting,
+} from "@plotlint/rules";
+import type { DiagnosticLayer } from "@plotlint/diagnostics";
+import { createHarperRule } from "@plotlint/mechanics";
+import { createMetricRules, metricStateRules } from "@plotlint/metrics";
+import { loadAdaptiveOverlay, loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
+import {
+  bookPackCatalog, builtinPacks, GENERAL_PACK, knownRuleIds, proposeFromGenre, proposePacks, resolveBookPacks, resolvePacks, type BookPacks, type PackProposal,
 } from "@plotlint/packs/node";
 import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../utils.js";
 
@@ -16,13 +20,73 @@ import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../ut
 
 const PACKS = "packs.json";
 
-/** Rule ids the CLI runs besides the packs' own style rules, for expanding pack globs. */
-export const knownRuleIds = (): string[] => [
-  ...builtinRegistry.list().map((rule) => rule.id),
-  "mechanics/harper",
-  ...createMetricRules().map((rule) => rule.id),
-  ...metricStateRules().map((rule) => rule.id),
-];
+export { knownRuleIds };
+
+/** Where the adaptive overlay's settings show up in provenance. */
+export const ADAPTIVE_SOURCE = "adaptive";
+
+/**
+ * Where a rule's effective setting comes from, highest layer first: the book's
+ * rules.json, the adaptive overlay (checks the author keeps rejecting), the packs
+ * that set it, or the rule's own default.
+ */
+export function settingSource(id: string, packs: BookPacks, book: BookRuleData, overlay?: RuleConfigFile): string[] {
+  if (id in (book.config?.rules ?? {})) return ["rules.json"];
+  if (overlay && id in overlay.rules) return [ADAPTIVE_SOURCE];
+  return packs.resolved.provenance[id] ?? ["default"];
+}
+
+export interface EffectiveRule {
+  readonly id: string;
+  readonly layer: DiagnosticLayer;
+  readonly title: string;
+  readonly rationale: string;
+  readonly source?: string;
+  readonly enabled: boolean;
+  readonly severity?: string;
+  readonly options?: Record<string, unknown>;
+  /** The metric band, for L2 rules. */
+  readonly band?: unknown;
+  /** See `settingSource`. */
+  readonly from: string[];
+}
+
+/**
+ * Every rule `inkos lint` runs for a book (state, Harper, metric and the packs'
+ * style rules) with its effective setting and where that setting comes from.
+ * Without a book, the defaults of the general pack.
+ */
+export async function effectiveRules(bookDir: string | undefined): Promise<{ rules: EffectiveRule[]; unknown: string[] }> {
+  const book: BookRuleData = bookDir ? await loadBookRuleData(bookDir) : {};
+  const overlay = bookDir ? await loadAdaptiveOverlay(bookDir) : undefined;
+  // A missing folder has no book packs, so the general pack resolves alone.
+  const packs = bookPacks(bookDir ?? join(process.cwd(), ".no-book"), book, [overlay]);
+  type Described = { id: string; layer: DiagnosticLayer; rationale: string; title?: string; source?: string };
+  const described: Described[] = [
+    ...builtinRegistry.list(),
+    createHarperRule() as Described,
+    ...createMetricRules(packs.metrics),
+    ...metricStateRules(),
+    ...packs.styleRules,
+  ];
+  const known = new Set(described.map((rule) => rule.id));
+  const rules = described.map((rule): EffectiveRule => {
+    const { enabled, severity, options } = readRuleSetting(packs.config.rules[rule.id] as RuleSetting | undefined);
+    return {
+      id: rule.id,
+      layer: rule.layer,
+      title: rule.title ?? rule.id,
+      rationale: rule.rationale,
+      ...(rule.source ? { source: rule.source } : {}),
+      enabled,
+      ...(severity ? { severity } : {}),
+      ...(Object.keys(options).length ? { options } : {}),
+      ...(rule.id in packs.metrics ? { band: packs.metrics[rule.id] } : {}),
+      from: settingSource(rule.id, packs, book, overlay),
+    };
+  });
+  return { rules, unknown: Object.keys(book.config?.rules ?? {}).filter((id) => !known.has(id)) };
+}
 
 /** The packs a book runs, resolved with its rules.json on top; warns about selected packs that do not exist. */
 export function bookPacks(bookDir: string, book: BookRuleData, overlays: ReadonlyArray<RuleConfigFile | undefined> = []): BookPacks {
@@ -81,15 +145,14 @@ async function bookContext(root: string, state: StateManager, bookId: string): P
   };
 }
 
-/** Where each rule's effective setting comes from: the book's rules.json, else the packs that set it. */
-function provenanceRows(packs: BookPacks, book: BookRuleData) {
-  const own = book.config?.rules ?? {};
+/** Where each rule's effective setting comes from (see `settingSource`). */
+function provenanceRows(packs: BookPacks, book: BookRuleData, overlay?: RuleConfigFile) {
   const ids = new Set([...Object.keys(packs.config.rules), ...Object.keys(packs.metrics)]);
   return [...ids].sort().map((id) => ({
     id,
     ...(id in packs.config.rules ? { setting: packs.config.rules[id] } : {}),
     ...(id in packs.metrics ? { band: packs.metrics[id] } : {}),
-    from: id in own ? ["rules.json"] : packs.resolved.provenance[id] ?? [],
+    from: settingSource(id, packs, book, overlay),
   }));
 }
 
@@ -121,8 +184,9 @@ export function addPacksCommand(lintCommand: Command): void {
           return;
         }
         const book = await loadBookRuleData(bookDir);
-        const packs = bookPacks(bookDir, book);
-        const rules = provenanceRows(packs, book);
+        const overlay = await loadAdaptiveOverlay(bookDir);
+        const packs = bookPacks(bookDir, book, [overlay]);
+        const rules = provenanceRows(packs, book, overlay);
         if (json) {
           log(JSON.stringify({
             bookId, available, selected: packs.resolved.selected, packs: packs.resolved.packs,
