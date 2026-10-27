@@ -1,0 +1,38 @@
+{
+  "name": "@plotlint/mechanics",
+  "version": "0.1.0",
+  "description": "L0 mechanics for plotlint: spelling and grammar via Harper, with a project dictionary from story state",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/__tests__"
+  ],
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "build": "node ../../scripts/clean-package-dist.mjs && tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@actalk/inkos-core": "workspace:*",
+    "@plotlint/diagnostics": "workspace:*",
+    "@plotlint/rules": "workspace:*",
+    "harper.js": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}
