@@ -9,14 +9,17 @@ import {
 } from "@plotlint/diagnostics";
 import { addSuppression, loadSuppressions } from "@plotlint/diagnostics/node";
 import { checkParagraphs, paragraphRanges, projectDictionary } from "@plotlint/mechanics";
-import { checkSnapshot, checkText, type BookRuleData, type ChapterTexts, type TextDocument, type TextRule } from "@plotlint/rules";
+import {
+  builtinRegistry, checkSnapshot, checkText, configureTextRules, readRuleSetting,
+  type BookRuleData, type ChapterTexts, type RuleConfigFile, type RuleSetting, type TextDocument, type TextRule,
+} from "@plotlint/rules";
 import { loadBookRuleData } from "@plotlint/rules/node";
+import { resolveBookPacks } from "@plotlint/packs/node";
 import { chapterFiles } from "./plotlint-chapters.js";
-import { generalPack } from "@plotlint/style/node";
 
 /**
- * Chapter linting for the Studio editor: L0 Harper and L1 general-pack style
- * rules over the chapter text (whole, or only the paragraphs an edit touched),
+ * Chapter linting for the Studio editor: L0 Harper and L1 style rules of the
+ * book's check packs (general plus `packs.json`) over the chapter text (whole, or only the paragraphs an edit touched),
  * plus the L3 state findings for the chapter, with the book's suppressions applied.
  */
 
@@ -50,25 +53,21 @@ export interface ChapterLintResult {
 
 export const chapterSourceId = (chapter: number) => `chapter:${chapter}`;
 
-let stylePack: TextRule[] | undefined;
-/** The general style pack, read from disk once per process. */
-function styleRules(): TextRule[] {
-  stylePack ??= generalPack();
-  return stylePack;
-}
-
 interface BookState {
   readonly key: string;
   readonly chapters: ChapterTexts;
   readonly snapshot: RuntimeStateSnapshot | null;
   readonly dictionary: string[];
+  /** The packs' style rules with the effective rule config (packs < rules.json) applied. */
+  readonly styleRules: TextRule[];
+  readonly config: RuleConfigFile;
   /** The L3 findings, checked on first use (navigation reads the snapshot without them). */
   stateDiagnostics(): Diagnostic[];
 }
 
 const STATE_FILES = ["state/manifest.json", "state/current_state.json", "state/hooks.json", "state/chapter_summaries.json"];
 // The book's rule config, frames and rule data, which change what the L3 rules report.
-const PLOTLINT_FILES = ["plotlint/rules.json", "plotlint/frames.json"];
+const PLOTLINT_FILES = ["plotlint/rules.json", "plotlint/frames.json", "plotlint/packs.json"];
 const bookStates = new Map<string, BookState>();
 
 /**
@@ -97,13 +96,17 @@ async function bookState(bookDir: string): Promise<BookState> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
-  const book: BookRuleData = await loadBookRuleData(bookDir);
+  const loaded: BookRuleData = await loadBookRuleData(bookDir);
+  const packs = resolveBookPacks(bookDir, loaded, [...builtinRegistry.list().map((rule) => rule.id), "mechanics/harper"]);
+  const book: BookRuleData = { ...loaded, config: packs.config };
   let checked: Diagnostic[] | undefined;
   const state: BookState = {
     key,
     chapters,
     snapshot,
     dictionary: snapshot ? projectDictionary(snapshot) : [],
+    styleRules: configureTextRules(packs.styleRules, packs.config),
+    config: packs.config,
     stateDiagnostics: () => (checked ??= snapshot ? checkSnapshot(snapshot, { chapters, book }) : []),
   };
   bookStates.set(bookDir, state);
@@ -144,10 +147,10 @@ export function expandToParagraphs(text: string, ranges: ReadonlyArray<LintTextR
 }
 
 /** Style findings for `document.text.slice(range)`, with ranges in the whole document. */
-async function styleInRange(document: TextDocument, range: LintTextRange, dictionary: ReadonlyArray<string>): Promise<Diagnostic[]> {
+async function styleInRange(document: TextDocument, range: LintTextRange, rules: ReadonlyArray<TextRule>, dictionary: ReadonlyArray<string>): Promise<Diagnostic[]> {
   const text = document.text.slice(range.start, range.end);
   if (!text.trim()) return [];
-  const found = await checkText({ ...document, text }, styleRules(), { dictionary });
+  const found = await checkText({ ...document, text }, rules, { dictionary });
   return found.map((diagnostic) => ({
     ...diagnostic,
     range: { ...diagnostic.range!, start: diagnostic.range!.start + range.start, end: diagnostic.range!.end + range.start },
@@ -168,15 +171,18 @@ export async function lintChapter(request: ChapterLintRequest): Promise<ChapterL
   const partial = request.ranges ? expandToParagraphs(text, request.ranges) : null;
 
   const mechanicsStarted = performance.now();
-  const mechanics = await checkParagraphs(context, partial ? partial.paragraphs : undefined);
+  // Harper runs outside `checkText`, so its rule setting is applied to its findings.
+  const harper = readRuleSetting(state.config.rules["mechanics/harper"] as RuleSetting | undefined);
+  const mechanics = !harper.enabled ? [] : (await checkParagraphs(context, partial ? partial.paragraphs : undefined))
+    .map((diagnostic) => (harper.severity ? { ...diagnostic, severity: harper.severity } : diagnostic));
   const mechanicsMs = performance.now() - mechanicsStarted;
 
   // Style rules scope to sentences and paragraphs at most, so a partial lint runs
   // them over each re-linted run of whole paragraphs and shifts the ranges back.
   const styleStarted = performance.now();
   const style = partial
-    ? (await Promise.all(partial.ranges.map((range) => styleInRange(document, range, state.dictionary)))).flat()
-    : await checkText(document, styleRules(), { dictionary: state.dictionary });
+    ? (await Promise.all(partial.ranges.map((range) => styleInRange(document, range, state.styleRules, state.dictionary)))).flat()
+    : await checkText(document, state.styleRules, { dictionary: state.dictionary });
   const styleMs = performance.now() - styleStarted;
 
   const textDiagnostics = [...mechanics, ...style]

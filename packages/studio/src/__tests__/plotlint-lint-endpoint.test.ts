@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -157,6 +157,21 @@ describe("plotlint lint endpoint", () => {
     const third = await (await lint({ bookId: BOOK, chapter: 3, text: CHAPTER })).json() as LintResponse;
     expect(third.diagnostics.some((d) => d.ruleId === styleRule)).toBe(false);
     expect(third.suppressed).toBe(1 + first.diagnostics.filter((d) => d.ruleId === styleRule).length);
+  });
+
+  it("runs the book's check packs and its rules.json over the text", async () => {
+    const text = "An ancient evil stirred in the north. She was very tired.";
+    const ruleIds = async () => ((await (await lint({ bookId: BOOK, chapter: 1, text })).json()) as LintResponse).diagnostics
+      .filter((d) => d.layer === "style").map((d) => [d.ruleId, d.severity]);
+    expect(await ruleIds()).toEqual([["style/general.Intensifiers", "note"]]);
+
+    const plotlint = join(bookDir, "story", "plotlint");
+    await mkdir(plotlint, { recursive: true });
+    await writeFile(join(plotlint, "packs.json"), JSON.stringify({ version: 1, packs: ["fantasy"] }));
+    await writeFile(join(plotlint, "rules.json"), JSON.stringify({
+      version: 1, rules: { "style/general.Intensifiers": "off", "style/fantasy.Cliches": "warning" },
+    }));
+    expect(await ruleIds()).toEqual([["style/fantasy.Cliches", "warning"]]);
   });
 
   it("finds no L0 or L1 problems in a Chinese chapter", async () => {
