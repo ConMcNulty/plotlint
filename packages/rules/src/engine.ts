@@ -7,6 +7,7 @@ import { RuleRegistry, type ConfiguredRule } from "./registry.js";
 import type { Rule } from "./types.js";
 import { deadEntityActs } from "./rules/dead-entity-acts.js";
 import { deadThenAlive } from "./rules/dead-then-alive.js";
+import { invariantRule } from "./rules/invariant.js";
 import { itemFromNowhere } from "./rules/item-from-nowhere.js";
 import { impossibleTravel } from "./rules/impossible-travel.js";
 import { itemTwoHolders } from "./rules/item-two-holders.js";
@@ -23,6 +24,7 @@ export const builtinRules: ReadonlyArray<Rule> = [
   worldRuleBroken,
   knowledgeLeak,
   impossibleTravel, timelineOrder,
+  invariantRule,
 ];
 
 /** The built-in rules by id. Hosts that add their own rules build a registry from `builtinRules`. */

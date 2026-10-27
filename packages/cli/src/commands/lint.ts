@@ -1,9 +1,12 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Command } from "commander";
-import { StateManager, loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
-import { builtinRegistry, checkSnapshot, checkText, evidenceCoverage, type ChapterTexts, type EvidenceCoverage, type TextRule } from "@plotlint/rules";
-import { loadBookRuleData } from "@plotlint/rules/node";
+import { StateManager, chatCompletion, createLLMClient, loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
+import {
+  builtinRegistry, checkSnapshot, checkText, compileInvariant, evidenceCoverage, explainCheck, InvariantCheckSchema, InvariantIdSchema,
+  InvariantsFileSchema, invariantSlug, lastChapter, type ChapterTexts, type EvidenceCoverage, type Invariant, type InvariantsFile, type TextRule,
+} from "@plotlint/rules";
+import { loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
 import { createHarperRule, isMostlyCjk, projectDictionary } from "@plotlint/mechanics";
 import { generalPack } from "@plotlint/style/node";
 import {
@@ -15,7 +18,7 @@ import {
   type DiagnosticLayer,
   type Suppression,
 } from "@plotlint/diagnostics";
-import { findProjectRoot, log, logError, resolveBookId } from "../utils.js";
+import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../utils.js";
 import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "@plotlint/diagnostics/node";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
@@ -31,6 +34,8 @@ interface BookLint {
   stateMissing?: true;
   /** Chapters whose text was checked. */
   chapters: number[];
+  /** Invariants waiting for `inkos lint invariant approve`. */
+  proposedInvariants: number;
 }
 
 interface LintOptions {
@@ -139,8 +144,13 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
 
   const book = await loadBookRuleData(bookDir);
   for (const id of builtinRegistry.unknownIds(book.config)) logError(`${id} in story/plotlint/rules.json is not a known rule`);
+  const texts = await chapterTexts(bookDir);
   const diagnostics: LocatedDiagnostic[] = snapshot && options.layers.has("continuity")
-    ? checkSnapshot(snapshot, { chapters: await chapterTexts(bookDir), book }).filter(inScope)
+    ? checkSnapshot(snapshot, { chapters: texts, book }).filter(inScope).map((diagnostic) => {
+      // Invariants over the chapter text point into the chapter file like text findings.
+      const text = diagnostic.range && diagnostic.chapter !== undefined ? texts.get(diagnostic.chapter) : undefined;
+      return text === undefined ? diagnostic : { ...diagnostic, location: locate(text, diagnostic.range!.start) };
+    })
     : [];
   const files = await chapterFiles(bookDir);
   const chapters = options.chapter === undefined ? [...files.keys()] : files.has(options.chapter) ? [options.chapter] : [];
@@ -154,6 +164,9 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
     suppressed: suppressed.map((entry) => ({ diagnostic: withFingerprint(entry.diagnostic), suppression: entry.suppression })),
     ...(snapshot ? {} : { stateMissing: true as const }),
     chapters,
+    // Unsupported ones cannot be approved, so they are not waiting on the author.
+    proposedInvariants: book.invariants?.invariants
+      .filter((invariant) => invariant.status === "proposed" && invariant.check.kind !== "unsupported").length ?? 0,
   };
 }
 
@@ -209,6 +222,9 @@ export const lintCommand = new Command("lint")
           if (result.stateMissing) log("  no runtime state yet");
           if (result.diagnostics.length === 0 && (!result.stateMissing || result.chapters.length > 0)) log("  no problems");
           for (const diagnostic of result.diagnostics) log(indent(formatFinding(diagnostic, verbose)));
+          if (result.proposedInvariants > 0) {
+            log(`  ${result.proposedInvariants} proposed invariant${result.proposedInvariants === 1 ? "" : "s"} not yet approved (inkos lint invariant list)`);
+          }
           if (result.suppressed.length === 0) continue;
           if (opts.showSuppressed) {
             for (const { diagnostic, suppression } of result.suppressed) {
@@ -411,6 +427,197 @@ lintCommand
       if (removed.length === 0) process.exitCode = 1;
     } catch (e) {
       logError(`Unsuppress failed: ${e}`);
+      process.exit(1);
+    }
+  });
+
+// Author-written invariants, saved in `story/plotlint/invariants.json`. `add`
+// compiles the author's sentence with the configured LLM into the check language
+// of @plotlint/rules and saves it as proposed; only approved ones run in `inkos lint`.
+
+const INVARIANTS = "invariants.json";
+
+async function loadInvariants(bookDir: string): Promise<InvariantsFile> {
+  return await readPlotlintFile(bookDir, INVARIANTS, InvariantsFileSchema) ?? { version: 1, invariants: [] };
+}
+
+const saveInvariants = (bookDir: string, file: InvariantsFile) => writePlotlintFile(bookDir, INVARIANTS, InvariantsFileSchema, file);
+
+function findInvariant(file: InvariantsFile, id: string, bookId: string): Invariant {
+  const invariant = file.invariants.find((entry) => entry.id === id);
+  if (!invariant) {
+    throw new Error(`No invariant "${id}" in "${bookId}". Known: ${file.invariants.map((entry) => entry.id).join(", ") || "(none)"}`);
+  }
+  return invariant;
+}
+
+/** An id not taken yet: the wanted one, else with -2, -3... */
+function freeId(file: InvariantsFile, wanted: string): string {
+  const taken = new Set(file.invariants.map((entry) => entry.id));
+  if (!taken.has(wanted)) return wanted;
+  for (let n = 2; ; n += 1) if (!taken.has(`${wanted}-${n}`)) return `${wanted}-${n}`;
+}
+
+function formatInvariant(invariant: Invariant): string[] {
+  const status = invariant.check.kind === "unsupported" ? "unsupported" : invariant.status;
+  return [
+    `${invariant.id}  ${status}  "${invariant.text}"`,
+    indent(invariant.explanation),
+    indent(`check: ${JSON.stringify(invariant.check)}`),
+  ];
+}
+
+/** Subjects of the book's facts, most frequent first, so the model spells names the way the state does. */
+function stateNames(snapshot: RuntimeStateSnapshot | undefined): string[] {
+  const counts = new Map<string, number>();
+  for (const fact of snapshot?.currentState.facts ?? []) counts.set(fact.subject, (counts.get(fact.subject) ?? 0) + 1);
+  return [...counts].sort((a, b) => b[1] - a[1]).map(([name]) => name);
+}
+
+const issues = (error: { issues: Array<{ path: Array<string | number>; message: string }> }) =>
+  error.issues.map((issue) => `${issue.path.join(".") || "check"}: ${issue.message}`).join("; ");
+
+const invariantCommand = lintCommand
+  .command("invariant")
+  .description("Author-written invariants: rules about your book in plain language, checked on every lint");
+
+invariantCommand
+  .command("add")
+  .description("Compile a rule written in plain language with the configured LLM and save it as proposed")
+  .argument("<text>", "The rule, e.g. \"Mira must not learn the captain's identity before chapter 20\"")
+  .argument("[book-id]", "Book ID (auto-detected if only one book)")
+  .option("--check <json>", "Use this compiled check instead of asking the LLM")
+  .option("--id <id>", "The invariant's id (kebab-case); by default the LLM's suggestion or a slug of the text")
+  .option("--json", "Output JSON")
+  .action(async (text: string, bookIdArg: string | undefined, opts: { check?: string; id?: string; json?: boolean }, command: Command) => {
+    try {
+      opts = { ...opts, json: wantsJson(command) };
+      const rule = text.trim();
+      if (!rule) throw new Error("the invariant's text must not be empty");
+      if (opts.id !== undefined && !InvariantIdSchema.safeParse(opts.id).success) throw new Error(`--id must be lowercase kebab-case; got "${opts.id}"`);
+      const root = findProjectRoot();
+      const bookId = await resolveBookId(bookIdArg, root);
+      const bookDir = new StateManager(root).bookDir(bookId);
+      const file = await loadInvariants(bookDir);
+
+      let compiled: { id: string; check: Invariant["check"]; explanation: string };
+      if (opts.check !== undefined) {
+        let json: unknown;
+        try {
+          json = JSON.parse(opts.check);
+        } catch (error) {
+          throw new Error(`--check is not JSON: ${(error as Error).message}`);
+        }
+        const check = InvariantCheckSchema.safeParse(json);
+        if (!check.success) throw new Error(`--check is not a valid check: ${issues(check.error)}`);
+        compiled = { id: invariantSlug(rule), check: check.data, explanation: explainCheck(check.data) };
+      } else {
+        // The global --service/--base-url/--api-format/--model/--api-key-env flags apply, as for every LLM command.
+        // Reasoning models think at length before the JSON, so the output budget is generous.
+        const config = await loadConfig({ requireApiKey: true });
+        const client = createLLMClient(config.llm);
+        const snapshot = await loadSnapshot(bookDir);
+        const texts = await chapterTexts(bookDir);
+        const last = snapshot ? lastChapter(snapshot, texts) : texts.size ? Math.max(...texts.keys()) : undefined;
+        compiled = await compileInvariant(rule, async (messages) =>
+          (await chatCompletion(client, config.llm.model, messages, { temperature: 0, maxTokens: 16_384 })).content,
+        { names: stateNames(snapshot), ...(last === undefined ? {} : { lastChapter: last }) });
+      }
+
+      const invariant: Invariant = {
+        id: opts.id ?? freeId(file, compiled.id),
+        text: rule,
+        status: "proposed",
+        check: compiled.check,
+        explanation: compiled.explanation,
+        createdAt: new Date().toISOString(),
+      };
+      if (file.invariants.some((entry) => entry.id === invariant.id)) throw new Error(`An invariant "${invariant.id}" already exists in "${bookId}"`);
+      const path = await saveInvariants(bookDir, { ...file, invariants: [...file.invariants, invariant] });
+      if (opts.json) {
+        log(JSON.stringify({ bookId, invariant, path }, null, 2));
+        return;
+      }
+      for (const line of formatInvariant(invariant)) log(line);
+      log(invariant.check.kind === "unsupported"
+        ? "This rule cannot be checked deterministically, so it is saved but will not run."
+        : `Saved as proposed. Run \`inkos lint invariant approve ${invariant.id}\` once the check says what you meant.`);
+    } catch (e) {
+      logError(`Invariant add failed: ${e}`);
+      process.exit(1);
+    }
+  });
+
+invariantCommand
+  .command("approve")
+  .description("Approve a proposed invariant, so `inkos lint` checks it")
+  .argument("<id>", "Invariant ID (from `inkos lint invariant list`)")
+  .argument("[book-id]", "Book ID (auto-detected if only one book)")
+  .option("--json", "Output JSON")
+  .action(async (id: string, bookIdArg: string | undefined, opts: { json?: boolean }, command: Command) => {
+    try {
+      opts = { ...opts, json: wantsJson(command) };
+      const root = findProjectRoot();
+      const bookId = await resolveBookId(bookIdArg, root);
+      const bookDir = new StateManager(root).bookDir(bookId);
+      const file = await loadInvariants(bookDir);
+      const found = findInvariant(file, id, bookId);
+      if (found.check.kind === "unsupported") {
+        throw new Error(`"${id}" cannot be checked deterministically (${found.check.reason}); remove it, or add it again with --check`);
+      }
+      const invariant: Invariant = { ...found, status: "approved", approvedAt: new Date().toISOString() };
+      await saveInvariants(bookDir, { ...file, invariants: file.invariants.map((entry) => (entry.id === id ? invariant : entry)) });
+      if (opts.json) log(JSON.stringify({ bookId, invariant }, null, 2));
+      else log(`Approved "${id}" in "${bookId}": ${invariant.explanation}`);
+    } catch (e) {
+      logError(`Invariant approve failed: ${e}`);
+      process.exit(1);
+    }
+  });
+
+invariantCommand
+  .command("list")
+  .description("List the book's invariants with their compiled checks")
+  .argument("[book-id]", "Book ID (auto-detected if only one book)")
+  .option("--json", "Output JSON")
+  .action(async (bookIdArg: string | undefined, opts: { json?: boolean }, command: Command) => {
+    try {
+      opts = { ...opts, json: wantsJson(command) };
+      const root = findProjectRoot();
+      const bookId = await resolveBookId(bookIdArg, root);
+      const bookDir = new StateManager(root).bookDir(bookId);
+      const file = await loadInvariants(bookDir);
+      if (opts.json) {
+        log(JSON.stringify({ bookId, path: join(plotlintDir(bookDir), INVARIANTS), invariants: file.invariants }, null, 2));
+        return;
+      }
+      if (file.invariants.length === 0) log(`${bookId}: no invariants yet (inkos lint invariant add "<rule>")`);
+      for (const invariant of file.invariants) for (const line of formatInvariant(invariant)) log(line);
+    } catch (e) {
+      logError(`Invariant list failed: ${e}`);
+      process.exit(1);
+    }
+  });
+
+invariantCommand
+  .command("remove")
+  .description("Remove an invariant")
+  .argument("<id>", "Invariant ID")
+  .argument("[book-id]", "Book ID (auto-detected if only one book)")
+  .option("--json", "Output JSON")
+  .action(async (id: string, bookIdArg: string | undefined, opts: { json?: boolean }, command: Command) => {
+    try {
+      opts = { ...opts, json: wantsJson(command) };
+      const root = findProjectRoot();
+      const bookId = await resolveBookId(bookIdArg, root);
+      const bookDir = new StateManager(root).bookDir(bookId);
+      const file = await loadInvariants(bookDir);
+      const removed = findInvariant(file, id, bookId);
+      await saveInvariants(bookDir, { ...file, invariants: file.invariants.filter((entry) => entry.id !== id) });
+      if (opts.json) log(JSON.stringify({ bookId, removed }, null, 2));
+      else log(`Removed "${id}" from "${bookId}".`);
+    } catch (e) {
+      logError(`Invariant remove failed: ${e}`);
       process.exit(1);
     }
   });

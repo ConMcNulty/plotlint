@@ -1,7 +1,8 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { z } from "zod";
 import { FramesFileSchema, RuleConfigFileSchema, type BookRuleData } from "./book.js";
+import { InvariantsFileSchema } from "./invariants.js";
 import { TravelFileSchema } from "./travel.js";
 
 /** A book's plotlint folder, beside its story state: `works/<id>/source/story/plotlint/`. */
@@ -28,12 +29,24 @@ export async function readPlotlintFile<S extends z.ZodTypeAny>(bookDir: string, 
   return parsed.data;
 }
 
-/** Everything the rule engine reads from a book's plotlint folder: `rules.json`, `frames.json` and `travel.json`. */
+/** Everything the rule engine reads from a book's plotlint folder: `rules.json`, `frames.json`, `travel.json` and `invariants.json`. */
 export async function loadBookRuleData(bookDir: string): Promise<BookRuleData> {
-  const [config, frames, travel] = await Promise.all([
+  const [config, frames, travel, invariants] = await Promise.all([
     readPlotlintFile(bookDir, "rules.json", RuleConfigFileSchema),
     readPlotlintFile(bookDir, "frames.json", FramesFileSchema),
     readPlotlintFile(bookDir, "travel.json", TravelFileSchema),
+    readPlotlintFile(bookDir, "invariants.json", InvariantsFileSchema),
   ]);
-  return { ...(config ? { config } : {}), ...(frames ? { frames } : {}), ...(travel ? { travel } : {}) };
+  return {
+    ...(config ? { config } : {}), ...(frames ? { frames } : {}), ...(travel ? { travel } : {}), ...(invariants ? { invariants } : {}),
+  };
+}
+
+/** Validate and write one plotlint JSON file, creating the folder; returns its path. */
+export async function writePlotlintFile<S extends z.ZodTypeAny>(bookDir: string, name: string, schema: S, data: z.input<S>): Promise<string> {
+  const parsed = schema.parse(data);
+  await mkdir(plotlintDir(bookDir), { recursive: true });
+  const path = join(plotlintDir(bookDir), name);
+  await writeFile(path, `${JSON.stringify(parsed, null, 2)}\n`, "utf-8");
+  return path;
 }
