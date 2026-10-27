@@ -513,13 +513,14 @@ invariantCommand
         compiled = { id: invariantSlug(rule), check: check.data, explanation: explainCheck(check.data) };
       } else {
         // The global --service/--base-url/--api-format/--model/--api-key-env flags apply, as for every LLM command.
+        // Reasoning models think at length before the JSON, so the output budget is generous.
         const config = await loadConfig({ requireApiKey: true });
         const client = createLLMClient(config.llm);
         const snapshot = await loadSnapshot(bookDir);
         const texts = await chapterTexts(bookDir);
         const last = snapshot ? lastChapter(snapshot, texts) : texts.size ? Math.max(...texts.keys()) : undefined;
         compiled = await compileInvariant(rule, async (messages) =>
-          (await chatCompletion(client, config.llm.model, messages, { temperature: 0, maxTokens: 4096 })).content,
+          (await chatCompletion(client, config.llm.model, messages, { temperature: 0, maxTokens: 16_384 })).content,
         { names: stateNames(snapshot), ...(last === undefined ? {} : { lastChapter: last }) });
       }
 
