@@ -1,4 +1,4 @@
-import type { CurrentStateFact, RuntimeStateDelta, RuntimeStateSnapshot } from "@actalk/inkos-core";
+import type { CurrentStateFact, FactKind, RuntimeStateDelta, RuntimeStateSnapshot } from "@actalk/inkos-core";
 
 export function snapshot(facts: CurrentStateFact[], lastAppliedChapter = 0): RuntimeStateSnapshot {
   return {
@@ -12,6 +12,9 @@ export function snapshot(facts: CurrentStateFact[], lastAppliedChapter = 0): Run
 export const fact = (subject: string, predicate: string, object: string, from: number, until: number | null = null): CurrentStateFact => ({
   subject, predicate, object, validFromChapter: from, validUntilChapter: until, sourceChapter: from,
 });
+
+/** A fact the settler labelled with a kind. */
+export const kinded = (kind: FactKind, ...args: Parameters<typeof fact>): CurrentStateFact => ({ ...fact(...args), kind });
 
 export function delta(chapter: number, upsert: Array<[string, string, string]>, expire: Array<[string, string]> = []): RuntimeStateDelta {
   return {

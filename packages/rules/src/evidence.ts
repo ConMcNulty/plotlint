@@ -32,15 +32,22 @@ export type EvidenceStatus =
   /** The chapter's text is not available. */
   | "no-chapter";
 
-/** Cache scene segmentation per chapter text. */
-const sceneCache = new WeakMap<ChapterTexts, Map<number, Scene[]>>();
+// Scene segmentation per chapter, recomputed when the chapter's text changes:
+// an editor may update one ChapterTexts map in place as the writer types.
+const sceneCache = new WeakMap<ChapterTexts, Map<number, { text: string; scenes: Scene[] }>>();
 function scenesOf(chapters: ChapterTexts, chapter: number): Scene[] {
   let byChapter = sceneCache.get(chapters);
   if (!byChapter) sceneCache.set(chapters, byChapter = new Map());
-  let scenes = byChapter.get(chapter);
-  if (!scenes) byChapter.set(chapter, scenes = segmentScenes(chapters.get(chapter) ?? "", { chapter }));
-  return scenes;
+  const text = chapters.get(chapter) ?? "";
+  let cached = byChapter.get(chapter);
+  if (cached?.text !== text) byChapter.set(chapter, cached = { text, scenes: segmentScenes(text, { chapter }) });
+  return cached.scenes;
 }
+
+// The settler's offsets count from the start of the body it settled; the chapter
+// file puts the "# Chapter N: Title" heading and a blank line before that body.
+const HEADING = /^#[^\n]*\n(?:[ \t]*\r?\n)*/u;
+const bodyOffset = (text: string) => HEADING.exec(text)?.[0].length ?? 0;
 
 /** Locate one evidence record in a chapter's current text. */
 export function locateEvidence(
@@ -51,7 +58,7 @@ export function locateEvidence(
   if (!evidence) return { status: "uncited" };
   const text = chapters.get(chapter);
   if (text === undefined) return { status: "no-chapter" };
-  const span = locateQuote(text, evidence.quote, evidence.start === undefined ? {} : { near: evidence.start });
+  const span = locateQuote(text, evidence.quote, evidence.start === undefined ? {} : { near: bodyOffset(text) + evidence.start });
   if (!span) return { status: "not-found" };
   return {
     status: "valid",
@@ -167,11 +174,17 @@ export function stateAt(snapshot: RuntimeStateSnapshot, cursor: CursorPosition, 
     }
     holding.push({ fact, kind: factKind(fact), ...(established ? { established } : {}) });
   }
-  const bySubject = new Map<string, FactAtCursor[]>();
-  for (const entry of holding) bySubject.set(entry.fact.subject, [...(bySubject.get(entry.fact.subject) ?? []), entry]);
-  return [...bySubject.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([subject, facts]) => ({
+  // Group as the rules do ("Mira" = "mira"), under the first spelling seen.
+  const bySubject = new Map<string, { subject: string; facts: FactAtCursor[] }>();
+  for (const entry of holding) {
+    const key = normalize(entry.fact.subject);
+    const group = bySubject.get(key) ?? { subject: entry.fact.subject, facts: [] };
+    group.facts.push(entry);
+    bySubject.set(key, group);
+  }
+  return [...bySubject.values()]
+    .sort((a, b) => a.subject.localeCompare(b.subject))
+    .map(({ subject, facts }) => ({
       subject,
       facts: facts.sort((a, b) => a.kind.localeCompare(b.kind) || a.fact.predicate.localeCompare(b.fact.predicate)),
     }));

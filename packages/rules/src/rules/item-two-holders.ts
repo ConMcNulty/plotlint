@@ -1,31 +1,13 @@
 import type { CurrentStateFact } from "@actalk/inkos-core";
 import type { Diagnostic } from "@plotlint/diagnostics";
 import type { Rule } from "../types.js";
+import { HOLDER_FIRST, ITEM_FIRST, type PossessionRelation } from "../predicates.js";
 import { factFinding, forEachOverlappingPair, groupBy, nested, normalize, normalizeValue } from "./facts.js";
 
-// Holding (who has the thing on them) and owning (whose it is) are different
-// relations: a thief holds what the merchant owns. Each is compared only with
-// itself. A relation can be written holder-first ("Mira · holds · brass key")
-// or item-first ("brass key · held by · Mira").
-//
-// Bare "has"/"have"/"有" are left out: settlers use them for traits, relatives
-// and conditions ("has a fever", "has a sister"), which many characters share.
-// "belongs to"/"属于" are left out too: they mostly record membership of a group.
-// So are "keeps", "possesses" and "wields", which settlers also use for abstract
-// things ("keeps a secret", "possesses magic") that many characters share.
-type Relation = "holds" | "owns";
-
-const HOLDER_FIRST: Record<string, Relation> = Object.fromEntries([
-  ...["holds", "holding", "carries", "carrying", "inpossessionof", "hasinhand",
-    "持有", "携带", "手持", "拿着", "握着", "随身携带", "身上带着", "怀揣"].map((p) => [p, "holds" as const]),
-  ...["owns", "ownerof", "拥有"].map((p) => [p, "owns" as const]),
-]);
-
-const ITEM_FIRST: Record<string, Relation> = Object.fromEntries([
-  ...["heldby", "carriedby", "possessedby", "holder", "currentholder", "bearer", "inthepossessionof",
-    "持有者", "持有人", "携带者", "持有方"].map((p) => [p, "holds" as const]),
-  ...["owner", "ownedby", "currentowner", "所有者", "所有人", "主人", "物主"].map((p) => [p, "owns" as const]),
-]);
+// Holding and owning are compared each only with itself, written holder-first
+// or item-first (HOLDER_FIRST and ITEM_FIRST in predicates.ts, with the words
+// left out of them). A settler's "possession" label does not say which side is
+// the holder, so the direction still comes from the predicate name.
 
 // An indefinite or counted object ("a sword", "two arrows", "一把剑") names a kind
 // of thing, not one thing, so two holders of it are not a contradiction.
@@ -33,7 +15,7 @@ const GENERIC_ITEM = /^(a|an|some|any|several|many|one|two|three|four|five|\d+)\
 
 interface Possession {
   readonly fact: CurrentStateFact;
-  readonly relation: Relation;
+  readonly relation: PossessionRelation;
   readonly holder: string;
   readonly item: string;
 }
@@ -49,7 +31,7 @@ export function readPossession(fact: CurrentStateFact): Possession | null {
   return { fact, relation, holder, item };
 }
 
-const RELATION_WORDS: Record<Relation, string> = { holds: "held", owns: "owned" };
+const RELATION_WORDS: Record<PossessionRelation, string> = { holds: "held", owns: "owned" };
 
 export const itemTwoHolders: Rule = {
   id: "continuity/item-two-holders",

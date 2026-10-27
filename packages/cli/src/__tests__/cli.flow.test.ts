@@ -153,6 +153,75 @@ describe("CLI mini-flows", () => {
       .toThrow(/No continuity\/dead-entity-acts finding/);
   }, 120_000);
 
+  it("reports the evidence gate: fact ops whose quoted passage is still in the chapter", async () => {
+    run(["init"]);
+    await saveWorkManifest(projectDir, createWorkManifest({
+      id: "lint-novel",
+      title: "Lint Novel",
+      profileId: "longform-novel",
+      language: "en",
+    }));
+    const bookDir = new StateManager(projectDir).bookDir("lint-novel");
+    const ch1 = "Mira reached the harbour at dusk. She lit the lamp.\n\nLater she hid in the chapel crypt.\n";
+    const cite = (quote: string) => ({ quote, start: ch1.indexOf(quote), end: ch1.indexOf(quote) + quote.length });
+    await saveRuntimeStateSnapshot(bookDir, {
+      manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 2, projectionVersion: 1 },
+      currentState: {
+        chapter: 2,
+        facts: [
+          { subject: "Mira", predicate: "location", object: "harbour", validFromChapter: 1, validUntilChapter: null, sourceChapter: 1,
+            kind: "location", evidence: cite("Mira reached the harbour") },
+          // Quoted with a capital S; the chapter reads "she hid".
+          { subject: "Mira", predicate: "hiding in", object: "the chapel crypt", validFromChapter: 1, validUntilChapter: null, sourceChapter: 1,
+            kind: "location", evidence: { quote: "She hid in the chapel crypt" } },
+          { subject: "Mira", predicate: "holds", object: "lamp", validFromChapter: 1, validUntilChapter: 1, sourceChapter: 1,
+            kind: "possession", evidence: cite("She lit the lamp"), endEvidence: { quote: "The lamp went out." } },
+          { subject: "Tomas", predicate: "mood", object: "calm", validFromChapter: 2, validUntilChapter: null, sourceChapter: 2 },
+        ],
+      },
+      hooks: { hooks: [] },
+      chapterSummaries: { rows: [] },
+    });
+    await mkdir(join(bookDir, "chapters"), { recursive: true });
+    await writeFile(join(bookDir, "chapters", "0001_harbour.md"), `# Chapter 1: Harbour\n\n${ch1}`);
+    await writeFile(join(bookDir, "chapters", "0002_night.md"), "# Chapter 2: Night\n\nTomas sat by the fire, calm.\n");
+
+    // Below the default 95% gate: the command fails but still prints the report.
+    const failed = runWithStatus(["lint", "evidence", "lint-novel", "--json"]);
+    expect(failed.status).toBe(1);
+    const coverage = JSON.parse(failed.stdout) as {
+      bookId: string; min: number; passed: boolean; total: number; valid: number; ratio: number;
+      byChapter: Array<{ chapter: number; total: number; valid: number }>;
+      issues: Array<{ op: string; status: string; chapter: number; fact: { predicate: string } }>;
+    };
+    expect(coverage).toMatchObject({
+      bookId: "lint-novel", min: 0.95, passed: false, total: 5, valid: 3, ratio: 0.6,
+      byChapter: [{ chapter: 1, total: 3, valid: 3 }, { chapter: 2, total: 2, valid: 0 }],
+    });
+    expect(coverage.issues.map((issue) => [issue.status, issue.chapter, issue.op, issue.fact.predicate])).toEqual([
+      ["not-found", 2, "expire", "holds"],
+      ["uncited", 2, "upsert", "mood"],
+    ]);
+
+    const text = runWithStatus(["lint", "evidence"]);
+    expect(text.status).toBe(1);
+    expect(text.stdout).toContain("lint-novel: 3/5 fact ops have a valid evidence span (60.0%), below the 95.0% gate");
+    expect(text.stdout).toContain("  chapter  valid  total   ratio\n  ch1          3      3  100.0%\n  ch2          0      2    0.0%\n");
+    expect(text.stdout).toContain("not-found ch2 expire: Mira · holds · lamp \"The lamp went out.\"");
+    expect(text.stdout).toContain("uncited ch2 upsert: Tomas · mood · calm");
+
+    expect(run(["lint", "evidence", "--min", "0.6"])).toContain("meets the 60.0% gate");
+    expect(() => run(["lint", "evidence", "--min", "1.5"])).toThrow(/--min takes a ratio/);
+
+    // Rules cite facts with their kind and evidence; a kind-labelled location counts.
+    const linted = JSON.parse(run(["lint", "lint-novel", "--json", "--layers", "continuity"])) as {
+      books: Array<{ diagnostics: Array<{ ruleId: string; facts: Array<{ predicate: string; kind?: string; evidence?: { quote: string } }> }> }>;
+    };
+    expect(linted.books[0]!.diagnostics.map((d) => [d.ruleId, d.facts.map((fact) => [fact.predicate, fact.kind, fact.evidence?.quote])])).toEqual([
+      ["continuity/two-places-at-once", [["location", "location", "Mira reached the harbour"], ["hiding in", "location", "She hid in the chapel crypt"]]],
+    ]);
+  }, 120_000);
+
   it("lints chapter text with L0 mechanics and L1 style, at compiler-style positions", async () => {
     run(["init"]);
     await saveWorkManifest(projectDir, createWorkManifest({
@@ -221,5 +290,16 @@ describe("CLI mini-flows", () => {
         HOME: projectDir,
       },
     });
+  }
+
+  /** Like `run`, but returns a non-zero exit with its output instead of throwing. */
+  function runWithStatus(args: string[]): { status: number; stdout: string } {
+    try {
+      return { status: 0, stdout: run(args) };
+    } catch (error) {
+      const { status, stdout } = error as { status: number | null; stdout: string };
+      if (status === null) throw error;
+      return { status, stdout };
+    }
   }
 });

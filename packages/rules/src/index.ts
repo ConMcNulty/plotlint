@@ -9,7 +9,7 @@ export type { TextDocument, TextFindingInput, TextRule, TextRuleContext } from "
 export { checkText, textDiagnostic } from "./text.js";
 export type { Scene, SceneBreak, SceneBreakKind, SegmentScenesOptions } from "./scenes.js";
 export { diagnosticScene, sceneAt, scenesOverlapping, segmentScenes } from "./scenes.js";
-export { classifyPredicate, factKind } from "./predicates.js";
+export { classifyPredicate, factKind, hasKind } from "./predicates.js";
 export type {
   ChapterTexts, CursorPosition, Definition, EntityAtCursor, EvidenceCoverage, EvidenceIssue, EvidenceLocation, EvidenceStatus, FactAtCursor,
 } from "./evidence.js";
