@@ -24,18 +24,21 @@ export function sameCharacter(a: string, b: string): boolean {
   return ` ${long} `.includes(` ${short} `);
 }
 
-/** The protagonist: the file's, else the most frequent POV character (first seen wins a tie). */
+/**
+ * The protagonist: the file's, else the most frequent POV character, counting
+ * "Mira" and "Mira Okonkwo-Hale" as one (the first spelling seen names them).
+ */
 export function protagonistOf(scenes: ReadonlyArray<SceneAnnotation>, declared?: string): string | null {
   if (declared) return declared;
-  const counts = new Map<string, { name: string; count: number }>();
+  const counts: Array<{ name: string; count: number }> = [];
   for (const scene of scenes) {
     if (!scene.pov) continue;
-    const entry = counts.get(key(scene.pov)) ?? { name: scene.pov, count: 0 };
-    entry.count += 1;
-    counts.set(key(scene.pov), entry);
+    const entry = counts.find((candidate) => sameCharacter(candidate.name, scene.pov!));
+    if (entry) entry.count += 1;
+    else counts.push({ name: scene.pov, count: 1 });
   }
   let best: { name: string; count: number } | null = null;
-  for (const entry of counts.values()) if (!best || entry.count > best.count) best = entry;
+  for (const entry of counts) if (!best || entry.count > best.count) best = entry;
   return best?.name ?? null;
 }
 

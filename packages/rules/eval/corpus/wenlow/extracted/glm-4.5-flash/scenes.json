@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "scenes": [
+    {
+      "id": "ch1.s1",
+      "chapter": 1,
+      "scene": 1,
+      "pov": "Elspeth Marrow",
+      "goal": "understand the mystery of her father's death and the letter",
+      "opposition": "Captain Ida Thorne",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Captain Thorne reveals the letter signed with Elspeth's father's name",
+        "causedBy": "other",
+        "by": "Captain Ida Thorne",
+        "evidence": "Someone has written to the warden's office to say they know where her cargo went. The letter is signed with your father's name."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "Someone has written to the warden's office to say they know where her cargo went. The letter is signed with your father's name.",
+        "opposition": "I would like to know who wrote this letter.",
+        "outcome": "Then we go to Stavely"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "09fc5f2ffebdee"
+    },
+    {
+      "id": "ch2.s1",
+      "chapter": 2,
+      "scene": 1,
+      "pov": null,
+      "goal": "reach Stavely",
+      "opposition": "difficult journey and Captain Thorne's investigation",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "turningPoint": {
+        "description": "Captain Thorne reveals information about their father and the missing money",
+        "causedBy": "other",
+        "by": "Captain Thorne",
+        "evidence": "Captain Thorne was indeed already in Stavely. She came to the Heron after supper, shaking rain from her cloak, and sat down at their table without asking."
+      },
+      "stakes": 5,
+      "povBreaks": [
+        {
+          "quote": "Crane was at that moment in his cottage in Wenlow, a day's walk behind them, coughing into a handkerchief while the parish nurse boiled water on his stove. None of them knew yet how little time he had.",
+          "note": "The narrator describes Crane's situation without Elspeth or Jonas knowing"
+        }
+      ],
+      "evidence": {
+        "goal": "They set out at dawn on the second of October and walked east along the river road.",
+        "opposition": "Captain Thorne was indeed already in Stavely. She came to the Heron after supper, shaking rain from her cloak, and sat down at their table without asking.",
+        "outcome": "Elspeth lay awake a long time in the room above the bar."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "05ec6b8f4b5cd4"
+    },
+    {
+      "id": "ch3.s1",
+      "chapter": 3,
+      "scene": 1,
+      "pov": "Elspeth",
+      "goal": "Learn the truth about their father's death",
+      "opposition": "The men responsible for their father's death",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Crane reveals the truth about their father's death and gives them evidence",
+        "causedBy": "other",
+        "by": "Absalom Crane",
+        "evidence": "I ferried the Margery's crew the night she sailed, and I wrote it in the ledger, and I wrote something else in it too. Your father did not steal anything. He was paid to sink the barge and he would not, and the men who paid him sank it with him aboard."
+      },
+      "stakes": 8,
+      "evidence": {
+        "goal": "\"You wrote the letter,\" Elspeth said.",
+        "opposition": "\"Because the men who sank the Margery are still alive, and one of them is still on the parish council.\"",
+        "outcome": "\"We go tomorrow. Before anyone on the parish council hears that Crane is dead.\""
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1068e4bb69d1a7"
+    },
+    {
+      "id": "ch4.s1",
+      "chapter": 4,
+      "scene": 1,
+      "pov": "Elspeth",
+      "goal": "retrieve parish money",
+      "opposition": "Captain Ida Thorne",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "trust",
+        "value": 1
+      },
+      "valueEnd": {
+        "axis": "trust",
+        "value": 0
+      },
+      "turningPoint": {
+        "description": "Captain Thorne demands the money box",
+        "causedBy": "other",
+        "by": "Captain Ida Thorne",
+        "evidence": "Now you give that box to me."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "Elspeth counted the flagstones from the chapel door.",
+        "opposition": "Now you give that box to me.",
+        "outcome": "Elspeth carried the strongbox down the hill herself, though it bruised her arms."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0f1bcd6183204e"
+    },
+    {
+      "id": "ch5.s1",
+      "chapter": 5,
+      "scene": 1,
+      "pov": "Elspeth",
+      "goal": "delivering evidence for justice",
+      "opposition": "corruption/Alderman Pask",
+      "outcome": "success",
+      "valueStart": {
+        "axis": "justice",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "justice",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Elspeth gives the ledger to Captain Thorne",
+        "causedBy": "protagonist",
+        "by": "Elspeth",
+        "evidence": "She gave the ledger to Captain Thorne."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "She gave the ledger to Captain Thorne.",
+        "opposition": "I know,\" Thorne said. \"I have suspected him for ten years. I could never prove it",
+        "outcome": "Elspeth laughed for the first time in a week. She had seven shillings in her purse, the strongbox was in the vestry, her father's name was clean, and the river went past Wenlow as it always had, brown and patient, giving back at last one of the things it had kept."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0cd6660026e475"
+    }
+  ]
+}

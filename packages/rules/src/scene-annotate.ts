@@ -74,7 +74,7 @@ Rules:
 - valueStart and valueEnd use the same axis: the value most at stake for the POV character. -2 is worst, 0 neutral, 2 best. When nothing changes, give the same value at both ends.
 - outcome: did the POV character get what they wanted? "none" when they wanted nothing or the scene ends before it is decided.
 - turningPoint: the moment the scene changes direction, or null when it does not. causedBy is "protagonist" when the protagonist's own choice or action causes it, "other" for another character's, "circumstance" for chance, nature or events.
-- stakes: how much the POV character stands to lose, 0 nothing to 10 life or everything.
+- stakes: how much the POV character stands to lose in this scene, judged on this scale and not on how dramatic the book is overall: 0-1 nothing (travel, rest, chores), 2-3 comfort or pride (an awkward talk, a small errand), 4-5 something they care about (a job, a secret, a friendship), 6-7 something they cannot replace (a home, a loved one's trust, their freedom), 8-9 their life or a loved one's life in immediate danger, 10 everything at once. Most scenes in most books are 2 to 6.
 - povBreaks: only clear cases where the narration reports another character's unspoken thoughts or feelings, or events the POV character cannot see. Usually [].
 - Annotate every scene id you are asked about, in order.`;
 
@@ -87,7 +87,7 @@ const SYSTEM_ZH = `你为发展编辑标注小说一章中的各个场景。每�
 - 引文必须逐字照抄该场景原文中的一句话（10 到 40 个字），不改写、不缩写、不拼接。宁可省略也不要编造。
 - valueStart 与 valueEnd 用同一个 axis；-2 最坏，0 中性，2 最好；没有变化就给相同的值。
 - causedBy：主角自己的选择或行动为 "protagonist"，其他角色为 "other"，偶然、自然或局势为 "circumstance"。
-- stakes：视角人物可能失去多少，0 毫无，10 生命或一切。
+- stakes：视角人物在本场景可能失去多少，按此刻度判断：0-1 毫无（赶路、休息），2-3 面子或舒适，4-5 在乎的东西（差事、秘密、友谊），6-7 无法替代的东西（家园、亲人的信任、自由），8-9 自己或亲人的性命当场受威胁，10 一切。多数场景在 2 到 6 之间。
 - povBreaks 只列明显的视角越界（写出他人未说出口的想法，或视角人物看不到的事），通常为 []。
 - 按顺序标注要求的每一个场景 id。`;
 

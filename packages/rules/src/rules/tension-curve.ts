@@ -6,12 +6,14 @@ import { annotatedScenes, anyQuote, chapterSpan, numberOption, percent, structur
 // The tension curve: each chapter's stakes, the highest of its scenes' judged
 // stakes (0 to 10). Two shapes are flagged, as notes, since the stakes are the
 // annotator's opinion:
-// - a flat run: `flatRun` (default 4) or more consecutive annotated chapters
-//   whose stakes stay within `flatBand` (default 1) of each other;
+// - a flat run: `flatRun` (default 5) or more consecutive annotated chapters
+//   whose stakes stay within `flatBand` (default 1) of each other, in a book of
+//   at least `minChapters` (default 8) annotated chapters (models tend to give
+//   every scene of a short book much the same stakes);
 // - an early peak, only once the book is finished (option `finished: true`):
 //   the last chapter at the highest stakes comes before `earlyPeak` (default
-//   0.6) of the way through, in a book of at least `minChapters` (default 5)
-//   annotated chapters.
+//   0.6) of the way through, in a book of at least `minChapters` annotated
+//   chapters.
 
 export interface ChapterTension {
   readonly chapter: number;
@@ -42,12 +44,13 @@ export const tensionCurveRule: Rule = {
   check({ book, chapters, options }) {
     const curve = tensionCurve(annotatedScenes(book));
     if (curve.length === 0) return [];
-    const flatRun = Math.max(2, numberOption(options, "flatRun", 4));
+    const flatRun = Math.max(2, numberOption(options, "flatRun", 5));
+    const minChapters = numberOption(options, "minChapters", 8);
     const band = numberOption(options, "flatBand", 1);
     const diagnostics: Diagnostic[] = [];
     const context = chapters ? { chapters } : {};
 
-    for (let i = 0; i < curve.length;) {
+    for (let i = 0; curve.length >= minChapters && i < curve.length;) {
       let low = curve[i]!.stakes;
       let high = low;
       let j = i + 1;
@@ -73,7 +76,6 @@ export const tensionCurveRule: Rule = {
       }
     }
 
-    const minChapters = numberOption(options, "minChapters", 5);
     if (options.finished === true && curve.length >= minChapters) {
       const top = Math.max(...curve.map((point) => point.stakes));
       const index = curve.map((point) => point.stakes).lastIndexOf(top);

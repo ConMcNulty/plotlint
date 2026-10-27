@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  builtinRegistry, checkSnapshot, goalConflictOutcome, povDiscipline, protagonistAgency, sameCharacter, sceneTurn,
+  builtinRegistry, checkSnapshot, goalConflictOutcome, povDiscipline, protagonistAgency, protagonistOf, sameCharacter, SceneAnnotationSchema, sceneTurn,
   SceneAnnotationsFileSchema, tensionCurveRule, type BookRuleData, type Rule, type SceneAnnotationInput,
 } from "../index.js";
 import { snapshot } from "./fixtures.js";
@@ -121,6 +121,8 @@ describe("structure/protagonist-agency", () => {
     expect(run(protagonistAgency, specs, { protagonist: "Pell" })).toEqual([]); // 3 of 5
     expect(run(protagonistAgency, specs, { protagonist: "Tomas" })[0]!.summary).toContain("Tomas causes 1 of 5");
     expect(run(protagonistAgency, specs.slice(0, 4), { protagonist: "Tomas" })).toEqual([]);
+    expect(protagonistOf([scene({ at: "1", pov: "Tomas" }), scene({ at: "2", pov: "Mira Okonkwo-Hale" }), scene({ at: "3", pov: "Mira" })]
+      .map((entry) => SceneAnnotationSchema.parse(entry)))).toBe("Mira Okonkwo-Hale");
     expect(sameCharacter("Mira", "Mira Okonkwo-Hale")).toBe(true);
     expect(sameCharacter("Mir", "Mira Okonkwo-Hale")).toBe(false);
     expect(sameCharacter("黛玉", "林黛玉")).toBe(true);
@@ -138,6 +140,9 @@ describe("structure/tension-curve", () => {
       severity: "note", confidence: "judged", chapter: 2,
       summary: "Tension stays flat across ch 2–6: stakes between 4 and 5 for 5 chapters.",
     });
+    // A short book where every chapter sits at the same stakes says more about the annotator than the book.
+    expect(run(tensionCurveRule, stakes([7, 7, 7, 6, 7]))).toEqual([]);
+    expect(run(tensionCurveRule, stakes([7, 7, 7, 6, 7]), { config: { minChapters: 5 } })).toHaveLength(1);
   });
 
   it("notes an early peak only in a finished book, taking the highest scene per chapter", () => {
@@ -152,7 +157,7 @@ describe("structure/tension-curve", () => {
 
   it("stays judged at note even when rules.json raises its severity", () => {
     const book: BookRuleData = {
-      scenes: SceneAnnotationsFileSchema.parse({ version: 1, scenes: stakes([5, 5, 5, 5]).map(scene) }),
+      scenes: SceneAnnotationsFileSchema.parse({ version: 1, scenes: stakes([5, 5, 5, 5, 5, 5, 5, 5]).map(scene) }),
       config: { version: 1, rules: { "structure/tension-curve": "error" } },
     };
     expect(checkSnapshot(snapshot([], 4), { rules: [tensionCurveRule], book }).map((d) => d.severity)).toEqual(["note"]);
