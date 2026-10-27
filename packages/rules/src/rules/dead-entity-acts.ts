@@ -7,7 +7,9 @@ import { factFinding, normalize, validAt } from "./facts.js";
 // Settler facts are free-form subject-predicate-object strings in English or
 // Chinese, so a status fact is recognised from its kind or a small vocabulary of
 // predicate names, and death from a small vocabulary of objects.
-const DEAD_OBJECT = /^(dead|deceased|killed|died|slain|murdered|executed|死亡|已死|已死亡|死了|身亡|阵亡|去世|已故|遇害|被杀)$/u;
+// An English death word may carry its manner ("murdered with throat cut",
+// "killed by Tomas"), but only after a preposition, so "dead tired" is not a death.
+const DEAD_OBJECT = /^(dead|deceased|killed|died|slain|murdered|executed|drowned)(\s+(by|with|from|of|in|at|on)\s.*)?$|^(死亡|已死|已死亡|死了|身亡|阵亡|去世|已故|遇害|被杀)$/u;
 const NOT_ALIVE_OBJECT = /^(false|no|not alive|否|不|无)$/u;
 
 // Extractors also write death as a plain copula ("Harrow · is · dead") or as the
@@ -38,36 +40,35 @@ export const deadEntityActs: Rule = {
   rationale: "A character recorded as dead should not gain new state (move, hold things, learn things) unless the story brings them back or the scene is a flashback.",
   check({ snapshot }) {
     const facts = snapshot.currentState.facts;
-    // One finding per character: when several facts record the same death
-    // ("is · dead" and "died from · ..."), report from the earliest.
-    const deaths = new Map<string, CurrentStateFact>();
-    for (const fact of facts.filter(isDeathFact)) {
-      const earlier = deaths.get(normalize(fact.subject));
-      if (!earlier || fact.validFromChapter < earlier.validFromChapter) deaths.set(normalize(fact.subject), fact);
-    }
-    const diagnostics: Diagnostic[] = [];
+    // One finding per character and chapter: when several facts record the same
+    // death ("is · dead" and "died from · ..."), cite the earliest one still valid.
+    const findings = new Map<string, { death: CurrentStateFact; chapter: number; after: CurrentStateFact[] }>();
+    const deaths = facts.filter(isDeathFact).sort((a, b) => a.validFromChapter - b.validFromChapter);
 
-    for (const death of deaths.values()) {
+    for (const death of deaths) {
       const subject = normalize(death.subject);
-      const later = facts.filter((fact) =>
-        fact !== death
-        && normalize(fact.subject) === subject
-        && fact.validFromChapter > death.validFromChapter
-        && validAt(death, fact.validFromChapter)
-        && !isDeathFact(fact)
-        && !hasKind(fact, "status")
-        && !POSTHUMOUS_PREDICATE.test(fact.predicate.toLowerCase()));
-
-      const byChapter = new Map<number, CurrentStateFact[]>();
-      for (const fact of later) byChapter.set(fact.validFromChapter, [...(byChapter.get(fact.validFromChapter) ?? []), fact]);
-
-      for (const [chapter, chapterFacts] of byChapter) {
-        diagnostics.push(factFinding(this, {
-          chapter,
-          summary: `${death.subject} is recorded as dead since chapter ${death.validFromChapter}, but gains new state in chapter ${chapter}.`,
-          evidence: [["death", death], ...chapterFacts.map((fact) => ["after", fact] as const)],
-        }));
+      for (const fact of facts) {
+        if (fact === death
+          || normalize(fact.subject) !== subject
+          || fact.validFromChapter <= death.validFromChapter
+          || !validAt(death, fact.validFromChapter)
+          || isDeathFact(fact)
+          || hasKind(fact, "status")
+          || POSTHUMOUS_PREDICATE.test(fact.predicate.toLowerCase())) continue;
+        const key = `${subject}\u0000${fact.validFromChapter}`;
+        const finding = findings.get(key) ?? { death, chapter: fact.validFromChapter, after: [] };
+        if (finding.death === death) finding.after.push(fact);
+        findings.set(key, finding);
       }
+    }
+
+    const diagnostics: Diagnostic[] = [];
+    for (const { death, chapter, after } of findings.values()) {
+      diagnostics.push(factFinding(this, {
+        chapter,
+        summary: `${death.subject} is recorded as dead since chapter ${death.validFromChapter}, but gains new state in chapter ${chapter}.`,
+        evidence: [["death", death], ...after.map((fact) => ["after", fact] as const)],
+      }));
     }
     return diagnostics;
   },
