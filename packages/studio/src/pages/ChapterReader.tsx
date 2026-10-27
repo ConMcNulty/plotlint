@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchJson, useApi } from "../hooks/use-api";
 import type { Theme } from "../hooks/use-theme";
 import type { TFunction } from "../hooks/use-i18n";
 import { useColors } from "../hooks/use-colors";
 import { ChapterWorkspacePanel } from "../components/ChapterWorkspacePanel";
 import { ManuscriptEditor, type ManuscriptEditorHandle } from "../components/plotlint/ManuscriptEditor";
+import type { EvidenceLocation } from "../components/plotlint/navigate-client";
 import {
   ChevronLeft,
   Check,
@@ -26,14 +27,23 @@ interface ChapterData {
   readonly content: string;
 }
 
+interface TextRange {
+  readonly start: number;
+  readonly end: number;
+}
+
 interface Nav {
   toBook: (id: string) => void;
   toDashboard: () => void;
+  /** Open a chapter, optionally in the editor with a text range selected. */
+  toChapter?: (bookId: string, chapterNumber: number, select?: TextRange) => void;
 }
 
-export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
+export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: {
   bookId: string;
   chapterNumber: number;
+  /** Open in the editor with this range of the chapter file's text selected (a jump from another chapter). */
+  select?: TextRange;
   nav: Nav;
   theme: Theme;
   t: TFunction;
@@ -48,6 +58,22 @@ export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
   const editorRef = useRef<ManuscriptEditorHandle>(null);
   const [saving, setSaving] = useState(false);
   const [workspaceRevision, setWorkspaceRevision] = useState(0);
+  // A jump here opens the editor once, on the passage it points at.
+  const [pendingSelect, setPendingSelect] = useState(select);
+
+  useEffect(() => {
+    if (!pendingSelect || !data || editing) return;
+    setEditContent(data.content);
+    setEditing(true);
+  }, [pendingSelect, data, editing]);
+
+  /** Go to a passage in another chapter, after confirming that unsaved edits here may be left behind. */
+  const openLocation = (location: EvidenceLocation) => {
+    if (!nav.toChapter) return;
+    const dirty = editing && data && editorRef.current && editorRef.current.getText() !== data.content;
+    if (dirty && !window.confirm(t("state.leaveUnsaved"))) return;
+    nav.toChapter(bookId, location.chapter, { start: location.start, end: location.end });
+  };
 
   const handleStartEdit = () => {
     if (!data) return;
@@ -56,6 +82,7 @@ export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
   };
 
   const handleCancelEdit = () => {
+    setPendingSelect(undefined);
     setEditing(false);
     setEditContent("");
   };
@@ -68,6 +95,7 @@ export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: editorRef.current?.getText() ?? editContent }),
       });
+      setPendingSelect(undefined);
       setEditing(false);
       refetch();
       setWorkspaceRevision((revision) => revision + 1);
@@ -175,7 +203,8 @@ export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
       />
 
       {/* Manuscript Sheet */}
-      <div className="paper-sheet rounded-2xl p-8 md:p-16 lg:p-24 shadow-2xl shadow-primary/5 min-h-[80vh] relative overflow-hidden">
+      {/* overflow-clip, not hidden: hidden makes a scroll container, which would stop the state panel sticking. */}
+      <div className="paper-sheet rounded-2xl p-8 md:p-16 lg:p-24 shadow-2xl shadow-primary/5 min-h-[80vh] relative overflow-clip">
         {/* Physical Paper Details */}
         <div className="absolute top-0 left-8 w-px h-full bg-primary/5 hidden md:block" />
         <div className="absolute top-0 right-8 w-px h-full bg-primary/5 hidden md:block" />
@@ -203,6 +232,8 @@ export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
             initialText={editContent}
             handleRef={editorRef}
             t={t}
+            selection={pendingSelect}
+            onOpenLocation={openLocation}
           />
         ) : (
           <article className="prose prose-zinc dark:prose-invert max-w-none">

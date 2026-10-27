@@ -97,8 +97,8 @@ export function App() {
     toBookCreate: () => setRoute({ page: "book-create" }),
     toWork: (workId: string) => setRoute({ page: "work", workId }),
     toWorkChat: (workId: string, profileId: string) => setRoute({ page: "work-chat", workId, profileId }),
-    toChapter: (bookId: string, chapterNumber: number) =>
-      setRoute({ page: "chapter", bookId, chapterNumber }),
+    toChapter: (bookId: string, chapterNumber: number, select?: { start: number; end: number }) =>
+      setRoute({ page: "chapter", bookId, chapterNumber, ...(select ? { select } : {}) }),
     toAnalytics: (bookId: string) => setRoute({ page: "analytics", bookId }),
     toServices: () => setRoute({ page: "services" }),
     toProjectSettings: () => setRoute({ page: "project-settings" }),
@@ -294,7 +294,8 @@ export function App() {
           )}
           {route.page === "chapter" && (
             <div className="mx-auto w-full max-w-[1400px] px-4 py-12 sm:px-6 lg:px-10 lg:py-16 2xl:px-12 fade-in">
-              <ChapterReader bookId={route.bookId} chapterNumber={route.chapterNumber} nav={nav} theme={theme} t={t} />
+              {/* Keyed so a jump to another chapter opens a fresh reader (and editor) on it. */}
+              <ChapterReader key={`${route.bookId}:${route.chapterNumber}`} bookId={route.bookId} chapterNumber={route.chapterNumber} select={route.select} nav={nav} theme={theme} t={t} />
             </div>
           )}
           {route.page === "analytics" && (
