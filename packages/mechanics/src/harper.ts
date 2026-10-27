@@ -26,6 +26,16 @@ export interface HarperHandle {
 
 const handles = new Map<Dialect, Promise<HarperHandle>>();
 
+// harper.js reads its WebAssembly file with `new URL(url).pathname`, which turns
+// `file:///D:/...` into `/D:/...` and fails on Windows. The inlined build carries
+// the binary as a data URL instead, so it loads without touching the file system.
+// Each harper.js entry declares its own copy of the binary class, so the types
+// differ nominally; both are what LocalLinter expects.
+export async function harperBinary(platform: string = process.platform): Promise<typeof binary> {
+  if (platform !== "win32") return binary;
+  return (await import("harper.js/binaryInlined")).binaryInlined as unknown as typeof binary;
+}
+
 /**
  * The shared Harper linter for a dialect. Loading the WebAssembly binary takes
  * about a second, so it happens once per process; call this early to warm up.
@@ -34,7 +44,7 @@ export function harperLinter(dialect: Dialect = Dialect.American): Promise<Harpe
   let handle = handles.get(dialect);
   if (!handle) {
     handle = (async () => {
-      const linter = new LocalLinter({ binary, dialect });
+      const linter = new LocalLinter({ binary: await harperBinary(), dialect });
       await linter.setup();
       return { linter, wordsKey: "", queue: Promise.resolve() };
     })();
