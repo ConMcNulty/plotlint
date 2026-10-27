@@ -80,6 +80,31 @@ describe("inkos lint packs", () => {
     expect(listed.rules.find((rule) => rule.id === "structure/protagonist-agency")).toMatchObject({ setting: "note", from: ["romance"] });
   });
 
+  it("lists every rule with its effective setting and where it comes from", async () => {
+    run(["lint", "packs", "use", "romance"]);
+    await writeFile(join(bookDir, "story", "plotlint", "rules.json"), JSON.stringify({
+      version: 1, rules: { "metrics/wall-of-text": "warning" },
+    }));
+    // Five rejected Intensifiers findings: the adaptive overlay lowers the rule to a note.
+    const verdicts = Array.from({ length: 5 }, (_, index) => JSON.stringify({
+      ruleId: "style/general.Intensifiers", fingerprint: `fp${index}`, verdict: "rejected", action: "not-useful",
+      at: new Date(2026, 0, 1, 0, index).toISOString(), layer: "style", confidence: "deterministic",
+    })).join("\n");
+    await writeFile(join(bookDir, "story", "plotlint", "verdicts.jsonl"), `${verdicts}\n`);
+
+    type Row = { id: string; layer: string; enabled: boolean; severity?: string; band?: unknown; from: string[] };
+    const { rules } = JSON.parse(run(["lint", "rules", "thorn", "--json"])) as { rules: Row[] };
+    const byId = new Map(rules.map((rule) => [rule.id, rule]));
+    expect(byId.get("style/general.Intensifiers")).toMatchObject({ layer: "style", severity: "note", from: ["adaptive"] });
+    expect(byId.get("metrics/wall-of-text")).toMatchObject({ layer: "metrics", severity: "warning", from: ["rules.json"] });
+    expect(byId.get("metrics/dialogue-ratio")).toMatchObject({ layer: "metrics", from: expect.arrayContaining(["romance"]) });
+    expect(byId.get("metrics/dialogue-ratio")!.band).toBeDefined();
+    expect(byId.get("structure/subplot-balance")).toMatchObject({ layer: "structure", severity: "note", from: ["romance"] });
+    expect(byId.get("mechanics/harper")).toMatchObject({ layer: "mechanics", enabled: true });
+    expect(byId.has("metrics/repeated-phrase")).toBe(true);
+    expect(run(["lint", "rules", "thorn"])).toMatch(/style\/general\.Intensifiers {2}note {2}\(adaptive\)/u);
+  });
+
   it("uses packs by name and rejects unknown ones", async () => {
     expect(run(["lint", "packs", "use", "mystery,romance", "--book", "thorn"])).toContain("now runs general + mystery + romance");
     expect(lint().packs).toEqual(["general", "mystery", "romance"]);

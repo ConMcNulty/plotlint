@@ -42,6 +42,12 @@ export interface SetDiagnosticsOptions {
    * version's text) are replaced, the rest stay. Omit to replace all diagnostics.
    */
   readonly ranges?: ReadonlyArray<TextRange>;
+  /**
+   * On a partial re-lint, keep existing diagnostics this returns true for even
+   * inside the replaced ranges: findings only a whole-text lint produces (chapter
+   * metrics, say) stay drawn, marked stale where edited, until the next full lint.
+   */
+  readonly keep?: (diagnostic: Diagnostic) => boolean;
 }
 
 export interface HoverContext {
@@ -316,8 +322,9 @@ function applyMeta(
   let decorations: DecorationSet;
   let dirty: ReadonlyArray<DirtyRange>;
   if (partial) {
+    const { keep } = meta.options;
     const removed = state.decorations.find(undefined, undefined).filter((decoration) =>
-      replaced.some((r) => (decoration.from < r.to && decoration.to > r.from) || (decoration.from >= r.from && decoration.to <= r.to)));
+      !keep?.((decoration.spec as DecorationSpec).diagnostic) && replaced.some((r) => (decoration.from < r.to && decoration.to > r.from) || (decoration.from >= r.from && decoration.to <= r.to)));
     decorations = state.decorations.remove(removed).add(doc, added);
     dirty = state.dirty.filter((d) => d.version > baseVersion || !replaced.some((r) => r.from <= d.from && d.to <= r.to));
   } else {
