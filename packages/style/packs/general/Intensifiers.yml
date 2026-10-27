@@ -1,0 +1,16 @@
+# Weasel intensifiers, as notes only: they are everywhere in good prose too.
+extends: existence
+message: "'%s' rarely adds force; try a stronger word or cut it."
+description: >-
+  Intensifiers like "very" and "really" usually prop up a weak word instead of replacing it
+  with a precise one, and "just" is a common filler. Skipped inside dialogue, where they are
+  part of a character's voice. Word list after write-good's weasel words.
+link: https://github.com/btford/write-good
+level: suggestion
+ignorecase: true
+plotlint:
+  skipDialogue: true
+tokens:
+  - very
+  - really
+  - just

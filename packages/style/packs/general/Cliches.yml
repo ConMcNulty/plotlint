@@ -1,0 +1,31 @@
+# A short, curated list of stock phrases. Kept small on purpose: a long list flags too much
+# to be useful. Dialogue is skipped, since people really do talk in clichés.
+extends: existence
+message: "Cliché: '%s'."
+description: >-
+  Stock phrases have lost their force through overuse; readers skim them. A specific image
+  from this scene usually does the job better.
+link: https://en.wikipedia.org/wiki/Clich%C3%A9
+level: warning
+ignorecase: true
+plotlint:
+  skipDialogue: true
+tokens:
+  - all of a sudden
+  - at the end of the day
+  - avoid(?:ed|s|ing)? (?:\w+ )?like the plague
+  - dead as a doornail
+  - in the nick of time
+  - crystal clear
+  - fit as a fiddle
+  - white as a sheet
+  - time stood still
+  - only time will tell
+  - calm before the storm
+  - little did (?:he|she|they|I|we) know
+  - a dark and stormy night
+  - (?:her|his|my|their|your) blood ran cold
+  - a chill ran down (?:her|his|my|their|your) spine
+  - (?:her|his|my|their|your) heart skipped a beat
+  - every fib(?:er|re) of (?:her|his|my|their|your) being
+  - let out a breath (?:she|he|I|they|you) didn't know (?:she|he|I|they|you) (?:was|were|had been) holding

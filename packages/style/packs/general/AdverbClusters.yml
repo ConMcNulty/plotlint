@@ -1,0 +1,14 @@
+# Three or more -ly adverbs in one sentence. The token's negative lookahead skips common
+# -ly words that are not adverbs; lookarounds are JavaScript regex, so this file is
+# plotlint-only (Go's RE2, and so Vale itself, would reject it).
+extends: occurrence
+message: "%s -ly adverbs in one sentence; let the verbs carry more of the weight."
+description: >-
+  One adverb is often the right word. A sentence stacked with them usually means the verbs
+  are doing too little, the habit Stephen King warns against in On Writing.
+link: https://en.wikipedia.org/wiki/On_Writing:_A_Memoir_of_the_Craft
+level: warning
+ignorecase: true
+scope: sentence
+max: 2
+token: \b(?!(?:only|early|family|holy|ally|rally|belly|jelly|bully|lily|reply|apply|supply|imply|comply|rely|multiply|ugly|silly|lonely|lovely|friendly|likely|unlikely|elderly|curly|oily|chilly|hilly|jolly|woolly|costly|deadly|lively|lowly|sickly|surly|burly|wobbly|prickly|grisly|ghastly|ghostly|heavenly|worldly|orderly|scholarly|cowardly|leisurely|timely|daily|weekly|monthly|yearly|hourly|nightly|homely|stately|butterfly|dragonfly|firefly|anomaly|assembly|monopoly|melancholy|folly|gully|italy|july|emily|molly|sally|holly|kelly|billy|polly)\b)[a-z]{2,}ly\b

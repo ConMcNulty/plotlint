@@ -1,0 +1,23 @@
+# Words that machine-generated English prose overuses. The list is InkOS's own: the
+# `aiTellWords` of its English post-write validator (packages/core/src/agents/post-write-validator.ts,
+# removed upstream in the harness v2 migration), which also seeded its genre `fatigueWords`.
+# Inflections are added so "delved" and "tapestries" match too.
+extends: existence
+message: "'%s' is a common AI tell; is there a plainer or more specific word?"
+description: >-
+  Generated prose leans on the same few elevated words. One use is fine; several in a
+  chapter make the text read as machine-written. InkOS flagged these by density, so treat
+  single hits as a prompt to look, not a mistake.
+link: https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing
+level: suggestion
+ignorecase: true
+tokens:
+  - delv(?:e|es|ed|ing)
+  - tapestr(?:y|ies)
+  - testaments?
+  - intricate(?:ly)?
+  - pivotal
+  - vibrant(?:ly)?
+  - embark(?:s|ed|ing)?
+  - comprehensive(?:ly)?
+  - nuanced
