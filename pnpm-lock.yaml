@@ -23,9 +23,15 @@ importers:
       '@plotlint/diagnostics':
         specifier: workspace:*
         version: link:../diagnostics
+      '@plotlint/mechanics':
+        specifier: workspace:*
+        version: link:../mechanics
       '@plotlint/rules':
         specifier: workspace:*
         version: link:../rules
+      '@plotlint/style':
+        specifier: workspace:*
+        version: link:../style
       commander:
         specifier: ^13.0.0
         version: 13.1.0
