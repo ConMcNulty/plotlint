@@ -36,6 +36,7 @@ const RELATION_WORDS: Record<PossessionRelation, string> = { holds: "held", owns
 export const itemTwoHolders: Rule = {
   id: "continuity/item-two-holders",
   layer: "continuity",
+  title: "Item held by two",
   rationale: "One object can be held (or owned) by only one character at a time. Two holders usually mean a hand-over was recorded without ending the old possession.",
   check({ snapshot }) {
     const possessions = snapshot.currentState.facts

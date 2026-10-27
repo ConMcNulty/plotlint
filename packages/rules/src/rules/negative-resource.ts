@@ -19,6 +19,7 @@ export function negativeAmount(fact: CurrentStateFact): number | null {
 export const negativeResource: Rule = {
   id: "continuity/negative-resource",
   layer: "continuity",
+  title: "Resource below zero",
   rationale: "Money, mana, ammunition and other tracked resources cannot drop below zero; a negative amount usually means a cost was applied twice or a gain was never recorded.",
   check({ snapshot }) {
     const facts = snapshot.currentState.facts;

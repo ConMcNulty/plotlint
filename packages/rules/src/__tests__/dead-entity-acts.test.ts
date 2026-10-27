@@ -56,12 +56,12 @@ describe("continuity/dead-entity-acts", () => {
     ], 6))).toEqual([]);
   });
 
-  it("does not flag a character whose death fact was later expired", () => {
+  it("leaves a character whose death fact was later expired to dead-then-alive", () => {
     expect(checkSnapshot(snapshot([
       fact("Mira", "status", "dead", 5, 8),
       fact("Mira", "status", "alive", 9),
       fact("Mira", "location", "harbour", 9),
-    ], 9))).toEqual([]);
+    ], 9)).map((d) => d.ruleId)).toEqual(["continuity/dead-then-alive"]);
   });
 
   it("recognises death written as a copula or as the manner of death", () => {

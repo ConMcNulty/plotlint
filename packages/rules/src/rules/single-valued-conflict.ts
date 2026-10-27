@@ -45,6 +45,7 @@ function read(fact: CurrentStateFact): Reading | null {
 export const singleValuedConflict: Rule = {
   id: "continuity/single-valued-conflict",
   layer: "continuity",
+  title: "Conflicting single values",
   rationale: "Some properties have one value at a time: a character is alive or dead, and has one age. Two different values valid in the same chapter mean an old fact was never ended.",
   check({ snapshot }) {
     const readings = snapshot.currentState.facts.map(read).filter((reading): reading is Reading => reading !== null);

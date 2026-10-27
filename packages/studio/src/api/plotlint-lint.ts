@@ -9,7 +9,9 @@ import {
 } from "@plotlint/diagnostics";
 import { addSuppression, loadSuppressions } from "@plotlint/diagnostics/node";
 import { checkParagraphs, paragraphRanges, projectDictionary } from "@plotlint/mechanics";
-import { checkSnapshot, checkText, type TextDocument, type TextRule } from "@plotlint/rules";
+import { checkSnapshot, checkText, type BookRuleData, type ChapterTexts, type TextDocument, type TextRule } from "@plotlint/rules";
+import { loadBookRuleData } from "@plotlint/rules/node";
+import { chapterFiles } from "./plotlint-chapters.js";
 import { generalPack } from "@plotlint/style/node";
 
 /**
@@ -57,24 +59,29 @@ function styleRules(): TextRule[] {
 
 interface BookState {
   readonly key: string;
+  readonly chapters: ChapterTexts;
   readonly snapshot: RuntimeStateSnapshot | null;
   readonly dictionary: string[];
   /** The L3 findings, checked on first use (navigation reads the snapshot without them). */
   stateDiagnostics(): Diagnostic[];
 }
 
-const STATE_FILES = ["manifest.json", "current_state.json", "hooks.json", "chapter_summaries.json"];
+const STATE_FILES = ["state/manifest.json", "state/current_state.json", "state/hooks.json", "state/chapter_summaries.json"];
+// The book's rule config, frames and rule data, which change what the L3 rules report.
+const PLOTLINT_FILES = ["plotlint/rules.json", "plotlint/frames.json"];
 const bookStates = new Map<string, BookState>();
 
 /**
- * The book's dictionary and L3 findings, cached until a state file changes, so a
- * keystroke re-lint does not re-read and re-check the whole story state.
+ * The book's dictionary and L3 findings, cached until a state, plotlint or chapter
+ * file changes, so a keystroke re-lint does not re-read and re-check the whole story state.
+ * Rules read the saved chapter files (for frame markers), not the unsaved editor text.
  */
 async function bookState(bookDir: string): Promise<BookState> {
-  const stateDir = join(bookDir, "story", "state");
-  const stamps = await Promise.all(STATE_FILES.map(async (file) => {
+  const storyDir = join(bookDir, "story");
+  const chapters = await chapterFiles(bookDir);
+  const stamps = await Promise.all([...STATE_FILES, ...PLOTLINT_FILES].map(async (file) => {
     try {
-      const info = await stat(join(stateDir, file));
+      const info = await stat(join(storyDir, file));
       return `${info.mtimeMs}:${info.size}`;
     } catch {
       return "-";
@@ -82,7 +89,7 @@ async function bookState(bookDir: string): Promise<BookState> {
   }));
   const key = stamps.join("|");
   const cached = bookStates.get(bookDir);
-  if (cached?.key === key) return cached;
+  if (cached?.key === key && cached.chapters === chapters) return cached;
 
   let snapshot: RuntimeStateSnapshot | null = null;
   try {
@@ -90,12 +97,14 @@ async function bookState(bookDir: string): Promise<BookState> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
+  const book: BookRuleData = await loadBookRuleData(bookDir);
   let checked: Diagnostic[] | undefined;
   const state: BookState = {
     key,
+    chapters,
     snapshot,
     dictionary: snapshot ? projectDictionary(snapshot) : [],
-    stateDiagnostics: () => (checked ??= snapshot ? checkSnapshot(snapshot) : []),
+    stateDiagnostics: () => (checked ??= snapshot ? checkSnapshot(snapshot, { chapters, book }) : []),
   };
   bookStates.set(bookDir, state);
   return state;
