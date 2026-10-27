@@ -2,8 +2,12 @@ import { applyRuntimeStateDelta, type RuntimeStateDelta, type RuntimeStateSnapsh
 import { DiagnosticSchema, sortDiagnostics, type Diagnostic } from "@plotlint/diagnostics";
 import type { Rule, RuleContext } from "./types.js";
 import { deadEntityActs } from "./rules/dead-entity-acts.js";
+import { itemTwoHolders } from "./rules/item-two-holders.js";
+import { negativeResource } from "./rules/negative-resource.js";
+import { singleValuedConflict } from "./rules/single-valued-conflict.js";
+import { twoPlacesAtOnce } from "./rules/two-places-at-once.js";
 
-export const builtinRules: ReadonlyArray<Rule> = [deadEntityActs];
+export const builtinRules: ReadonlyArray<Rule> = [deadEntityActs, twoPlacesAtOnce, itemTwoHolders, negativeResource, singleValuedConflict];
 
 function run(rules: ReadonlyArray<Rule>, context: RuleContext): Diagnostic[] {
   const diagnostics = rules.flatMap((rule) => rule.check(context));
