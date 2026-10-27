@@ -71,6 +71,30 @@ export function isMostlyCjk(text: string): boolean {
   return cjk > 0 && cjk >= (text.match(LATIN)?.length ?? 0);
 }
 
+// Writers use American and British spelling alike, so a word either dialect
+// accepts is not a misspelling. Checked per word against the other dialect's
+// linter, and cached, since only flagged words get here.
+const SPELLING_DIALECTS: ReadonlyArray<Dialect> = [Dialect.American, Dialect.British];
+const dialectWords = new Map<string, Promise<boolean>>();
+
+function spelledInOtherDialect(word: string, dialect: Dialect): Promise<boolean> {
+  const others = SPELLING_DIALECTS.filter((other) => other !== dialect);
+  const key = `${dialect}:${word}`;
+  let known = dialectWords.get(key);
+  if (!known) {
+    known = (async () => {
+      for (const other of others) {
+        const handle = await harperLinter(other);
+        const lints = await serialize(handle, () => handle.linter.lint(word, { language: "plaintext" }));
+        if (!lints.some((lint) => lint.lint_kind() === "Spelling")) return true;
+      }
+      return false;
+    })();
+    dialectWords.set(key, known);
+  }
+  return known;
+}
+
 const normalizeWord = (word: string) => word.toLowerCase().replace(/['’]s?$/u, "");
 
 const kebab = (kind: string) => kind.replace(/(?<=[a-z])(?=[A-Z])/gu, "-").toLowerCase();
@@ -137,6 +161,7 @@ export async function lintRange(
     const problem = lint.get_problem_text();
     // The user dictionary misses forms like possessives ("Zorbak's"), so check again here.
     if (kind === "Spelling" && accepted.has(normalizeWord(problem))) continue;
+    if (kind === "Spelling" && await spelledInOtherDialect(problem, options.dialect ?? Dialect.American)) continue;
     const [from, to] = utf16Span(text, lint);
     diagnostics.push(textDiagnostic({
       rule: RULE,
