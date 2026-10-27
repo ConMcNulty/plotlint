@@ -1,0 +1,18 @@
+name: fantasy
+title: Fantasy and science fiction
+description: >-
+  Fantasy, science fiction and their web-novel kin (xuanhuan, xianxia): stated costs
+  and limits of magic or technology hold, travel takes the time the map says, and
+  exposition does not swallow the scene.
+selection:
+  keywords: [fantasy, romantasy, science fiction, sci-fi, scifi, sf, space opera, litrpg, xuanhuan, xianxia, wuxia, 玄幻, 仙侠, 奇幻, 科幻, 武侠, 修仙]
+styles: styles
+checks:
+  # Sanderson's laws: the reader can only enjoy a magic system that keeps its own rules.
+  continuity/world-rule-broken: error
+  # Secondary worlds live on their maps.
+  continuity/impossible-travel: error
+  continuity/negative-resource: error
+metrics:
+  # Exposition dumps arrive as long unbroken paragraphs.
+  metrics/wall-of-text: { max: 300 }
