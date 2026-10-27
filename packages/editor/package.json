@@ -1,0 +1,50 @@
+{
+  "name": "@plotlint/editor",
+  "version": "0.1.0",
+  "description": "Tiptap extensions for plotlint: inline diagnostic decorations, quick fixes and change tracking for re-lint",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./styles.css"
+  },
+  "files": [
+    "dist",
+    "!dist/__tests__",
+    "styles.css"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "build": "node ../../scripts/clean-package-dist.mjs && tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "@plotlint/diagnostics": "workspace:*",
+    "@tiptap/extension-document": "^3.32.0",
+    "@tiptap/extension-paragraph": "^3.32.0",
+    "@tiptap/extension-text": "^3.32.0"
+  },
+  "peerDependencies": {
+    "@tiptap/core": "^3.32.0",
+    "@tiptap/pm": "^3.32.0"
+  },
+  "devDependencies": {
+    "@tiptap/core": "^3.32.0",
+    "@tiptap/pm": "^3.32.0",
+    "jsdom": "^30.1.3",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  }
+}

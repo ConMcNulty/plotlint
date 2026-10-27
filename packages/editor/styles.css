@@ -1,0 +1,75 @@
+/*
+ * @plotlint/editor default diagnostic styles.
+ * Each check layer has its own underline shape and colour so a typo reads
+ * differently from a plot hole; severity sets how strong the colour is.
+ * Override the --pl-diag-* custom properties to theme.
+ */
+:root {
+  --pl-diag-mechanics: #d93025;
+  --pl-diag-style: #1a73e8;
+  --pl-diag-metrics: #5f6b7a;
+  --pl-diag-continuity: #e8710a;
+  --pl-diag-structure: #8e44ad;
+  --pl-diag-judgment: #80868b;
+  --pl-diag-strength-error: 100%;
+  --pl-diag-strength-warning: 75%;
+  --pl-diag-strength-note: 45%;
+  --pl-diag-strength-stale: 30%;
+}
+
+.pl-diag {
+  --pl-diag-color: currentColor;
+  --pl-diag-strength: var(--pl-diag-strength-warning);
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1.5px;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--pl-diag-color) var(--pl-diag-strength), transparent);
+}
+
+/* Layers: shape and hue. */
+.pl-diag--mechanics { --pl-diag-color: var(--pl-diag-mechanics); text-decoration-style: wavy; }
+.pl-diag--style { --pl-diag-color: var(--pl-diag-style); text-decoration-style: wavy; }
+.pl-diag--metrics { --pl-diag-color: var(--pl-diag-metrics); text-decoration-style: dotted; text-decoration-thickness: 2px; }
+.pl-diag--continuity { --pl-diag-color: var(--pl-diag-continuity); text-decoration-style: double; text-decoration-thickness: 1px; }
+.pl-diag--structure { --pl-diag-color: var(--pl-diag-structure); text-decoration-style: dashed; }
+.pl-diag--judgment { --pl-diag-color: var(--pl-diag-judgment); text-decoration-style: dotted; }
+
+/* Severity: colour strength, plus a faint background for errors. */
+.pl-diag--error {
+  --pl-diag-strength: var(--pl-diag-strength-error);
+  background-color: color-mix(in srgb, var(--pl-diag-color) 8%, transparent);
+}
+.pl-diag--warning { --pl-diag-strength: var(--pl-diag-strength-warning); }
+.pl-diag--note { --pl-diag-strength: var(--pl-diag-strength-note); text-decoration-thickness: 1px; }
+
+/* Text edited since the lint that found it: faded until the next lint. */
+.pl-diag--stale {
+  --pl-diag-strength: var(--pl-diag-strength-stale);
+  background-color: transparent;
+}
+
+/* Minimal tooltip body from renderDiagnosticDetails. */
+.pl-diag-details {
+  max-width: 28rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+.pl-diag-details__item + .pl-diag-details__item {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+.pl-diag-details__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.pl-diag-details__severity { font-weight: 600; text-transform: capitalize; }
+.pl-diag-details__confidence { opacity: 0.7; }
+.pl-diag-details__message { margin: 0.25rem 0; }
+.pl-diag-details__evidence { margin: 0.25rem 0; padding-left: 1.25rem; opacity: 0.85; }
+.pl-diag-details__stale { margin: 0.25rem 0; font-style: italic; opacity: 0.7; }
+.pl-diag-details__fixes { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem; }
