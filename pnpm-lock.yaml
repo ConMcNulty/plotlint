@@ -26,6 +26,9 @@ importers:
       '@plotlint/mechanics':
         specifier: workspace:*
         version: link:../mechanics
+      '@plotlint/packs':
+        specifier: workspace:*
+        version: link:../packs
       '@plotlint/rules':
         specifier: workspace:*
         version: link:../rules
@@ -258,6 +261,9 @@ importers:
       '@plotlint/mechanics':
         specifier: workspace:*
         version: link:../mechanics
+      '@plotlint/packs':
+        specifier: workspace:*
+        version: link:../packs
       '@plotlint/rules':
         specifier: workspace:*
         version: link:../rules
