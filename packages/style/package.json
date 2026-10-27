@@ -1,0 +1,44 @@
+{
+  "name": "@plotlint/style",
+  "version": "0.1.0",
+  "description": "L1 style lint for plotlint: a TypeScript engine for a subset of Vale's YAML rules, plus a general pack",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/__tests__",
+    "packs"
+  ],
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "build": "node ../../scripts/clean-package-dist.mjs && tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@plotlint/diagnostics": "workspace:*",
+    "@plotlint/rules": "workspace:*",
+    "js-yaml": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

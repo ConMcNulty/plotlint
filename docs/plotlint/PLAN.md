@@ -115,7 +115,7 @@ Checks run in six layers, ordered from most to least objective. Lower layers are
 - A finding without quoted evidence is not shown.
 - Judged findings are never shown as errors, only as notes, and never block the loop on their own.
 - Each check has an ID, a short rationale (why it matters) and a link to the craft source it comes from, so the writer can decide whether they agree with it.
-- Suppressions are per instance with a reason, or per check per book; both are saved in the project so agents respect them.
+- Suppressions are per instance with a reason, or per check per book; both are saved in the project so agents respect them. They live in `works/<id>/source/story/plotlint/suppressions.json` (`SuppressionFileSchema` in `@plotlint/diagnostics`). An instance is matched by `diagnosticFingerprint`, a hash of the rule, chapter, evidence, quotes and facts rather than character offsets, so it survives text moving. From the CLI: `inkos lint suppress <rule-id> [book-id] --reason <text> [--fingerprint <fp>]` and `inkos lint unsuppress`; `inkos lint --verbose` or `--json` prints fingerprints, `--show-suppressed` lists hidden findings.
 
 ## Story state and the rule engine
 
@@ -309,7 +309,7 @@ Phases 1 and 2 already help human writers on their own, so the editor can ship b
 
 **First week of code (phase 0).** Add the `upstream` remote; get `pnpm install && pnpm test` green on the fork; scaffold `packages/diagnostics` and `packages/rules`; define `Diagnostic` as `Observation` plus `range`, `layer`, `severity`, `confidence` and `ruleId`; add a hook after `applyRuntimeStateDelta` that runs registered rules over the proposed snapshot; ship one rule (a fact asserted for an entity after a fact that it is dead) end to end in the CLI.
 
-**Status.** Phase 0 code is in: `@plotlint/diagnostics` (the `Diagnostic` schema), `@plotlint/rules` (`checkSnapshot`, and `checkDelta`, which wraps `applyRuntimeStateDelta` rather than patching core), the `continuity/dead-entity-acts` rule and an `inkos lint [book-id] [--json]` command. The `upstream` merge routine is `.github/workflows/upstream-sync.yml` (weekly, or run by hand), which opens a PR per merge. Still open: GitHub Actions has to be enabled on the fork for CI and the sync to run.
+**Status.** Phase 0 code is in: `@plotlint/diagnostics` (the `Diagnostic` schema), `@plotlint/rules` (`checkSnapshot`, and `checkDelta`, which wraps `applyRuntimeStateDelta` rather than patching core), the continuity rules `dead-entity-acts`, `two-places-at-once`, `item-two-holders`, `negative-resource` and `single-valued-conflict` (alive and dead, or two ages, at once), which run on today's temporal facts ahead of the phase 2 event log, and an `inkos lint [book-id] [--json]` command. The `upstream` merge routine is `.github/workflows/upstream-sync.yml` (weekly, or run by hand), which opens a PR per merge. Still open: GitHub Actions has to be enabled on the fork for CI and the sync to run. Phase 1 has started with L1: `@plotlint/style` runs a TypeScript subset of Vale's YAML rules (`existence`, `substitution`, `occurrence`) as text rules with ids `style/<Style>.<Rule>`, and ships the general pack in `packages/style/packs/general` (filter words, clichés, InkOS's English AI-tell words, adverb clusters, intensifiers, redundancies).
 
 ## Evaluation
 

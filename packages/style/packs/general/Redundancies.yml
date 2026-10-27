@@ -1,0 +1,12 @@
+# Body-part redundancies, with quick fixes: the verb already names the body part.
+extends: substitution
+message: "Use '%s' instead of '%s'."
+description: >-
+  You can only nod your head, shrug your shoulders or blink your eyes, so the extra words
+  slow the sentence without adding anything.
+level: suggestion
+ignorecase: true
+swap:
+  nodded (?:his|her|their|my|your) heads?: nodded
+  shrugged (?:his|her|their|my|your) shoulders: shrugged
+  blinked (?:his|her|their|my|your) eyes: blinked
