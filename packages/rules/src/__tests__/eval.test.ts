@@ -71,9 +71,10 @@ describe("mutators", () => {
     for (const mutator of allMutators) expect(mutator.mutants(clean).length, mutator.ruleId).toBeGreaterThanOrEqual(10);
   });
 
-  it("are caught by their rule: every registered rule has a mutator and catches most of its mutants", () => {
+  it("are caught by their rule: every registered continuity rule has a mutator and catches most of its mutants", () => {
     const result = scoreRules(clean, allMutators);
-    for (const rule of builtinRules) {
+    // Structure rules read scene annotations, which the seeded mutants do not change.
+    for (const rule of builtinRules.filter((entry) => entry.layer === "continuity")) {
       const score = result.rules.find((r) => r.ruleId === rule.id)!;
       expect(score.mutants, rule.id).toBeGreaterThanOrEqual(10);
       expect(score.recall!, rule.id).toBeGreaterThanOrEqual(0.5);
