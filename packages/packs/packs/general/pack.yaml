@@ -19,10 +19,7 @@ checks:
   structure/goal-conflict-outcome: note
   structure/protagonist-agency: note
   structure/tension-curve: note
-# Floors and bands, never targets: a metric flags only text outside the band. These
-# are deliberately loose; genre packs narrow them. Units are the metric rules' own:
-# MTLD score, dialogue share of words (0-1), words per paragraph.
-metrics:
-  metrics/lexical-diversity: { min: 40 }
-  metrics/dialogue-ratio: { min: 0.03, max: 0.9 }
-  metrics/wall-of-text: { max: 400 }
+# Floors and bands, never targets: a metric flags only text outside the band. The
+# general bands live in @plotlint/metrics (baselines/general.json, measured from
+# reference books); genre packs narrow them by rule id, in the metric rules' units
+# (MTLD score, dialogue share of words 0-1, words in the longest unbroken run).

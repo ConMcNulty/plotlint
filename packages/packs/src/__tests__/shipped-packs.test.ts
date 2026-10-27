@@ -60,7 +60,7 @@ describe("shipped packs", () => {
       "continuity/world-rule-broken": "error", "continuity/impossible-travel": "error", "structure/protagonist-agency": "note",
     });
     expect(resolved.metrics["metrics/wall-of-text"]).toEqual({ max: 300 });
-    expect(resolved.metrics["metrics/dialogue-ratio"]).toEqual({ min: 0.15, max: 0.9 });
+    expect(resolved.metrics["metrics/dialogue-ratio"]).toEqual({ min: 0.15 });
     expect(resolved.styleRules.map((rule) => rule.id)).toEqual(expect.arrayContaining(["style/general.Cliches", "style/romance.Cliches", "style/fantasy.Cliches"]));
     const mystery = resolvePacks(["mystery"], packs, { knownRuleIds: known });
     expect(mystery.config.rules).toMatchObject({ "continuity/knowledge-leak": "error", "structure/unpaid-setup": "error" });
