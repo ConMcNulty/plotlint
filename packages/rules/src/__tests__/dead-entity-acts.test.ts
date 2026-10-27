@@ -80,6 +80,20 @@ describe("continuity/dead-entity-acts", () => {
     ], 4)).map((diagnostic) => diagnostic.chapter)).toEqual([4]);
   });
 
+  it("reads a death status that names its manner", () => {
+    // As GLM extracted it on a second import of the test manuscript.
+    expect(checkSnapshot(snapshot([
+      fact("Captain Aurel Harrow", "status", "Deceased", 1, 1),
+      fact("Captain Aurel Harrow", "status", "Murdered with throat cut", 2),
+      fact("Captain Aurel Harrow", "location", "Lantern house", 3),
+    ], 3)).map((diagnostic) => diagnostic.chapter)).toEqual([3]);
+
+    expect(checkSnapshot(snapshot([
+      fact("Mira", "status", "dead tired", 2),
+      fact("Mira", "location", "harbour", 3),
+    ], 3))).toEqual([]);
+  });
+
   it("does not read other copula facts as status", () => {
     expect(checkSnapshot(snapshot([
       fact("Harrow", "is", "lighthouse keeper", 1),
