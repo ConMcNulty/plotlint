@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { z } from "zod";
 import { FramesFileSchema, RuleConfigFileSchema, type BookRuleData } from "./book.js";
+import { TravelFileSchema } from "./travel.js";
 
 /** A book's plotlint folder, beside its story state: `works/<id>/source/story/plotlint/`. */
 export const plotlintDir = (bookDir: string) => join(bookDir, "story", "plotlint");
@@ -27,11 +28,12 @@ export async function readPlotlintFile<S extends z.ZodTypeAny>(bookDir: string, 
   return parsed.data;
 }
 
-/** Everything the rule engine reads from a book's plotlint folder: `rules.json` and `frames.json`. */
+/** Everything the rule engine reads from a book's plotlint folder: `rules.json`, `frames.json` and `travel.json`. */
 export async function loadBookRuleData(bookDir: string): Promise<BookRuleData> {
-  const [config, frames] = await Promise.all([
+  const [config, frames, travel] = await Promise.all([
     readPlotlintFile(bookDir, "rules.json", RuleConfigFileSchema),
     readPlotlintFile(bookDir, "frames.json", FramesFileSchema),
+    readPlotlintFile(bookDir, "travel.json", TravelFileSchema),
   ]);
-  return { ...(config ? { config } : {}), ...(frames ? { frames } : {}) };
+  return { ...(config ? { config } : {}), ...(frames ? { frames } : {}), ...(travel ? { travel } : {}) };
 }

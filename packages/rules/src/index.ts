@@ -10,6 +10,12 @@ export { downgradeUnreliable, frameMarkers, frameResolver, mainTimeline, OFF_TIM
 export { deadEntityActs } from "./rules/dead-entity-acts.js";
 export { deadThenAlive } from "./rules/dead-then-alive.js";
 export { itemFromNowhere } from "./rules/item-from-nowhere.js";
+export { impossibleTravel } from "./rules/impossible-travel.js";
+export { timelineOrder } from "./rules/timeline-order.js";
+export type { ChapterTime, Elapsed, Hemisphere, PartOfDay, Season, TimeReading } from "./time.js";
+export { chapterTimes, dateRange, isClockFact, parseDuration, parseTime, readAge, readBirthYear, readClock, readElapsed, readTimeFact, seasonMonths } from "./time.js";
+export type { TravelFile, TravelRoute, TravelUnit } from "./travel.js";
+export { TravelFileSchema, TravelGraph, TravelRouteSchema } from "./travel.js";
 export { itemTwoHolders } from "./rules/item-two-holders.js";
 export { knowledgeLeak } from "./rules/knowledge-leak.js";
 export { negativeResource } from "./rules/negative-resource.js";
