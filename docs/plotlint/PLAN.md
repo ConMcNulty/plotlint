@@ -309,7 +309,7 @@ Phases 1 and 2 already help human writers on their own, so the editor can ship b
 
 **First week of code (phase 0).** Add the `upstream` remote; get `pnpm install && pnpm test` green on the fork; scaffold `packages/diagnostics` and `packages/rules`; define `Diagnostic` as `Observation` plus `range`, `layer`, `severity`, `confidence` and `ruleId`; add a hook after `applyRuntimeStateDelta` that runs registered rules over the proposed snapshot; ship one rule (a fact asserted for an entity after a fact that it is dead) end to end in the CLI.
 
-**Status.** Phase 0 code is in: `@plotlint/diagnostics` (the `Diagnostic` schema), `@plotlint/rules` (`checkSnapshot`, and `checkDelta`, which wraps `applyRuntimeStateDelta` rather than patching core), the `continuity/dead-entity-acts` rule and an `inkos lint [book-id] [--json]` command. Still open: the `upstream` merge routine and CI running on the fork.
+**Status.** Phase 0 code is in: `@plotlint/diagnostics` (the `Diagnostic` schema), `@plotlint/rules` (`checkSnapshot`, and `checkDelta`, which wraps `applyRuntimeStateDelta` rather than patching core), the `continuity/dead-entity-acts` rule and an `inkos lint [book-id] [--json]` command. The `upstream` merge routine is `.github/workflows/upstream-sync.yml` (weekly, or run by hand), which opens a PR per merge. Still open: GitHub Actions has to be enabled on the fork for CI and the sync to run.
 
 ## Evaluation
 

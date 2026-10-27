@@ -24,6 +24,13 @@ describe("DiagnosticSchema", () => {
   it("rejects a finding without any evidence", () => {
     expect(() => DiagnosticSchema.parse({ ...base, evidence: [] })).toThrow(/evidence/);
   });
+
+  it("accepts quick fixes only on a diagnostic with a range", () => {
+    const fixes = [{ title: "Delete", replacement: "" }];
+    expect(() => DiagnosticSchema.parse({ ...base, fixes })).toThrow(/needs a range/);
+    const withRange = { ...base, fixes, range: { sourceId: "chapter:7", start: 0, end: 4 } };
+    expect(DiagnosticSchema.parse(withRange)).toEqual(withRange);
+  });
 });
 
 describe("sortDiagnostics and formatDiagnostic", () => {

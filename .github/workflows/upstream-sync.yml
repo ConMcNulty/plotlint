@@ -1,0 +1,61 @@
+name: Upstream sync
+
+# Merge Narcooo/inkos master into a branch and open a PR, so upstream changes
+# arrive as reviewable merges instead of drifting (see docs/plotlint/PLAN.md).
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge upstream into a sync branch
+        id: merge
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/Narcooo/inkos.git
+          git fetch upstream master
+          if git merge-base --is-ancestor upstream/master HEAD; then
+            echo "Already up to date with upstream."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="upstream-sync/$(date -u +%Y-%m-%d)"
+          git checkout -B "$branch"
+          if git merge --no-edit upstream/master; then
+            echo "conflicts=false" >> "$GITHUB_OUTPUT"
+          else
+            # Commit the conflict markers so a person can resolve them on the PR branch.
+            git add -A
+            git commit --no-edit -m "Merge upstream/master (conflicts to resolve)"
+            echo "conflicts=true" >> "$GITHUB_OUTPUT"
+          fi
+          git push --force-with-lease origin "$branch"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Open a pull request
+        if: steps.merge.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch="${{ steps.merge.outputs.branch }}"
+          if [ -n "$(gh pr list --head "$branch" --json number --jq '.[].number')" ]; then exit 0; fi
+          note="Clean merge."
+          if [ "${{ steps.merge.outputs.conflicts }}" = "true" ]; then note="The merge has conflicts committed as markers; resolve them on this branch before merging."; fi
+          gh pr create --base master --head "$branch" \
+            --title "Merge upstream InkOS ($(date -u +%Y-%m-%d))" \
+            --body "Automated merge of Narcooo/inkos master. $note Run the full test suite before merging."
