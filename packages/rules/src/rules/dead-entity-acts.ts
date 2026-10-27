@@ -1,10 +1,11 @@
 import type { CurrentStateFact } from "@actalk/inkos-core";
 import type { Diagnostic } from "@plotlint/diagnostics";
 import type { Rule } from "../types.js";
+import { factFinding, normalize, validAt } from "./facts.js";
 
 // Settler facts are free-form subject-predicate-object strings in English or
 // Chinese, so death is recognised from a small vocabulary rather than a type.
-const STATUS_PREDICATES = new Set([
+export const STATUS_PREDICATES = new Set([
   "status", "state", "condition", "alive", "lifestatus", "life", "vitalstatus", "health",
   "状态", "生死", "生死状态", "存活", "存活状态", "生命状态",
 ]);
@@ -14,22 +15,12 @@ const NOT_ALIVE_OBJECT = /^(false|no|not alive|否|不|无)$/u;
 // Facts that may still change after a death without the character acting.
 const POSTHUMOUS_PREDICATE = /(cause.?of.?death|death|died|buried|burial|grave|tomb|body|corpse|remains|remembered|memory|legacy|estate|inherit|will|mourn|funeral|ghost|spirit|死|葬|墓|遗|尸|悼|纪念|鬼|魂)/u;
 
-const normalize = (value: string) => value.trim().toLowerCase().replace(/[\s_-]+/gu, "");
-
-function isDeathFact(fact: CurrentStateFact): boolean {
+export function isDeathFact(fact: CurrentStateFact): boolean {
   if (!STATUS_PREDICATES.has(normalize(fact.predicate))) return false;
   const object = fact.object.trim().toLowerCase();
   if (normalize(fact.predicate) === "alive" || normalize(fact.predicate) === "存活") return NOT_ALIVE_OBJECT.test(object);
   return DEAD_OBJECT.test(object);
 }
-
-function validAt(fact: CurrentStateFact, chapter: number): boolean {
-  // InkOS treats validUntilChapter as inclusive.
-  return fact.validFromChapter <= chapter && (fact.validUntilChapter === null || fact.validUntilChapter >= chapter);
-}
-
-const renderFact = (fact: CurrentStateFact) =>
-  `${fact.subject} · ${fact.predicate} · ${fact.object} (from ch${fact.validFromChapter}, recorded in ch${fact.sourceChapter})`;
 
 export const deadEntityActs: Rule = {
   id: "continuity/dead-entity-acts",
@@ -55,19 +46,11 @@ export const deadEntityActs: Rule = {
       for (const fact of later) byChapter.set(fact.validFromChapter, [...(byChapter.get(fact.validFromChapter) ?? []), fact]);
 
       for (const [chapter, chapterFacts] of byChapter) {
-        diagnostics.push({
-          code: "dead-entity-acts",
-          ruleId: this.id,
-          layer: this.layer,
-          severity: "warning",
-          confidence: "extracted",
-          category: "quality",
-          assessment: "issue",
+        diagnostics.push(factFinding(this, {
           chapter,
           summary: `${death.subject} is recorded as dead since chapter ${death.validFromChapter}, but gains new state in chapter ${chapter}.`,
-          evidence: [`death: ${renderFact(death)}`, ...chapterFacts.map((fact) => `after: ${renderFact(fact)}`)],
-          facts: [death, ...chapterFacts].map((fact) => ({ ...fact })),
-        });
+          evidence: [["death", death], ...chapterFacts.map((fact) => ["after", fact] as const)],
+        }));
       }
     }
     return diagnostics;
