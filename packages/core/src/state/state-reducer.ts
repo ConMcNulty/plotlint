@@ -158,7 +158,10 @@ function applyFactOps(
 
   for (const selector of delta.factOps.expire) {
     for (const fact of nextFacts) {
-      if (active(fact) && sameKey(fact, selector)) fact.validUntilChapter = Math.max(0, delta.chapter - 1);
+      if (active(fact) && sameKey(fact, selector)) {
+        fact.validUntilChapter = Math.max(0, delta.chapter - 1);
+        if (selector.evidence) fact.endEvidence = { ...selector.evidence };
+      }
     }
   }
 
@@ -168,11 +171,17 @@ function applyFactOps(
       predicate: input.predicate.trim(),
       object: input.object.trim(),
     };
-    const exact = nextFacts.some((candidate) => active(candidate) && sameKey(candidate, fact));
-    if (exact) continue;
+    const exact = nextFacts.find((candidate) => active(candidate) && sameKey(candidate, fact));
+    if (exact) {
+      // A restated fact keeps the passage that first established it; fill in only what it lacks.
+      if (input.kind && !exact.kind) exact.kind = input.kind;
+      if (input.evidence && !exact.evidence && exact.sourceChapter === delta.chapter) exact.evidence = { ...input.evidence };
+      continue;
+    }
     for (const candidate of nextFacts) {
       if (active(candidate) && candidate.subject === fact.subject && candidate.predicate === fact.predicate) {
         candidate.validUntilChapter = Math.max(0, delta.chapter - 1);
+        if (input.evidence && !candidate.endEvidence) candidate.endEvidence = { ...input.evidence };
       }
     }
     nextFacts.push({
@@ -180,6 +189,8 @@ function applyFactOps(
       validFromChapter: delta.chapter,
       validUntilChapter: null,
       sourceChapter: delta.chapter,
+      ...(input.kind ? { kind: input.kind } : {}),
+      ...(input.evidence ? { evidence: { ...input.evidence } } : {}),
     });
   }
 

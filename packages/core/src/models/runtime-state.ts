@@ -55,6 +55,41 @@ export const ChapterSummariesStateSchema = z.object({
 
 export type ChapterSummariesState = z.infer<typeof ChapterSummariesStateSchema>;
 
+// plotlint: a typed predicate vocabulary. The settler labels each fact with the
+// kind of state it records so rules can match on the kind instead of guessing
+// from free-text predicate names ("location", "whereabouts", "位置").
+export const FactKindSchema = z.enum([
+  "status", // alive, dead, injured, missing, conscious
+  "location", // where an entity is
+  "possession", // what an entity holds or owns
+  "knowledge", // what a character knows or believes
+  "relationship", // how two entities stand to each other
+  "resource", // a counted quantity: money, ammunition, mana
+  "age",
+  "identity", // name, alias, role, title, species
+  "trait", // a lasting attribute: appearance, skill, personality
+  "goal", // what an entity wants or intends
+  "world_rule", // a stated law, cost or limit of the setting
+  "time", // dates, elapsed time, season
+  "other",
+]);
+
+export type FactKind = z.infer<typeof FactKindSchema>;
+
+// plotlint: where in a chapter a fact op is established. The settler quotes the
+// passage; the host locates the quote in the chapter body it settled (the prose
+// without the chapter heading) and records the character offsets. The quote is
+// the anchor: later edits move text, so readers re-locate the quote and use the
+// offsets only to pick the nearest occurrence. `start`/`end` are absent when the
+// quote could not be found.
+export const FactEvidenceSchema = z.object({
+  quote: z.string().min(1),
+  start: z.number().int().min(0).optional(),
+  end: z.number().int().min(0).optional(),
+}).strict();
+
+export type FactEvidence = z.infer<typeof FactEvidenceSchema>;
+
 export const CurrentStateFactSchema = z.object({
   subject: z.string().min(1),
   predicate: z.string().min(1),
@@ -62,6 +97,11 @@ export const CurrentStateFactSchema = z.object({
   validFromChapter: z.number().int().min(0),
   validUntilChapter: z.number().int().min(0).nullable(),
   sourceChapter: z.number().int().min(0),
+  kind: FactKindSchema.optional(),
+  /** The passage in `sourceChapter` that establishes the fact. */
+  evidence: FactEvidenceSchema.optional(),
+  /** The passage in chapter `validUntilChapter + 1` that ends the fact. */
+  endEvidence: FactEvidenceSchema.optional(),
 }).strict();
 
 export type CurrentStateFact = z.infer<typeof CurrentStateFactSchema>;
@@ -77,6 +117,8 @@ export const StateFactInputSchema = z.object({
   subject: z.string().min(1),
   predicate: z.string().min(1),
   object: z.string().min(1),
+  kind: FactKindSchema.optional(),
+  evidence: FactEvidenceSchema.optional(),
 }).strict();
 
 export type StateFactInput = z.infer<typeof StateFactInputSchema>;
@@ -85,6 +127,7 @@ export const StateFactSelectorSchema = z.object({
   subject: z.string().min(1),
   predicate: z.string().min(1),
   object: z.string().min(1).optional(),
+  evidence: FactEvidenceSchema.optional(),
 }).strict();
 
 export type StateFactSelector = z.infer<typeof StateFactSelectorSchema>;

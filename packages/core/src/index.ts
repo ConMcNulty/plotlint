@@ -31,6 +31,10 @@ export {
   ChapterSummariesStateSchema,
   CurrentStateFactSchema,
   CurrentStateStateSchema,
+  FactKindSchema,
+  FactEvidenceSchema,
+  type FactKind,
+  type FactEvidence,
   StateFactInputSchema,
   StateFactSelectorSchema,
   StateFactOpsSchema,
@@ -598,3 +602,4 @@ export { runWorkerAgent, type WorkerAgentOptions } from "./agent/worker-agent.js
 export { compileStyleGuide } from "./agents/style-guide.js";
 export { LLM_API_FORMATS, isLLMApiFormat, toPiApi, type LLMApiFormat } from "./llm/api-format.js";
 export * from "./harness/index.js";
+export { locateQuote, type QuoteSpan, type LocateQuoteOptions } from "./utils/quote-locate.js";
