@@ -1,0 +1,2 @@
+# Cached auditor responses (re-runs are cheap; regenerate with `node eval/run.mjs --auditor`).
+.cache/
