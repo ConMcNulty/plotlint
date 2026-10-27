@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "unit": "hours",
+  "places": {
+    "Wenlow": { "aliases": ["Wenlow ferry landing", "Wenlow mill", "Marrow cottage, Wenlow", "Crane's cottage, Wenlow", "Lune ferry", "Wenlow churchyard", "Wenlow churchyard lych-gate", "the vestry"] },
+    "Stavely": { "aliases": ["the Heron inn, Stavely", "the warden's house, Stavely"] },
+    "Gorse Hill": { "aliases": ["abbey ruins on Gorse Hill", "the abbey on Gorse Hill"] },
+    "Saltmere": { "aliases": ["Saltmere harbour"] }
+  },
+  "routes": [
+    { "from": "Wenlow", "to": "Stavely", "time": 12, "note": "a full day's walk, dawn to dusk" },
+    { "from": "Wenlow", "to": "Gorse Hill", "time": 6, "note": "half a day's walk" },
+    { "from": "Stavely", "to": "Saltmere", "time": 48, "note": "two days further along the river road" },
+    { "from": "Wenlow", "to": "Saltmere", "time": 72, "note": "three days' walk" }
+  ]
+}

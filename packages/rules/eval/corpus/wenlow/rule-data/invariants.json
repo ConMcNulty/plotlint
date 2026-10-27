@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "invariants": [
+    {
+      "id": "strongbox-secret",
+      "text": "Elspeth must not learn where the strongbox is hidden before chapter 3.",
+      "status": "approved",
+      "check": { "kind": "not-before", "fact": { "subject": "Elspeth Marrow", "kind": "knowledge", "object": { "contains": ["flagstone"] } }, "chapter": 3 },
+      "explanation": "No knowledge fact for Elspeth Marrow mentioning the flagstone is in force before chapter 3."
+    },
+    {
+      "id": "jonas-never-reads-ledger",
+      "text": "Jonas never reads the ferry ledger.",
+      "status": "approved",
+      "check": { "kind": "never", "fact": { "subject": "Jonas Marrow", "predicate": { "contains": ["read"] }, "object": { "contains": ["ledger"] } } },
+      "explanation": "No fact in which Jonas Marrow reads something mentioning the ledger is ever in force."
+    },
+    {
+      "id": "thorne-not-on-gorse-hill-early",
+      "text": "Captain Thorne does not reach Gorse Hill before chapter 4.",
+      "status": "approved",
+      "check": { "kind": "not-before", "fact": { "subject": "Ida Thorne", "kind": "location", "object": { "contains": ["Gorse Hill", "abbey"] } }, "chapter": 4 },
+      "explanation": "No location fact putting Ida Thorne on Gorse Hill or at the abbey is in force before chapter 4."
+    },
+    {
+      "id": "pask-named-late",
+      "text": "Alderman Pask is not named before chapter 5.",
+      "status": "approved",
+      "check": { "kind": "text-not-before", "text": { "contains": ["Pask"] }, "chapter": 5 },
+      "explanation": "The text \"Pask\" does not appear in any chapter before chapter 5."
+    }
+  ]
+}

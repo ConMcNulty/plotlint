@@ -1,0 +1,1209 @@
+{
+ "generated": "2026-10-27T17:42:47.326Z",
+ "book": "wenlow",
+ "chapters": 5,
+ "skipped": [
+  "continuity/invariant"
+ ],
+ "rules": [
+  {
+   "ruleId": "continuity/dead-entity-acts",
+   "mutants": 11,
+   "caught": 10,
+   "recall": 0.9090909090909091,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "dead-entity-acts/1",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 4,
+     "description": "Crane, dead in ch3, waits at the abbey in ch4 (location).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/2",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 5,
+     "description": "Crane takes his oar back at the landing in ch5 (GLM free-form 'took possession of').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/3",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 4,
+     "description": "Crane points out the flagstone in ch4 (free-form action predicate).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/4",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 5,
+     "description": "Crane watches his own funeral from the lych-gate in ch5 (whereabouts).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/5",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 4,
+     "description": "Thorne drowns in ch2 but walks into the abbey in ch4 (clean ch4 facts now follow a death).",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "continuity/dead-entity-acts",
+       "chapter": 5,
+       "summary": "Ida Thorne is recorded as dead since chapter 2, but gains new state in chapter 5."
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/6",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 4,
+     "description": "Jonas dies of fever in ch3 (copula 'is · dead') but climbs Gorse Hill in ch4.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "continuity/dead-entity-acts",
+       "chapter": 5,
+       "summary": "Jonas Marrow is recorded as dead since chapter 3, but gains new state in chapter 5."
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/7",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 4,
+     "description": "Tobias Marrow, dead since the Margery sank, steps out of the abbey ruins in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/8",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 2,
+     "description": "The dead Tobias Marrow hands in the letter at the Stavely post office in ch2 (free-form action).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/9",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 5,
+     "description": "Crane's death recorded as 'died from' a chest sickness; he rows the second boat in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/10",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 4,
+     "description": "Crane's death recorded as 'fate · passed away' (outside the death vocabulary); he mends nets at the landing in ch4.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-entity-acts/11",
+     "ruleId": "continuity/dead-entity-acts",
+     "chapter": 3,
+     "description": "Footpads kill Jonas on the road in ch2 ('was killed by'); he is at Crane's bedside in ch3.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "continuity/dead-entity-acts",
+       "chapter": 4,
+       "summary": "Jonas Marrow is recorded as dead since chapter 2, but gains new state in chapter 4."
+      },
+      {
+       "ruleId": "continuity/dead-entity-acts",
+       "chapter": 5,
+       "summary": "Jonas Marrow is recorded as dead since chapter 2, but gains new state in chapter 5."
+      }
+     ],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/dead-then-alive",
+   "mutants": 11,
+   "caught": 10,
+   "recall": 0.9090909090909091,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "dead-then-alive/1",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 5,
+     "description": "Crane's death is ended after ch3 and he walks into his own funeral, alive, in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/2",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 5,
+     "description": "Crane's death is ended after ch4 and he sits on the bollard at the landing in ch5 (location only).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/3",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 4,
+     "description": "Thorne is laid out for dead in ch2 (death ended after ch3) and is at the abbey in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/4",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 3,
+     "description": "Jonas is dead in ch2 ('is · dead', ended after ch2) and back at Crane's cottage in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/5",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 4,
+     "description": "Tobias Marrow's death is ended and he is alive at the abbey in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/6",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 2,
+     "description": "Tobias Marrow's death is ended after ch1; Rook says he lives at Saltmere (free-form 'lives in').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/7",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 5,
+     "description": "Crane's death is ended after ch4 and he rows the second boat in ch5 (free-form action).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/8",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 4,
+     "description": "Crane's death recorded as 'died from' and ended after ch3; he holds his oar at the abbey in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/9",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 2,
+     "description": "Thorne is found deceased at the end of ch1 ('condition · deceased', ended) and is in Stavely in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/10",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 5,
+     "description": "Crane's death recorded as 'fate · passed away' (outside the death vocabulary) and ended; alive in ch5.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dead-then-alive/11",
+     "ruleId": "continuity/dead-then-alive",
+     "chapter": 4,
+     "description": "Jonas is pulled from the river drowned at the end of ch3 (ended) and climbs Gorse Hill in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/two-places-at-once",
+   "mutants": 11,
+   "caught": 10,
+   "recall": 0.9090909090909091,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "two-places-at-once/1",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 2,
+     "description": "Jonas is at the Wenlow mill while at the Heron in Stavely (whereabouts).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/2",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 4,
+     "description": "Elspeth sits at home in Wenlow while digging on Gorse Hill (current location).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/3",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 5,
+     "description": "Thorne stays behind in Stavely while at the Wenlow landing (located in).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/4",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 2,
+     "description": "Rook spends the week at Saltmere while serving them at the Heron.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/5",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 2,
+     "description": "Crane is staying at the Heron while ill in his Wenlow cottage (staying at).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/6",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 3,
+     "description": "Elspeth is still at the Heron while at Crane's bedside (GLM 'is at', labelled location).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/7",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 4,
+     "description": "Jonas has arrived at Saltmere while on Gorse Hill (free-form 'arrived at', no kind label).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/8",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 5,
+     "description": "Jonas is at the Heron in Stavely while rowing the ferry (free-form 'arrived at', labelled location).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/9",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 4,
+     "description": "Thorne writes letters in Stavely while at the abbey.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/10",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 1,
+     "description": "Elspeth spends the first day in Stavely while at the Wenlow landing and cottage.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "two-places-at-once/11",
+     "ruleId": "continuity/two-places-at-once",
+     "chapter": 1,
+     "description": "Crane is up at the mill all morning while rowing the ferry.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/item-two-holders",
+   "mutants": 11,
+   "caught": 9,
+   "recall": 0.8181818181818182,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "item-two-holders/1",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 4,
+     "description": "Thorne has the ledger under her arm while Elspeth holds it.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/2",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 4,
+     "description": "Elspeth carries the compass in ch4 after giving it to Jonas in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/3",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 2,
+     "description": "The compass Elspeth carries hangs on Rook's watch chain (item-first 'held by').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/4",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 4,
+     "description": "Jonas has the iron key around his neck while Elspeth holds it (in possession of).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/5",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 4,
+     "description": "Jonas carries the strongbox down the hill while Elspeth does (item-first 'carried by').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/6",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 5,
+     "description": "Elspeth still has the ledger after giving it to Thorne.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/7",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 4,
+     "description": "Elspeth carries the lantern Jonas carries.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/8",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 2,
+     "description": "Rook produces Crane's ledger while Crane holds it (free-form 'took possession of').",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/9",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 5,
+     "description": "Thorne is carrying the compass Jonas wears (free-form 'is carrying', labelled possession).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/10",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 1,
+     "description": "Crane is carrying Elspeth's compass while it is in her pocket.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-two-holders/11",
+     "ruleId": "continuity/item-two-holders",
+     "chapter": 5,
+     "description": "The iron key hangs from Thorne's belt while Elspeth holds it (item-first 'bearer').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/negative-resource",
+   "mutants": 11,
+   "caught": 9,
+   "recall": 0.8181818181818182,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "negative-resource/1",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 2,
+     "description": "Elspeth pays fifteen shillings at the Heron with twelve in her purse.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/2",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 4,
+     "description": "Elspeth pays the smith eleven shillings with nine.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/3",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 4,
+     "description": "As above, recorded under predicate 'shillings' with a resource label.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/4",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 4,
+     "description": "As above, recorded as 'purse · -2 shillings' with no label (unit outside the resource vocabulary).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/5",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 5,
+     "description": "Jonas pays ten pennies for the licence out of six pennies earned.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/6",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 1,
+     "description": "Elspeth pays a fourteen-shilling bill with twelve ('minus 2 shillings').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/7",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 2,
+     "description": "Thorne spends five shillings more than she has on a horse ('coins').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/8",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 3,
+     "description": "Elspeth pays the nurse ten shillings out of nine.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/9",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 2,
+     "description": "Elspeth pays fifteen at the Heron, recorded as 'remaining money · −3 shillings' (Unicode minus).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/10",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 4,
+     "description": "Elspeth pays fourteen to the smith, recorded as 'savings · -5 shillings'.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "negative-resource/11",
+     "ruleId": "continuity/negative-resource",
+     "chapter": 2,
+     "description": "Elspeth overspends at the Heron, recorded as prose ('in debt by 3 shillings'), which no number parser reads.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/single-valued-conflict",
+   "mutants": 11,
+   "caught": 10,
+   "recall": 0.9090909090909091,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "single-valued-conflict/1",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 4,
+     "description": "Jonas is seventeen in ch4 while still sixteen.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/2",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 2,
+     "description": "Crane is sixty-eight in ch2 while seventy-one.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/3",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 4,
+     "description": "Thorne is forty in ch1 and forty-five in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/4",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 2,
+     "description": "Rook is fifty and fifty-eight in the same chapter (current age).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/5",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 4,
+     "description": "The smith says Crane is alive in ch4 while his death stands.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/6",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 2,
+     "description": "Rook says Tobias is alive in ch2 ('alive · true').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/7",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 5,
+     "description": "Jonas is seventeen in ch5 (GLM 'years old', labelled age).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/8",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 3,
+     "description": "Jonas is 'seventeen' in ch3, written as a word, which the age reader does not parse.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/9",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 1,
+     "description": "Crane is seventy-five in the same chapter he is seventy-one.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/10",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 5,
+     "description": "Crane, living and well, attends his own burial ('condition · living').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "single-valued-conflict/11",
+     "ruleId": "continuity/single-valued-conflict",
+     "chapter": 4,
+     "description": "Tobias's letter shows he is alive in ch4 ('life status · alive').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/item-from-nowhere",
+   "mutants": 10,
+   "caught": 6,
+   "recall": 0.6,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "item-from-nowhere/1",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 2,
+     "description": "Jonas checks the compass Elspeth carries.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/2",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 4,
+     "description": "Elspeth uses the compass she gave Jonas in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/3",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 4,
+     "description": "Jonas opens the strongbox with the iron key Elspeth holds.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/4",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 2,
+     "description": "Rook reads Crane's ledger, which Crane holds in Wenlow.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/5",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 1,
+     "description": "Thorne reads the ledger Crane keeps under his seat.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/6",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 5,
+     "description": "Elspeth writes in the ledger she has just given to Thorne.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/7",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 3,
+     "description": "Jonas lights the lantern that is only bought in ch4.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/8",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 3,
+     "description": "Elspeth digs with the spade that is only bought in ch4.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/9",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 5,
+     "description": "Jonas unlocks the ferry chain with the iron key Elspeth holds.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "item-from-nowhere/10",
+     "ruleId": "continuity/item-from-nowhere",
+     "chapter": 4,
+     "description": "Thorne followed them with the compass Jonas holds.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/world-rule-broken",
+   "mutants": 10,
+   "caught": 6,
+   "recall": 0.6,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "world-rule-broken/1",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 1,
+     "description": "The ferry comes in with five passengers.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/2",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 5,
+     "description": "Jonas takes six across.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/3",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 5,
+     "description": "Jonas takes four across.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/4",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 1,
+     "description": "The ferry comes in with seven passengers.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/5",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 3,
+     "description": "Crane's nephew brings them over with five aboard.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/6",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 4,
+     "description": "From the hill they see the ferry cross with six passengers.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/7",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 5,
+     "description": "Jonas takes four across, recorded as 'ferried · four passengers' (free-form).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/8",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 5,
+     "description": "Jonas (not the ferry) carries five across ('Jonas Marrow · carried · 5 passengers across the Lune').",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/9",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 1,
+     "description": "The ferry comes in with four passengers ('passenger count').",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "world-rule-broken/10",
+     "ruleId": "continuity/world-rule-broken",
+     "chapter": 5,
+     "description": "Jonas takes eight across ('passengers · eight', a word numeral).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/knowledge-leak",
+   "mutants": 10,
+   "caught": 8,
+   "recall": 0.8,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "knowledge-leak/1",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 2,
+     "description": "Elspeth plans to lift the third flagstone in ch2; Crane only tells her in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/2",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 1,
+     "description": "Jonas proposes digging under the third flagstone in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/3",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 2,
+     "description": "Elspeth tells Thorne where the strongbox is in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/4",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 1,
+     "description": "Elspeth searches under the third flagstone on the night of ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/5",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 2,
+     "description": "Thorne, who is never told, means to dig under the third flagstone in ch2.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/6",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 2,
+     "description": "Thorne names Alderman Pask from the ledger in ch2; she only reads it in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/7",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 2,
+     "description": "Jonas buys a spade in Stavely to dig under the third flagstone.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/8",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 2,
+     "description": "Elspeth asks Rook the way to the abbey chapel's third flagstone.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/9",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 1,
+     "description": "Elspeth tells Jonas where the strongbox is in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "knowledge-leak/10",
+     "ruleId": "continuity/knowledge-leak",
+     "chapter": 2,
+     "description": "Jonas draws the abbey chapel floor and marks the third flagstone in ch2.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/impossible-travel",
+   "mutants": 10,
+   "caught": 10,
+   "recall": 1,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "impossible-travel/1",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 2,
+     "description": "Jonas is at the Wenlow mill on 1 October and at Saltmere on 2 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/2",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 2,
+     "description": "Elspeth is in Wenlow on 1 October and sleeps at Saltmere on 2 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/3",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 2,
+     "description": "Thorne is at the Wenlow landing on 1 October and at Saltmere on 2 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/4",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 2,
+     "description": "Crane is on the Lune ferry on 1 October and at Saltmere on 2 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/5",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 4,
+     "description": "Thorne is at Saltmere on 4 October and on Gorse Hill on 5 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/6",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 4,
+     "description": "Elspeth is in Wenlow on 4 October and at Saltmere on 5 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/7",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 4,
+     "description": "Jonas is in Wenlow on 4 October and at Saltmere on 5 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/8",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 4,
+     "description": "Jonas is at Saltmere on 4 October and on Gorse Hill on 5 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/9",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 4,
+     "description": "Elspeth is at Saltmere on 4 October and on Gorse Hill on 5 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "impossible-travel/10",
+     "ruleId": "continuity/impossible-travel",
+     "chapter": 2,
+     "description": "Crane spends 1 October at Saltmere and is ill in his Wenlow cottage on 2 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "continuity/timeline-order",
+   "mutants": 10,
+   "caught": 8,
+   "recall": 0.8,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "timeline-order/1",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 4,
+     "description": "Ch4 is dated 3 October, after ch3's 4 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/2",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 3,
+     "description": "Ch3 is dated 1 October, after ch2's 2 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/3",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 5,
+     "description": "Ch5 (the funeral) is dated 4 October, after ch4's 5 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/4",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 2,
+     "description": "Ch2 is dated 30 September, after ch1's 1 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/5",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 4,
+     "description": "Ch4 is dated 'October 3' (month first).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/6",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 3,
+     "description": "Ch3 is dated 'the 1st of October', before ch2's 2 October.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/7",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 5,
+     "description": "Ch5 is dated '3 Oct', with no year (the time parser reads no date without a year).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/8",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 4,
+     "description": "Ch4 is dated 2 October under the predicate 'current date'.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/9",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 5,
+     "description": "Ch5 is dated 'the third day of October' under the predicate 'day' (free-form, no year).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "timeline-order/10",
+     "ruleId": "continuity/timeline-order",
+     "chapter": 3,
+     "description": "Ch3 is dated 'September 29'.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  }
+ ]
+}
