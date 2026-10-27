@@ -22,7 +22,7 @@ import {
 import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../utils.js";
 import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "@plotlint/diagnostics/node";
 import { registerStudyCommands } from "./lint-study.js";
-import { addPacksCommand, bookPacks } from "./lint-packs.js";
+import { addPacksCommand, bookPacks, effectiveRules } from "./lint-packs.js";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
@@ -383,40 +383,31 @@ lintCommand
 
 lintCommand
   .command("rules")
-  .description("List the continuity rules, with each one's setting in the book's story/plotlint/rules.json")
+  .description("List every rule (state, mechanics, metrics, style) with its effective setting and where it comes from: a pack, the adaptive overlay or rules.json")
   .argument("[book-id]", "Book ID (auto-detected if only one book); without a project, lists the defaults")
   .option("--json", "Output JSON")
   .action(async (bookIdArg: string | undefined, opts: { json?: boolean }, command: Command) => {
     try {
       opts = { ...opts, json: wantsJson(command) };
-      let config;
+      let bookDir: string | undefined;
       try {
         const root = findProjectRoot();
         const bookId = await resolveBookId(bookIdArg, root);
-        config = (await loadBookRuleData(new StateManager(root).bookDir(bookId))).config;
+        bookDir = new StateManager(root).bookDir(bookId);
       } catch (error) {
         if (bookIdArg !== undefined) throw error;
       }
-      const rules = builtinRegistry.configure(config).map(({ rule, enabled, severity, options }) => ({
-        id: rule.id,
-        layer: rule.layer,
-        title: rule.title ?? rule.id,
-        rationale: rule.rationale,
-        ...(rule.source ? { source: rule.source } : {}),
-        enabled,
-        ...(severity ? { severity } : {}),
-        ...(Object.keys(options).length ? { options } : {}),
-      }));
+      const { rules, unknown } = await effectiveRules(bookDir);
       if (opts.json) {
-        log(JSON.stringify({ rules, unknown: builtinRegistry.unknownIds(config) }, null, 2));
+        log(JSON.stringify({ rules, unknown }, null, 2));
         return;
       }
       for (const rule of rules) {
         const setting = !rule.enabled ? "off" : rule.severity ?? "on";
-        log(`${rule.id}  ${setting}  ${rule.title}`);
+        log(`${rule.id}  ${setting}  (${rule.from.join(", ")})  ${rule.title}`);
         log(indent(rule.rationale));
       }
-      for (const id of builtinRegistry.unknownIds(config)) logError(`${id} in rules.json is not a known rule`);
+      for (const id of unknown) logError(`${id} in rules.json is not a known rule`);
     } catch (e) {
       logError(`Rules failed: ${e}`);
       process.exit(1);

@@ -7,7 +7,7 @@ import type { DiagnosticEntry } from "@plotlint/editor";
 import type { TFunction } from "../../../hooks/use-i18n";
 import { ManuscriptEditor, type ManuscriptEditorHandle } from "../ManuscriptEditor";
 import { ProblemsPanel } from "../ProblemsPanel";
-import { problemRows, visibleProblems, type ProblemRow } from "../problems-model";
+import { LAYER_ORDER, problemRows, rowTarget, visibleProblems, type ProblemRow } from "../problems-model";
 import type { LintDiagnostic, LintResponse } from "../lint-client";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -51,6 +51,23 @@ describe("problems model", () => {
       .toEqual(["deterministic", "deterministic", "extracted"]);
   });
 
+  it("keeps chapter-level structure findings, with where their fact was established as the click target", () => {
+    const established = { chapter: 2, start: 10, end: 27, quote: "Mira died at dawn" };
+    const structure = problemRows(
+      [entry("m", 0, finding({ ruleId: "metrics/wall-of-text", layer: "metrics", severity: "note", summary: "wall" }))],
+      [
+        finding({ ruleId: "structure/unpaid-setup", layer: "structure", severity: "note", confidence: "extracted", summary: "never returns", fingerprint: "u", established }),
+        finding({ ruleId: "structure/open-questions", layer: "structure", severity: "note", confidence: "extracted", summary: "questions pile up", fingerprint: "q" }),
+      ],
+      () => 1,
+    );
+    expect(structure.map(rowTarget)).toEqual([{ kind: "range", entryId: "m" }, { kind: "established", location: established }, null]);
+    expect(visibleProblems(structure, { layer: "structure", severity: "all", confidence: "all" }, "position").map((r) => r.diagnostic.summary))
+      .toEqual(["never returns", "questions pile up"]);
+    expect(visibleProblems(structure, { layer: "metrics", severity: "all", confidence: "all" }, "position").map((r) => r.diagnostic.summary))
+      .toEqual(["wall"]);
+  });
+
   it("filters by layer, severity and confidence", () => {
     expect(visibleProblems(rows, { layer: "style", severity: "all", confidence: "all" }, "position")).toHaveLength(1);
     expect(visibleProblems(rows, { layer: "all", severity: "error", confidence: "all" }, "position")[0]!.diagnostic.ruleId).toBe("continuity/dead-entity-acts");
@@ -68,6 +85,21 @@ describe("ProblemsPanel", () => {
     expect(html).toContain("problems.line 3");
     expect(html).toMatch(/data-testid="problems-suppressed"[^>]*>.*4/);
     expect(html.indexOf("dead acts")).toBeLessThan(html.indexOf("cliche"));
+  });
+
+  it("lists every layer in the filter and links unranged findings to where their fact was established", () => {
+    const established = { chapter: 2, start: 0, end: 5, quote: "Mira died" };
+    const withLink = [...rows, ...problemRows([], [finding({ ruleId: "structure/unpaid-setup", layer: "structure", summary: "never returns", fingerprint: "u", established })], () => 1)];
+    const html = renderToStaticMarkup(React.createElement(ProblemsPanel, {
+      rows: withLink, suppressed: 0, linting: false, error: null, stateMissing: false, t, onSelect: () => {}, onNotUseful: () => {},
+    }));
+    for (const layer of LAYER_ORDER) expect(html).toContain(`<option value="${layer}">`);
+    expect(html).toContain("metrics (0)");
+    expect(html).toMatch(/data-testid="problem-established"[^>]*>.*state\.established.*ch.*2/);
+    expect(html.match(/data-testid="problem-not-useful"/g)).toHaveLength(withLink.length);
+    // The structure row with a link is clickable; the continuity row without one is not.
+    expect(html).toMatch(/data-rule-id="structure\/unpaid-setup" data-layer="structure" data-ranged="false"[^>]*><button type="button"(?! disabled)/);
+    expect(html).toMatch(/data-rule-id="continuity\/dead-entity-acts"[^>]*><button type="button" disabled/);
   });
 
   it("shows the empty and filtered states", () => {
@@ -123,5 +155,39 @@ describe("ManuscriptEditor", () => {
     await act(async () => { row.click(); });
     const { state } = handle.current!.editor()!;
     expect(state.doc.textBetween(state.selection.from, state.selection.to)).toBe("teh");
+  });
+
+  it("opens where an unranged finding's fact was established, and records Not useful from a problems row", async () => {
+    const text = "# Chapter 3\n\nMira walked to the quay.";
+    const established = { chapter: 2, start: 13, end: 30, quote: "Mira died at dawn" };
+    const response: LintResponse = {
+      sourceId: "chapter:3",
+      diagnostics: [
+        finding({ ruleId: "structure/unpaid-setup", layer: "structure", severity: "note", confidence: "extracted", chapter: 3, summary: "never returns", fingerprint: "u", established }),
+        finding({ ruleId: "metrics/sentence-rhythm", layer: "metrics", severity: "note", chapter: 3, summary: "flat", fingerprint: "m", range: { sourceId: "chapter:3", start: 13, end: 17 } }),
+      ],
+      ranges: null,
+      suppressed: 0,
+      stateMissing: false,
+    };
+    const onOpenLocation = vi.fn();
+    const onVerdicts = vi.fn();
+    const container = document.createElement("div");
+    document.body.append(container);
+    root = createRoot(container);
+    await act(async () => {
+      root!.render(React.createElement(ManuscriptEditor, {
+        bookId: "b", chapterNumber: 3, initialText: text, t, lint: vi.fn(async () => response), onOpenLocation, onVerdicts,
+      }));
+    });
+    await act(async () => { await vi.waitFor(() => expect(container.querySelector("[data-testid=problems-count]")!.textContent).toBe("2")); });
+
+    await act(async () => { container.querySelector<HTMLButtonElement>("li[data-rule-id='structure/unpaid-setup'] button")!.click(); });
+    expect(onOpenLocation).toHaveBeenCalledWith(established);
+
+    await act(async () => { container.querySelector<HTMLButtonElement>("li[data-rule-id='metrics/sentence-rhythm'] [data-testid=problem-not-useful]")!.click(); });
+    expect(onVerdicts).toHaveBeenCalledWith([{ diagnostic: expect.objectContaining({ fingerprint: "m" }), action: "not-useful" }]);
+    await act(async () => { await vi.waitFor(() => expect(container.querySelector("[data-testid=problems-count]")!.textContent).toBe("1")); });
+    expect(container.querySelector(".pl-diag--metrics")).toBeNull();
   });
 });

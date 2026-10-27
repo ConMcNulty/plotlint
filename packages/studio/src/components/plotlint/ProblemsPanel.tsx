@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AlertTriangle, CircleAlert, EyeOff, Info, Loader2 } from "lucide-react";
+import { AlertTriangle, CircleAlert, CornerDownRight, EyeOff, Info, Loader2, ThumbsDown } from "lucide-react";
 import type { DiagnosticSeverity } from "@plotlint/diagnostics";
 import type { TFunction } from "../../hooks/use-i18n";
 import { cn } from "../../lib/utils";
@@ -9,6 +9,7 @@ import {
   LAYER_ORDER,
   SEVERITY_ORDER,
   countBy,
+  rowTarget,
   visibleProblems,
   type ProblemFilter,
   type ProblemRow,
@@ -22,10 +23,12 @@ export interface ProblemsPanelProps {
   readonly error: string | null;
   readonly stateMissing: boolean;
   readonly t: TFunction;
-  /** Called for a row with a range: select it in the editor. */
+  /** Called for a row with somewhere to go (see `rowTarget`): its text, or where its fact was established. */
   readonly onSelect?: (row: ProblemRow) => void;
   /** Called to mark a finding as intentional. */
   readonly onSuppress?: (row: ProblemRow) => void;
+  /** Called for "Not useful": hide the finding this session and record the rejection. */
+  readonly onNotUseful?: (row: ProblemRow) => void;
   readonly initialFilter?: ProblemFilter;
   readonly initialSort?: ProblemSort;
 }
@@ -48,7 +51,7 @@ const MAX_ROWS = 300;
 const selectClass = "h-7 rounded-lg border border-border/50 bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20";
 
 /** The bottom problems list for the open chapter, like an IDE's problems view. */
-export function ProblemsPanel({ rows, suppressed, linting, error, stateMissing, t, onSelect, onSuppress, initialFilter, initialSort }: ProblemsPanelProps) {
+export function ProblemsPanel({ rows, suppressed, linting, error, stateMissing, t, onSelect, onSuppress, onNotUseful, initialFilter, initialSort }: ProblemsPanelProps) {
   const [filter, setFilter] = useState<ProblemFilter>(initialFilter ?? ALL_PROBLEMS);
   const [sort, setSort] = useState<ProblemSort>(initialSort ?? "position");
   const visible = useMemo(() => visibleProblems(rows, filter, sort), [rows, filter, sort]);
@@ -78,7 +81,7 @@ export function ProblemsPanel({ rows, suppressed, linting, error, stateMissing, 
           <select aria-label={t("problems.allLayers")} className={selectClass} value={filter.layer}
             onChange={(event) => setFilter({ ...filter, layer: event.target.value as ProblemFilter["layer"] })}>
             <option value="all">{t("problems.allLayers")}</option>
-            {LAYER_ORDER.filter((layer) => layers.has(layer) || filter.layer === layer).map((layer) => (
+            {LAYER_ORDER.map((layer) => (
               <option key={layer} value={layer}>{layer} ({layers.get(layer) ?? 0})</option>
             ))}
           </select>
@@ -113,9 +116,10 @@ export function ProblemsPanel({ rows, suppressed, linting, error, stateMissing, 
         {visible.slice(0, MAX_ROWS).map((row) => {
           const { diagnostic } = row;
           const Icon = severityIcon[diagnostic.severity];
-          const clickable = row.entryId !== null && onSelect !== undefined;
+          const target = rowTarget(row);
+          const clickable = target !== null && onSelect !== undefined;
           return (
-            <li key={row.key} data-rule-id={diagnostic.ruleId} data-layer={diagnostic.layer} className="group flex items-start">
+            <li key={row.key} data-rule-id={diagnostic.ruleId} data-layer={diagnostic.layer} data-ranged={row.entryId !== null} className="group flex items-start">
               <button
                 type="button"
                 disabled={!clickable}
@@ -130,6 +134,16 @@ export function ProblemsPanel({ rows, suppressed, linting, error, stateMissing, 
                 <span className="min-w-0 flex-1">
                   <span className="text-foreground">{diagnostic.summary}</span>
                   {diagnostic.evidence[0] && <span className="ml-2 text-muted-foreground">{diagnostic.evidence[0]}</span>}
+                  {row.established && (
+                    <span
+                      className="ml-2 inline-flex items-center gap-0.5 whitespace-nowrap text-[11px] text-primary"
+                      title={`${t("state.established")} ch${row.established.chapter}: “${row.established.quote}”`}
+                      data-testid="problem-established"
+                    >
+                      <CornerDownRight size={11} />
+                      {t("state.established")} ch{row.established.chapter}
+                    </span>
+                  )}
                 </span>
                 <code className="shrink-0 text-[11px] text-muted-foreground">{diagnostic.ruleId}</code>
                 <span className={cn("pl-problem-layer shrink-0 rounded px-1.5 text-[10px] font-medium uppercase tracking-wide", `pl-problem-layer--${diagnostic.layer}`)}>
@@ -148,6 +162,18 @@ export function ProblemsPanel({ rows, suppressed, linting, error, stateMissing, 
                   className="mr-2 mt-1 shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-secondary hover:text-foreground focus:opacity-100 group-hover:opacity-100"
                 >
                   <EyeOff size={12} />
+                </button>
+              )}
+              {onNotUseful && (
+                <button
+                  type="button"
+                  title={t("problems.notUsefulHint")}
+                  aria-label={t("problems.notUseful")}
+                  onClick={() => onNotUseful(row)}
+                  className="mr-2 mt-1 shrink-0 rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-secondary hover:text-foreground focus:opacity-100 group-hover:opacity-100"
+                  data-testid="problem-not-useful"
+                >
+                  <ThumbsDown size={12} />
                 </button>
               )}
             </li>

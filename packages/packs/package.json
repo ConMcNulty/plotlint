@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@plotlint/diagnostics": "workspace:*",
+    "@plotlint/metrics": "workspace:*",
     "@plotlint/rules": "workspace:*",
     "@plotlint/style": "workspace:*",
     "js-yaml": "^4.1.1",

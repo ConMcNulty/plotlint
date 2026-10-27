@@ -230,6 +230,22 @@ describe("change tracking for re-lint", () => {
     expect(calls.at(-1)!.ranges).toEqual([]);
   });
 
+  it("keeps diagnostics `keep` picks through a partial re-lint", () => {
+    setup();
+    const lazy = at("lazy");
+    const jumps = at("jumps");
+    editor.commands.setDiagnostics([
+      diagnostic(lazy.start, lazy.end, { ruleId: "metrics/wall-of-text", layer: "metrics", severity: "note" }),
+      diagnostic(jumps.start, jumps.end, { ruleId: "style/verb", layer: "style", severity: "note" }),
+    ], { sourceId: SOURCE });
+    editor.commands.insertContentAt(pos(at("over").start), "x");
+    const changed = editor.storage.diagnostics.changedRanges();
+    editor.commands.setDiagnostics([], {
+      sourceId: SOURCE, version: changed.version, ranges: changed.ranges, keep: (found) => found.layer === "metrics",
+    });
+    expect(editor.storage.diagnostics.all().map((entry) => entry.diagnostic.ruleId)).toEqual(["metrics/wall-of-text"]);
+  });
+
   it("keeps edits made after the linted version dirty", () => {
     setup();
     editor.commands.insertContentAt(pos(0), "a");

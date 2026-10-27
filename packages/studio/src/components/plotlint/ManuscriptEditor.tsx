@@ -12,7 +12,7 @@ import { chapterLinter, chapterSourceId, suppressDiagnostic, type LintDiagnostic
 import { fetchStateAt, findDefinition, type Definition, type EntityAtCursor, type EvidenceLocation, type StateAtCursorResponse } from "./navigate-client";
 import { ProblemsPanel } from "./ProblemsPanel";
 import { StatePanel } from "./StatePanel";
-import { problemRows, type ProblemRow } from "./problems-model";
+import { problemRows, rowTarget, type ProblemRow } from "./problems-model";
 import { recordVerdicts, type VerdictEvent } from "./verdict-client";
 
 export interface ManuscriptEditorHandle {
@@ -285,9 +285,8 @@ export function ManuscriptEditor({
     setHover(null);
   };
 
-  /** "Not useful": a rejection that also hides this finding for the rest of the session. */
-  const notUseful = (entry: DiagnosticEntry) => {
-    const diagnostic = entry.diagnostic as LintDiagnostic;
+  /** "Not useful" (on the hover card or a problems row): a rejection that also hides this finding for the rest of the session. */
+  const notUseful = (diagnostic: LintDiagnostic) => {
     controllerRef.current?.hide(diagnostic);
     live.current.verdicts([{ diagnostic, action: "not-useful" }]);
     setHover(null);
@@ -299,8 +298,11 @@ export function ManuscriptEditor({
     return problemRows(problems.ranged, problems.unranged, lineOf);
   }, [problems]);
 
+  /** A drawn finding selects its text; an unranged one opens where its fact was established. */
   const reveal = (row: ProblemRow) => {
-    if (row.entryId) controllerRef.current?.reveal(row.entryId);
+    const target = rowTarget(row);
+    if (target?.kind === "range") controllerRef.current?.reveal(target.entryId);
+    else if (target?.kind === "established") openLocation(target.location);
   };
 
   return (
@@ -345,6 +347,7 @@ export function ManuscriptEditor({
         t={t}
         onSelect={reveal}
         onSuppress={(row) => void markIntentional(row.diagnostic)}
+        onNotUseful={(row) => notUseful(row.diagnostic)}
       />
       {/* Portalled: Studio's page containers animate with transforms, which would re-anchor a fixed card. */}
       {hover && typeof document !== "undefined" && createPortal(
@@ -355,7 +358,7 @@ export function ManuscriptEditor({
           onLeave={hideSoon}
           onFix={applyFix}
           onSuppress={(entry) => void markIntentional(entry.diagnostic as LintDiagnostic)}
-          onNotUseful={notUseful}
+          onNotUseful={(entry) => notUseful(entry.diagnostic as LintDiagnostic)}
         />,
         document.body,
       )}

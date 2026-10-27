@@ -221,6 +221,9 @@ importers:
       '@plotlint/diagnostics':
         specifier: workspace:*
         version: link:../diagnostics
+      '@plotlint/metrics':
+        specifier: workspace:*
+        version: link:../metrics
       '@plotlint/rules':
         specifier: workspace:*
         version: link:../rules
@@ -283,6 +286,9 @@ importers:
       '@plotlint/mechanics':
         specifier: workspace:*
         version: link:../mechanics
+      '@plotlint/metrics':
+        specifier: workspace:*
+        version: link:../metrics
       '@plotlint/packs':
         specifier: workspace:*
         version: link:../packs

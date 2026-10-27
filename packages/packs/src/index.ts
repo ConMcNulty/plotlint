@@ -5,3 +5,4 @@ export type { PackProblem } from "./validate.js";
 export { validatePack } from "./validate.js";
 export type { PackProposal, ProposalInput } from "./select.js";
 export { parseProposal, proposalPrompt, proposeFromGenre, proposePacks } from "./select.js";
+export { HARPER_RULE_ID, knownRuleIds } from "./known.js";
