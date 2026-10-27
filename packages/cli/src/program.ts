@@ -10,6 +10,7 @@ import { writeCommand } from "./commands/write.js";
 import { autoCommand } from "./commands/auto.js";
 import { reviewCommand } from "./commands/review.js";
 import { statusCommand } from "./commands/status.js";
+import { lintCommand } from "./commands/lint.js";
 import { radarCommand } from "./commands/radar.js";
 import { upCommand, downCommand } from "./commands/daemon.js";
 import { doctorCommand } from "./commands/doctor.js";
@@ -72,6 +73,7 @@ export function createProgram(hooks: ProgramHooks = {}): Command {
   program.addCommand(autoCommand);
   program.addCommand(reviewCommand);
   program.addCommand(statusCommand);
+  program.addCommand(lintCommand);
   program.addCommand(radarCommand);
   program.addCommand(upCommand);
   program.addCommand(downCommand);

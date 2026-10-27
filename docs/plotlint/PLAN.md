@@ -297,7 +297,7 @@ Seven phases, each ending in a gate. No dates are set because team size and mode
 
 | Phase | Builds | Gate to move on |
 | --- | --- | --- |
-| 0. Fork hygiene | `upstream` remote and merge routine; CI on the fork; empty `@plotlint/*` packages wired into the workspace; `Diagnostic` schema extending `Observation`; one no-op rule that emits a diagnostic from the CLI | Upstream tests still pass; a diagnostic round-trips from rule to CLI output |
+| 0. Fork hygiene | `upstream` remote and merge routine; CI on the fork; `@plotlint/diagnostics` and `@plotlint/rules` wired into the workspace (`@plotlint/editor` and `@plotlint/loop` arrive with phases 1 and 5); `Diagnostic` schema extending `Observation`; one no-op rule that emits a diagnostic from the CLI | Upstream tests still pass; a diagnostic round-trips from rule to CLI output |
 | 1. Editor with L0–L1 | Tiptap editor replacing the `ChapterReader` textarea; problems panel; Harper and Vale behind the rule runner; project dictionary from state; suppressions | A human writer imports a manuscript and sees squiggles; under 100 ms per keystroke on a 10k-word chapter |
 | 2. Evidence-backed state | Scene segmentation; evidence spans on every settler fact op; typed predicates; state at cursor and go to definition | At least 95% of fact ops on the test books carry a span that validates |
 | 3. Continuity rules (L3) | Rule registry with the seven starter rules; author invariants; frames for flashback and unreliable POV | Seeded-error corpus: recall and false-alarm rate per rule published, and each rule beats the LLM-only auditor on false positives |
@@ -307,7 +307,9 @@ Seven phases, each ending in a gate. No dates are set because team size and mode
 
 Phases 1 and 2 already help human writers on their own, so the editor can ship before the autonomous loop exists. If the first users are people running the loop instead, phase 5 can move up after phase 3.
 
-**First week of code (phase 0).** Add the `upstream` remote; get `pnpm install && pnpm test` green on the fork; scaffold `packages/diagnostics`, `packages/rules`, `packages/loop` and `packages/editor`; define `Diagnostic` as `Observation` plus `range`, `layer`, `severity`, `confidence` and `ruleId`; add a hook after `applyRuntimeStateDelta` that runs registered rules over the proposed snapshot; ship one rule (a fact asserted for an entity after a fact that it is dead) end to end in the CLI.
+**First week of code (phase 0).** Add the `upstream` remote; get `pnpm install && pnpm test` green on the fork; scaffold `packages/diagnostics` and `packages/rules`; define `Diagnostic` as `Observation` plus `range`, `layer`, `severity`, `confidence` and `ruleId`; add a hook after `applyRuntimeStateDelta` that runs registered rules over the proposed snapshot; ship one rule (a fact asserted for an entity after a fact that it is dead) end to end in the CLI.
+
+**Status.** Phase 0 code is in: `@plotlint/diagnostics` (the `Diagnostic` schema), `@plotlint/rules` (`checkSnapshot`, and `checkDelta`, which wraps `applyRuntimeStateDelta` rather than patching core), the `continuity/dead-entity-acts` rule and an `inkos lint [book-id] [--json]` command. Still open: the `upstream` merge routine and CI running on the fork.
 
 ## Evaluation
 

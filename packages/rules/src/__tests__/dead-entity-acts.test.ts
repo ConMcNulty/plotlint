@@ -1,0 +1,85 @@
+import { describe, expect, it } from "vitest";
+import type { CurrentStateFact, RuntimeStateDelta, RuntimeStateSnapshot } from "@actalk/inkos-core";
+import { checkDelta, checkSnapshot } from "../index.js";
+
+function snapshot(facts: CurrentStateFact[], lastAppliedChapter = 0): RuntimeStateSnapshot {
+  return {
+    manifest: { schemaVersion: 2, language: "en", lastAppliedChapter, projectionVersion: 1 },
+    currentState: { chapter: lastAppliedChapter, facts },
+    hooks: { hooks: [] },
+    chapterSummaries: { rows: [] },
+  };
+}
+
+const fact = (subject: string, predicate: string, object: string, from: number, until: number | null = null): CurrentStateFact => ({
+  subject, predicate, object, validFromChapter: from, validUntilChapter: until, sourceChapter: from,
+});
+
+function delta(chapter: number, upsert: Array<[string, string, string]>, expire: Array<[string, string]> = []): RuntimeStateDelta {
+  return {
+    chapter,
+    factOps: {
+      upsert: upsert.map(([subject, predicate, object]) => ({ subject, predicate, object })),
+      expire: expire.map(([subject, predicate]) => ({ subject, predicate })),
+    },
+    hookOps: { upsert: [], mention: [], resolve: [], defer: [] },
+    newHookCandidates: [],
+  };
+}
+
+describe("continuity/dead-entity-acts", () => {
+  it("flags new state for a character after their death, citing both facts", () => {
+    const diagnostics = checkSnapshot(snapshot([
+      fact("Mira", "status", "dead", 5),
+      fact("Mira", "location", "harbour", 7),
+      fact("Mira", "holds", "brass key", 7),
+    ], 7));
+
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0]).toMatchObject({
+      ruleId: "continuity/dead-entity-acts",
+      severity: "warning",
+      confidence: "extracted",
+      chapter: 7,
+    });
+    expect(diagnostics[0]!.facts).toHaveLength(3);
+    expect(diagnostics[0]!.evidence[0]).toContain("Mira · status · dead");
+  });
+
+  it("ignores facts from before the death and posthumous facts", () => {
+    expect(checkSnapshot(snapshot([
+      fact("Mira", "location", "harbour", 2),
+      fact("Mira", "status", "dead", 5),
+      fact("Mira", "cause_of_death", "drowning", 6),
+      fact("Mira", "buried at", "chapel yard", 6),
+      fact("Tomas", "location", "chapel yard", 6),
+    ], 6))).toEqual([]);
+  });
+
+  it("does not flag a character whose death fact was later expired", () => {
+    expect(checkSnapshot(snapshot([
+      fact("Mira", "status", "dead", 5, 8),
+      fact("Mira", "status", "alive", 9),
+      fact("Mira", "location", "harbour", 9),
+    ], 9))).toEqual([]);
+  });
+
+  it("recognises Chinese status facts", () => {
+    const diagnostics = checkSnapshot(snapshot([
+      fact("林远", "状态", "已死亡", 3),
+      fact("林远", "位置", "城门", 4),
+    ], 4));
+    expect(diagnostics.map((diagnostic) => diagnostic.chapter)).toEqual([4]);
+  });
+
+  it("checks a settler delta through the InkOS reducer and reports only that chapter", () => {
+    let state = snapshot([]);
+    ({ next: state } = checkDelta(state, delta(1, [["Mira", "status", "dead"]])));
+    const { next, diagnostics } = checkDelta(state, delta(2, [["Mira", "location", "harbour"], ["Tomas", "location", "harbour"]]));
+
+    expect(next.manifest.lastAppliedChapter).toBe(2);
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0]!.summary).toContain("Mira");
+    expect(checkDelta(next, delta(3, [["Tomas", "mood", "grieving"]])).diagnostics).toEqual([]);
+  });
+});
