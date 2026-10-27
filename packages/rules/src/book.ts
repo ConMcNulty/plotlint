@@ -55,6 +55,17 @@ export const FramesFileSchema = z.object({
 }).strict();
 export type FramesFile = z.infer<typeof FramesFileSchema>;
 
+/**
+ * What the book's `book.json` says about its length: how many chapters are
+ * planned and whether it is completed. Structural rules use it to tell an
+ * unpaid setup in a finished book from a promise still waiting for its chapter.
+ */
+export interface BookPlan {
+  readonly targetChapters?: number;
+  /** InkOS's book status: incubating, outlining, active, paused, completed or dropped. */
+  readonly status?: string;
+}
+
 /** Everything the rule engine reads from a book's plotlint folder. Absent files are absent fields. */
 export interface BookRuleData {
   readonly config?: RuleConfigFile;
@@ -63,4 +74,6 @@ export interface BookRuleData {
   readonly invariants?: InvariantsFile;
   /** `travel.json`: travel times between places, for continuity/impossible-travel. */
   readonly travel?: TravelFile;
+  /** From the book's `book.json` beside the story folder, when it has one. */
+  readonly plan?: BookPlan;
 }

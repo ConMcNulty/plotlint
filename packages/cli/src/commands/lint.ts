@@ -145,8 +145,10 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
   const book = await loadBookRuleData(bookDir);
   for (const id of builtinRegistry.unknownIds(book.config)) logError(`${id} in story/plotlint/rules.json is not a known rule`);
   const texts = await chapterTexts(bookDir);
-  const diagnostics: LocatedDiagnostic[] = snapshot && options.layers.has("continuity")
-    ? checkSnapshot(snapshot, { chapters: texts, book }).filter(inScope).map((diagnostic) => {
+  // State rules run by their own layer: continuity rules under `continuity`, structural ones under `structure`.
+  const stateRules = builtinRegistry.list().filter((rule) => options.layers.has(rule.layer));
+  const diagnostics: LocatedDiagnostic[] = snapshot && stateRules.length > 0
+    ? checkSnapshot(snapshot, { rules: stateRules, chapters: texts, book }).filter(inScope).map((diagnostic) => {
       // Invariants over the chapter text point into the chapter file like text findings.
       const text = diagnostic.range && diagnostic.chapter !== undefined ? texts.get(diagnostic.chapter) : undefined;
       return text === undefined ? diagnostic : { ...diagnostic, location: locate(text, diagnostic.range!.start) };

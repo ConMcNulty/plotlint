@@ -92,6 +92,21 @@ describe("CLI mini-flows", () => {
     expect(run(["lint", "lint-novel"])).toContain("ch3 warning continuity/dead-entity-acts [extracted]");
   });
 
+  it("runs structural state rules under the structure layer only", async () => {
+    run(["init"]);
+    await saveWorkManifest(projectDir, createWorkManifest({ id: "lint-novel", title: "Lint Novel", profileId: "longform-novel", language: "en" }));
+    await saveRuntimeStateSnapshot(new StateManager(projectDir).bookDir("lint-novel"), {
+      manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 12, projectionVersion: 1 },
+      currentState: { chapter: 12, facts: [] },
+      hooks: { hooks: [{ hookId: "ring", startChapter: 1, type: "mystery", status: "open", lastAdvancedChapter: 1, expectedPayoff: "Who poisoned the ring", notes: "" }] },
+      chapterSummaries: { rows: [] },
+    });
+    type Lint = { books: Array<{ diagnostics: Array<{ ruleId: string; chapter: number }> }> };
+    const lint = (layers: string) => (JSON.parse(run(["lint", "lint-novel", "--json", "--layers", layers])) as Lint).books[0]!.diagnostics;
+    expect(lint("structure").map((d) => [d.ruleId, d.chapter])).toEqual([["structure/unpaid-setup", 1]]);
+    expect(lint("continuity")).toEqual([]);
+  });
+
   it("applies the book's rules.json and frames.json, and lists the rules", async () => {
     run(["init"]);
     await saveWorkManifest(projectDir, createWorkManifest({
