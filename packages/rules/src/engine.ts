@@ -17,6 +17,7 @@ import { timelineOrder } from "./rules/timeline-order.js";
 import { twoPlacesAtOnce } from "./rules/two-places-at-once.js";
 import { knowledgeLeak } from "./rules/knowledge-leak.js";
 import { worldRuleBroken } from "./rules/world-rule-broken.js";
+import { structureRules } from "./rules/structure/index.js";
 
 export const builtinRules: ReadonlyArray<Rule> = [
   deadEntityActs, deadThenAlive, twoPlacesAtOnce, itemTwoHolders, negativeResource, singleValuedConflict,
@@ -25,6 +26,7 @@ export const builtinRules: ReadonlyArray<Rule> = [
   knowledgeLeak,
   impossibleTravel, timelineOrder,
   invariantRule,
+  ...structureRules,
 ];
 
 /** The built-in rules by id. Hosts that add their own rules build a registry from `builtinRules`. */

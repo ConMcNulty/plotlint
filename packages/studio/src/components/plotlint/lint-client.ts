@@ -1,8 +1,19 @@
 import type { Diagnostic } from "@plotlint/diagnostics";
+import type { EvidenceLocation } from "@plotlint/rules";
 import { fetchJson } from "../../hooks/use-api";
 
 /** A finding from the Studio lint route, with the fingerprint "mark as intentional" saves. */
-export type LintDiagnostic = Diagnostic & { readonly fingerprint: string };
+export type LintDiagnostic = Diagnostic & {
+  readonly fingerprint: string;
+  /** For a finding with no range: where the first fact it cites was established. */
+  readonly established?: EvidenceLocation;
+};
+
+/**
+ * Findings only a whole-chapter lint produces: the L2 metrics measure the chapter
+ * as a whole, so a re-lint of the edited paragraphs leaves them as they were.
+ */
+export const wholeChapterOnly = (diagnostic: Diagnostic) => diagnostic.layer === "metrics";
 
 export interface LintRange {
   readonly start: number;

@@ -11,7 +11,8 @@ export interface ConfiguredRule {
   readonly options: Readonly<Record<string, unknown>>;
 }
 
-function readSetting(setting: RuleSetting | undefined): Omit<ConfiguredRule, "rule"> {
+/** Read one rule setting: whether the rule runs, its severity override and its options. */
+export function readRuleSetting(setting: RuleSetting | undefined): Omit<ConfiguredRule, "rule"> {
   if (setting === undefined) return { enabled: true, options: {} };
   if (typeof setting === "string") {
     return setting === "off" ? { enabled: false, options: {} } : { enabled: true, severity: setting, options: {} };
@@ -50,7 +51,7 @@ export class RuleRegistry {
 
   /** Every registered rule with the book's settings applied, in registration order. */
   configure(config?: RuleConfigFile): ConfiguredRule[] {
-    return this.list().map((rule) => ({ rule, ...readSetting(config?.rules[rule.id] as RuleSetting | undefined) }));
+    return this.list().map((rule) => ({ rule, ...readRuleSetting(config?.rules[rule.id] as RuleSetting | undefined) }));
   }
 
   /** Ids in a book's config that name no registered rule, usually typos. */

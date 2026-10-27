@@ -3,12 +3,13 @@ import { join } from "node:path";
 import { Command } from "commander";
 import { StateManager, chatCompletion, createLLMClient, loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
 import {
-  builtinRegistry, checkSnapshot, checkText, compileInvariant, evidenceCoverage, explainCheck, InvariantCheckSchema, InvariantIdSchema,
+  builtinRegistry, checkSnapshot, RuleRegistry, checkText, compileInvariant, configureTextRules, evidenceCoverage, explainCheck, InvariantCheckSchema, InvariantIdSchema,
   InvariantsFileSchema, invariantSlug, lastChapter, type ChapterTexts, type EvidenceCoverage, type Invariant, type InvariantsFile, type TextRule,
 } from "@plotlint/rules";
-import { loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
+import { loadAdaptiveOverlay, loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
 import { createHarperRule, isMostlyCjk, projectDictionary } from "@plotlint/mechanics";
-import { generalPack } from "@plotlint/style/node";
+import { createMetricRules, metricStateRules } from "@plotlint/metrics";
+import type { MetricBands } from "@plotlint/packs";
 import {
   applySuppressions,
   diagnosticFingerprint,
@@ -20,6 +21,8 @@ import {
 } from "@plotlint/diagnostics";
 import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../utils.js";
 import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "@plotlint/diagnostics/node";
+import { registerStudyCommands } from "./lint-study.js";
+import { addPacksCommand, bookPacks, effectiveRules } from "./lint-packs.js";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
@@ -36,6 +39,8 @@ interface BookLint {
   chapters: number[];
   /** Invariants waiting for `inkos lint invariant approve`. */
   proposedInvariants: number;
+  /** The check packs that ran: general, then the book's genre packs. */
+  packs: string[];
 }
 
 interface LintOptions {
@@ -92,13 +97,12 @@ function parseRatio(value: string | undefined): number {
   return ratio;
 }
 
-let generalPackRules: TextRule[] | undefined;
-
-/** L0 (Harper) and L1 (the general style pack), as far as `layers` asks for them. */
-function textRules(layers: ReadonlySet<DiagnosticLayer>): TextRule[] {
+/** L0 (Harper), L1 (the style rules of the book's packs, general first) and L2 (metrics against the packs' bands), as far as `layers` asks for them. */
+function textRules(layers: ReadonlySet<DiagnosticLayer>, styleRules: ReadonlyArray<TextRule>, metricBands: MetricBands): TextRule[] {
   const rules: TextRule[] = [];
   if (layers.has("mechanics")) rules.push(createHarperRule());
-  if (layers.has("style")) rules.push(...(generalPackRules ??= generalPack()));
+  if (layers.has("style")) rules.push(...styleRules);
+  if (layers.has("metrics")) rules.push(...createMetricRules(metricBands));
   return rules;
 }
 
@@ -142,11 +146,17 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
   const inScope = (diagnostic: Diagnostic) =>
     options.layers.has(diagnostic.layer) && (options.chapter === undefined || diagnostic.chapter === options.chapter);
 
-  const book = await loadBookRuleData(bookDir);
-  for (const id of builtinRegistry.unknownIds(book.config)) logError(`${id} in story/plotlint/rules.json is not a known rule`);
+  const loaded = await loadBookRuleData(bookDir);
+  const metricIds = new Set(metricStateRules().map((rule) => rule.id));
+  for (const id of builtinRegistry.unknownIds(loaded.config).filter((id) => !metricIds.has(id))) logError(`${id} in story/plotlint/rules.json is not a known rule`);
+  // The book's packs set the rule config, then the checks its author keeps rejecting are lowered, then its own rules.json wins.
+  const packs = bookPacks(bookDir, loaded, [await loadAdaptiveOverlay(bookDir)]);
+  const book = { ...loaded, config: packs.config };
   const texts = await chapterTexts(bookDir);
-  const diagnostics: LocatedDiagnostic[] = snapshot && options.layers.has("continuity")
-    ? checkSnapshot(snapshot, { chapters: texts, book }).filter(inScope).map((diagnostic) => {
+  // State rules run by their own layer: continuity rules under `continuity`, structural ones under `structure`.
+  const stateRules = builtinRegistry.list().filter((rule) => options.layers.has(rule.layer));
+  const diagnostics: LocatedDiagnostic[] = snapshot && stateRules.length > 0
+    ? checkSnapshot(snapshot, { rules: stateRules, chapters: texts, book }).filter(inScope).map((diagnostic) => {
       // Invariants over the chapter text point into the chapter file like text findings.
       const text = diagnostic.range && diagnostic.chapter !== undefined ? texts.get(diagnostic.chapter) : undefined;
       return text === undefined ? diagnostic : { ...diagnostic, location: locate(text, diagnostic.range!.start) };
@@ -154,8 +164,21 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
     : [];
   const files = await chapterFiles(bookDir);
   const chapters = options.chapter === undefined ? [...files.keys()] : files.has(options.chapter) ? [options.chapter] : [];
-  const rules = textRules(options.layers);
+  const rules = configureTextRules(textRules(options.layers, packs.styleRules, packs.metrics), packs.config);
   for (const chapter of chapters) diagnostics.push(...await lintChapterText(files.get(chapter)!, chapter, rules, snapshot));
+  if (options.layers.has("metrics")) {
+    // Book-level metrics (repetition across chapters) read every chapter but report into each one.
+    const names = snapshot ? projectDictionary(snapshot) : [];
+    for (const { rule, enabled, severity, options: ruleOptions } of new RuleRegistry(metricStateRules({ names })).configure(book.config)) {
+      if (!enabled) continue;
+      // The rule reads only chapter text and names, so a book without state still gets it.
+      for (const diagnostic of rule.check({ snapshot: snapshot ?? ({} as RuntimeStateSnapshot), chapters: texts, book, options: ruleOptions })) {
+        if (!inScope(diagnostic)) continue;
+        const text = texts.get(diagnostic.chapter!)!;
+        diagnostics.push({ ...diagnostic, ...(severity ? { severity } : {}), location: locate(text, diagnostic.range!.start) });
+      }
+    }
+  }
 
   const { kept, suppressed } = applySuppressions(diagnostics, suppressions);
   return {
@@ -167,6 +190,7 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
     // Unsupported ones cannot be approved, so they are not waiting on the author.
     proposedInvariants: book.invariants?.invariants
       .filter((invariant) => invariant.status === "proposed" && invariant.check.kind !== "unsupported").length ?? 0,
+    packs: packs.resolved.packs,
   };
 }
 
@@ -359,40 +383,31 @@ lintCommand
 
 lintCommand
   .command("rules")
-  .description("List the continuity rules, with each one's setting in the book's story/plotlint/rules.json")
+  .description("List every rule (state, mechanics, metrics, style) with its effective setting and where it comes from: a pack, the adaptive overlay or rules.json")
   .argument("[book-id]", "Book ID (auto-detected if only one book); without a project, lists the defaults")
   .option("--json", "Output JSON")
   .action(async (bookIdArg: string | undefined, opts: { json?: boolean }, command: Command) => {
     try {
       opts = { ...opts, json: wantsJson(command) };
-      let config;
+      let bookDir: string | undefined;
       try {
         const root = findProjectRoot();
         const bookId = await resolveBookId(bookIdArg, root);
-        config = (await loadBookRuleData(new StateManager(root).bookDir(bookId))).config;
+        bookDir = new StateManager(root).bookDir(bookId);
       } catch (error) {
         if (bookIdArg !== undefined) throw error;
       }
-      const rules = builtinRegistry.configure(config).map(({ rule, enabled, severity, options }) => ({
-        id: rule.id,
-        layer: rule.layer,
-        title: rule.title ?? rule.id,
-        rationale: rule.rationale,
-        ...(rule.source ? { source: rule.source } : {}),
-        enabled,
-        ...(severity ? { severity } : {}),
-        ...(Object.keys(options).length ? { options } : {}),
-      }));
+      const { rules, unknown } = await effectiveRules(bookDir);
       if (opts.json) {
-        log(JSON.stringify({ rules, unknown: builtinRegistry.unknownIds(config) }, null, 2));
+        log(JSON.stringify({ rules, unknown }, null, 2));
         return;
       }
       for (const rule of rules) {
         const setting = !rule.enabled ? "off" : rule.severity ?? "on";
-        log(`${rule.id}  ${setting}  ${rule.title}`);
+        log(`${rule.id}  ${setting}  (${rule.from.join(", ")})  ${rule.title}`);
         log(indent(rule.rationale));
       }
-      for (const id of builtinRegistry.unknownIds(config)) logError(`${id} in rules.json is not a known rule`);
+      for (const id of unknown) logError(`${id} in rules.json is not a known rule`);
     } catch (e) {
       logError(`Rules failed: ${e}`);
       process.exit(1);
@@ -621,3 +636,11 @@ invariantCommand
       process.exit(1);
     }
   });
+
+// `inkos lint study` and `inkos lint verdict` (lint-study.ts); a verdict looks its finding up among shown and suppressed ones.
+registerStudyCommands(lintCommand, async (state, bookId) => {
+  const result = await lintBook(state, bookId, everything);
+  return [...result.diagnostics, ...result.suppressed.map((entry) => entry.diagnostic)];
+});
+
+addPacksCommand(lintCommand);

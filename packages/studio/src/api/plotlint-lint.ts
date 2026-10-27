@@ -1,4 +1,4 @@
-import { stat } from "node:fs/promises";
+import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
 import {
@@ -9,15 +9,22 @@ import {
 } from "@plotlint/diagnostics";
 import { addSuppression, loadSuppressions } from "@plotlint/diagnostics/node";
 import { checkParagraphs, paragraphRanges, projectDictionary } from "@plotlint/mechanics";
-import { checkSnapshot, checkText, type BookRuleData, type ChapterTexts, type TextDocument, type TextRule } from "@plotlint/rules";
-import { loadBookRuleData } from "@plotlint/rules/node";
+import {
+  checkSnapshot, checkText, configureTextRules, establishedAt, readRuleSetting, RuleRegistry,
+  type BookRuleData, type ChapterTexts, type EvidenceLocation, type RuleConfigFile, type RuleSetting, type TextDocument, type TextRule,
+} from "@plotlint/rules";
+import { loadAdaptiveOverlay, loadBookRuleData } from "@plotlint/rules/node";
+import { createMetricRules, metricStateRules } from "@plotlint/metrics";
+import { bookPacksDir, HARPER_RULE_ID, knownRuleIds, resolveBookPacks } from "@plotlint/packs/node";
 import { chapterFiles } from "./plotlint-chapters.js";
-import { generalPack } from "@plotlint/style/node";
 
 /**
- * Chapter linting for the Studio editor: L0 Harper and L1 general-pack style
- * rules over the chapter text (whole, or only the paragraphs an edit touched),
- * plus the L3 state findings for the chapter, with the book's suppressions applied.
+ * Chapter linting for the Studio editor: L0 Harper and L1 style rules of the
+ * book's check packs (general plus `packs.json`) over the chapter text (whole, or
+ * only the paragraphs an edit touched), the L2 metrics on whole-chapter lints,
+ * plus the L3/L4 state findings for the chapter, with the book's suppressions applied.
+ * Rule settings stack like `inkos lint`: packs, then the adaptive overlay from
+ * the author's verdicts, then the book's `rules.json`.
  */
 
 export interface LintTextRange {
@@ -25,13 +32,21 @@ export interface LintTextRange {
   readonly end: number;
 }
 
-export type FingerprintedDiagnostic = Diagnostic & { readonly fingerprint: string };
+export type FingerprintedDiagnostic = Diagnostic & {
+  readonly fingerprint: string;
+  /** For a finding with no range here: where the first fact it cites was established, to jump to. */
+  readonly established?: EvidenceLocation;
+};
 
 export interface ChapterLintRequest {
   readonly bookDir: string;
   readonly chapter: number;
   readonly text: string;
-  /** Re-lint only these text ranges (expanded to whole paragraphs). Omit for the whole chapter. */
+  /**
+   * Re-lint only these text ranges (expanded to whole paragraphs). Omit for the
+   * whole chapter, which the editor does on open and after a save or suppression;
+   * only a whole-chapter lint runs the L2 metrics, which measure the chapter as a whole.
+   */
   readonly ranges?: ReadonlyArray<LintTextRange>;
 }
 
@@ -45,30 +60,33 @@ export interface ChapterLintResult {
   readonly suppressed: number;
   /** The book has no runtime state yet: no project dictionary and no L3 findings. */
   readonly stateMissing: boolean;
-  readonly timings: { readonly mechanicsMs: number; readonly styleMs: number; readonly totalMs: number };
+  readonly timings: { readonly mechanicsMs: number; readonly styleMs: number; readonly metricsMs: number; readonly totalMs: number };
 }
 
 export const chapterSourceId = (chapter: number) => `chapter:${chapter}`;
-
-let stylePack: TextRule[] | undefined;
-/** The general style pack, read from disk once per process. */
-function styleRules(): TextRule[] {
-  stylePack ??= generalPack();
-  return stylePack;
-}
 
 interface BookState {
   readonly key: string;
   readonly chapters: ChapterTexts;
   readonly snapshot: RuntimeStateSnapshot | null;
   readonly dictionary: string[];
+  /** The packs' style rules with the effective rule config (packs < adaptive overlay < rules.json) applied. */
+  readonly styleRules: TextRule[];
+  /** The L2 chapter metrics against the packs' bands, configured likewise. */
+  readonly metricRules: TextRule[];
+  /** Cross-chapter metrics (repeated phrases): enabled ones with their severity and options. */
+  readonly metricStateRules: ReturnType<RuleRegistry["configure"]>;
+  readonly book: BookRuleData;
+  readonly config: RuleConfigFile;
   /** The L3 findings, checked on first use (navigation reads the snapshot without them). */
   stateDiagnostics(): Diagnostic[];
 }
 
 const STATE_FILES = ["state/manifest.json", "state/current_state.json", "state/hooks.json", "state/chapter_summaries.json"];
-// The book's rule config, frames and rule data, which change what the L3 rules report.
-const PLOTLINT_FILES = ["plotlint/rules.json", "plotlint/frames.json"];
+// The book's rule config, frames, packs and verdicts (the adaptive overlay), which change what the rules report.
+const PLOTLINT_FILES = [
+  "plotlint/rules.json", "plotlint/frames.json", "plotlint/packs.json", "plotlint/invariants.json", "plotlint/travel.json", "plotlint/verdicts.jsonl",
+];
 const bookStates = new Map<string, BookState>();
 
 /**
@@ -87,7 +105,7 @@ async function bookState(bookDir: string): Promise<BookState> {
       return "-";
     }
   }));
-  const key = stamps.join("|");
+  const key = [...stamps, ...await bookPackStamps(bookDir)].join("|");
   const cached = bookStates.get(bookDir);
   if (cached?.key === key && cached.chapters === chapters) return cached;
 
@@ -97,17 +115,70 @@ async function bookState(bookDir: string): Promise<BookState> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
-  const book: BookRuleData = await loadBookRuleData(bookDir);
+  const loaded: BookRuleData = await loadBookRuleData(bookDir);
+  // Like `inkos lint`: the packs, then the checks the author keeps rejecting lowered, then the book's own rules.json.
+  const packs = resolveBookPacks(bookDir, loaded, knownRuleIds(), [await loadAdaptiveOverlay(bookDir)]);
+  const book: BookRuleData = { ...loaded, config: packs.config };
+  const dictionary = snapshot ? projectDictionary(snapshot) : [];
   let checked: Diagnostic[] | undefined;
   const state: BookState = {
     key,
     chapters,
     snapshot,
-    dictionary: snapshot ? projectDictionary(snapshot) : [],
+    dictionary,
+    styleRules: configureTextRules(packs.styleRules, packs.config),
+    metricRules: configureTextRules(createMetricRules(packs.metrics), packs.config),
+    metricStateRules: new RuleRegistry(metricStateRules({ names: dictionary })).configure(packs.config).filter(({ enabled }) => enabled),
+    book,
+    config: packs.config,
     stateDiagnostics: () => (checked ??= snapshot ? checkSnapshot(snapshot, { chapters, book }) : []),
   };
   bookStates.set(bookDir, state);
   return state;
+}
+
+/** Size and mtime of every file in the book's own packs (`story/plotlint/packs/`); a book without them has none. */
+async function bookPackStamps(bookDir: string): Promise<string[]> {
+  const dir = bookPacksDir(bookDir);
+  let files: string[];
+  try {
+    files = (await readdir(dir, { recursive: true })).sort();
+  } catch {
+    return [];
+  }
+  return Promise.all(files.map(async (file) => {
+    const info = await stat(join(dir, file)).catch(() => null);
+    return info?.isFile() ? `${file}:${info.mtimeMs}:${info.size}` : file;
+  }));
+}
+
+/**
+ * The cross-chapter metrics for `chapter`, reading its unsaved `text` in place of
+ * the saved file so the ranges fit the editor. They read only chapter text and
+ * names, so a book without state still gets them.
+ */
+function metricStateFindings(state: BookState, chapter: number, text: string): Diagnostic[] {
+  if (state.metricStateRules.length === 0) return [];
+  const chapters = new Map(state.chapters);
+  chapters.set(chapter, text);
+  const found: Diagnostic[] = [];
+  for (const { rule, severity, options } of state.metricStateRules) {
+    const context = { snapshot: state.snapshot ?? ({} as RuntimeStateSnapshot), chapters, book: state.book, options };
+    for (const diagnostic of rule.check(context)) {
+      if (diagnostic.chapter === chapter) found.push(severity ? { ...diagnostic, severity } : diagnostic);
+    }
+  }
+  return found;
+}
+
+/** Where a rangeless finding's first cited fact was established, when its passage is in a chapter today. */
+function establishedFor(diagnostic: Diagnostic, chapters: ChapterTexts): EvidenceLocation | undefined {
+  if (diagnostic.range) return undefined;
+  for (const fact of diagnostic.facts ?? []) {
+    const { location } = establishedAt(fact, chapters);
+    if (location) return location;
+  }
+  return undefined;
 }
 
 /** The book's runtime state snapshot (cached like the lint's), or null when it has none yet. */
@@ -144,18 +215,20 @@ export function expandToParagraphs(text: string, ranges: ReadonlyArray<LintTextR
 }
 
 /** Style findings for `document.text.slice(range)`, with ranges in the whole document. */
-async function styleInRange(document: TextDocument, range: LintTextRange, dictionary: ReadonlyArray<string>): Promise<Diagnostic[]> {
+async function styleInRange(document: TextDocument, range: LintTextRange, rules: ReadonlyArray<TextRule>, dictionary: ReadonlyArray<string>): Promise<Diagnostic[]> {
   const text = document.text.slice(range.start, range.end);
   if (!text.trim()) return [];
-  const found = await checkText({ ...document, text }, styleRules(), { dictionary });
+  const found = await checkText({ ...document, text }, rules, { dictionary });
   return found.map((diagnostic) => ({
     ...diagnostic,
     range: { ...diagnostic.range!, start: diagnostic.range!.start + range.start, end: diagnostic.range!.end + range.start },
   }));
 }
 
-const withFingerprint = (diagnostic: Diagnostic): FingerprintedDiagnostic =>
-  ({ ...diagnostic, fingerprint: diagnosticFingerprint(diagnostic) });
+const withFingerprint = (diagnostic: Diagnostic, chapters: ChapterTexts): FingerprintedDiagnostic => {
+  const established = establishedFor(diagnostic, chapters);
+  return { ...diagnostic, fingerprint: diagnosticFingerprint(diagnostic), ...(established ? { established } : {}) };
+};
 
 export async function lintChapter(request: ChapterLintRequest): Promise<ChapterLintResult> {
   const started = performance.now();
@@ -168,29 +241,41 @@ export async function lintChapter(request: ChapterLintRequest): Promise<ChapterL
   const partial = request.ranges ? expandToParagraphs(text, request.ranges) : null;
 
   const mechanicsStarted = performance.now();
-  const mechanics = await checkParagraphs(context, partial ? partial.paragraphs : undefined);
+  // Harper runs outside `checkText`, so its rule setting is applied to its findings.
+  const harper = readRuleSetting(state.config.rules[HARPER_RULE_ID] as RuleSetting | undefined);
+  const mechanics = !harper.enabled ? [] : (await checkParagraphs(context, partial ? partial.paragraphs : undefined))
+    .map((diagnostic) => (harper.severity ? { ...diagnostic, severity: harper.severity } : diagnostic));
   const mechanicsMs = performance.now() - mechanicsStarted;
 
   // Style rules scope to sentences and paragraphs at most, so a partial lint runs
   // them over each re-linted run of whole paragraphs and shifts the ranges back.
   const styleStarted = performance.now();
   const style = partial
-    ? (await Promise.all(partial.ranges.map((range) => styleInRange(document, range, state.dictionary)))).flat()
-    : await checkText(document, styleRules(), { dictionary: state.dictionary });
+    ? (await Promise.all(partial.ranges.map((range) => styleInRange(document, range, state.styleRules, state.dictionary)))).flat()
+    : await checkText(document, state.styleRules, { dictionary: state.dictionary });
   const styleMs = performance.now() - styleStarted;
 
-  const textDiagnostics = [...mechanics, ...style]
+  // Metrics measure the whole chapter (and repetition across chapters), so they run only on
+  // whole-chapter lints; on a partial one the editor keeps the findings it has.
+  const metricsStarted = performance.now();
+  const metrics = partial ? [] : [
+    ...await checkText(document, state.metricRules),
+    ...metricStateFindings(state, chapter, text),
+  ];
+  const metricsMs = performance.now() - metricsStarted;
+
+  const textDiagnostics = [...mechanics, ...style, ...metrics]
     .sort((a, b) => a.range!.start - b.range!.start || a.range!.end - b.range!.end || a.ruleId.localeCompare(b.ruleId));
   const stateDiagnostics = state.stateDiagnostics().filter((diagnostic) => diagnostic.chapter === chapter);
 
   const { kept, suppressed } = applySuppressions([...textDiagnostics, ...stateDiagnostics], suppressions);
   return {
     sourceId,
-    diagnostics: kept.map(withFingerprint),
+    diagnostics: kept.map((diagnostic) => withFingerprint(diagnostic, state.chapters)),
     ranges: partial ? partial.ranges : null,
     suppressed: suppressed.length,
     stateMissing: state.snapshot === null,
-    timings: { mechanicsMs, styleMs, totalMs: performance.now() - started },
+    timings: { mechanicsMs, styleMs, metricsMs, totalMs: performance.now() - started },
   };
 }
 

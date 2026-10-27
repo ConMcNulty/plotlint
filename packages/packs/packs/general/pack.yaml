@@ -1,0 +1,25 @@
+# The always-on pack. Every other pack extends it implicitly and can override it.
+name: general
+title: General
+description: >-
+  Checks that hold for most fiction: continuity, setup and payoff, the cut test, POV
+  discipline, AI-tell and cliché lists, and loose prose-metric floors.
+# @plotlint/style's general pack (style/general.*), shared so its ids and suppressions stay stable.
+styles: builtin:general
+checks:
+  # Continuity rules run at their own defaults; the general pack only names the
+  # structural checks it keeps quiet, since they describe rather than prove.
+  structure/unpaid-setup: warning
+  structure/unearned-payoff: warning
+  structure/pov-discipline: warning
+  structure/cut-candidate: note
+  structure/open-questions: note
+  structure/subplot-balance: note
+  structure/scene-turn: note
+  structure/goal-conflict-outcome: note
+  structure/protagonist-agency: note
+  structure/tension-curve: note
+# Floors and bands, never targets: a metric flags only text outside the band. The
+# general bands live in @plotlint/metrics (baselines/general.json, measured from
+# reference books); genre packs narrow them by rule id, in the metric rules' units
+# (MTLD score, dialogue share of words 0-1, words in the longest unbroken run).

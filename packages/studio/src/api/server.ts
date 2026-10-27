@@ -170,6 +170,7 @@ import {
   parseSuppressionBody as parsePlotlintSuppressionBody,
   suppressFinding,
 } from "./plotlint-lint.js";
+import { parseVerdictBody as parsePlotlintVerdictBody, recordVerdicts, verdictReport } from "./plotlint-verdicts.js";
 import {
   definitionsOf,
   parseDefinitionBody as parsePlotlintDefinitionBody,
@@ -3258,6 +3259,19 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     const { bookId, ...request } = parsed;
     const bookDir = await plotlintBookDir(bookId);
     return c.json({ ok: true, ...(await suppressFinding(bookDir, request)) });
+  });
+
+  // The writer's accept and reject verdicts on findings, for the writer study (plotlint-verdicts.ts).
+  app.post("/api/v1/plotlint/verdicts", async (c) => {
+    const parsed = parsePlotlintVerdictBody(await c.req.json().catch(() => null));
+    if (typeof parsed === "string") throw new ApiError(400, "INVALID_VERDICT", parsed);
+    const bookDir = await plotlintBookDir(parsed.bookId);
+    return c.json({ ok: true, ...(await recordVerdicts(bookDir, parsed.verdicts)) });
+  });
+
+  app.get("/api/v1/plotlint/verdicts", async (c) => {
+    const bookDir = await plotlintBookDir(c.req.query("bookId") ?? "");
+    return c.json(await verdictReport(bookDir));
   });
 
   // State at cursor and go to definition, over the runtime state's evidence spans.

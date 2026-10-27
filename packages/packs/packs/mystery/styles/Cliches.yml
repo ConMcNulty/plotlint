@@ -1,0 +1,20 @@
+# Stock phrases of the detective story. A modest list: each is fine once as pastiche.
+extends: existence
+message: "Mystery cliché: '%s'."
+description: >-
+  Phrases worn smooth by a century of detective fiction. Readers of the genre know them
+  by heart, so they read as pastiche unless that is the point.
+link: https://tvtropes.org/pmwiki/pmwiki.php/Main/DetectiveDrama
+level: suggestion
+ignorecase: true
+tokens:
+  - the game is afoot
+  - elementary, my dear
+  - (?:you|we) may be wondering why I(?:'ve| have) gathered you
+  - the butler did it
+  - (?:it|this) was no accident
+  - something didn't add up
+  - the pieces (?:of the puzzle )?(?:fell|clicked) into place
+  - (?:she|he|they|I) had a hunch
+  - a dame walked in
+  - too quiet\. too perfect

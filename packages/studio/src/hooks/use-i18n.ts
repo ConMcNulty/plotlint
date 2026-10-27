@@ -68,6 +68,8 @@ const strings = {
   "problems.wholeChapter": { zh: "整章", en: "Chapter" },
   "problems.line": { zh: "行", en: "Ln" },
   "problems.markIntentional": { zh: "标记为有意为之", en: "Mark as intentional" },
+  "problems.notUseful": { zh: "没有帮助", en: "Not useful" },
+  "problems.notUsefulHint": { zh: "本次会话中隐藏这条提示，并记录这项检查没有帮助", en: "Hide this finding for this session and record that the check was not useful" },
   "problems.reasonPrompt": { zh: "为什么这是有意为之？（原因会和忽略记录一起保存）", en: "Why is this intentional? The reason is saved with the suppression." },
   "problems.stale": { zh: "此处文字已修改，下次检查时更新。", en: "Text changed since this check; it updates on the next check." },
   "state.title": { zh: "光标处状态", en: "State at cursor" },

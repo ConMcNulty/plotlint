@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from "react";
 import { createPortal } from "react-dom";
-import { EyeOff, ListTree, SearchX, Wrench } from "lucide-react";
+import { EyeOff, ListTree, SearchX, ThumbsDown, Wrench } from "lucide-react";
 import type { Editor } from "@tiptap/core";
 import { confidenceLabel, OffsetMap, type DefinitionRequest, type DiagnosticEntry, type TextRange } from "@plotlint/editor";
 import "@plotlint/editor/styles.css";
@@ -12,7 +12,8 @@ import { chapterLinter, chapterSourceId, suppressDiagnostic, type LintDiagnostic
 import { fetchStateAt, findDefinition, type Definition, type EntityAtCursor, type EvidenceLocation, type StateAtCursorResponse } from "./navigate-client";
 import { ProblemsPanel } from "./ProblemsPanel";
 import { StatePanel } from "./StatePanel";
-import { problemRows, type ProblemRow } from "./problems-model";
+import { problemRows, rowTarget, type ProblemRow } from "./problems-model";
+import { recordVerdicts, type VerdictEvent } from "./verdict-client";
 
 export interface ManuscriptEditorHandle {
   /** The chapter text as edited, exactly as it will be saved. */
@@ -41,6 +42,8 @@ export interface ManuscriptEditorProps {
   readonly lint?: LintFunction;
   /** Override the state and definition routes (tests). */
   readonly navigation?: NavigationClient;
+  /** Override the verdict route (tests). */
+  readonly onVerdicts?: (events: VerdictEvent[]) => void;
   /** Select this text range once the editor opens (a jump from another chapter). */
   readonly selection?: TextRange;
   /** Open a passage in another chapter (an "established" link or a definition there). */
@@ -76,6 +79,14 @@ const chapterNavigation = (bookId: string, chapter: number): NavigationClient =>
   definition: (names, text) => findDefinition(bookId, names, { chapter, text }),
 });
 
+/** Findings marked "Not useful" this session, per book, so they stay hidden when a chapter reopens. */
+const sessionHidden = new Map<string, Set<string>>();
+const hiddenFor = (bookId: string) => {
+  let hidden = sessionHidden.get(bookId);
+  if (!hidden) sessionHidden.set(bookId, hidden = new Set());
+  return hidden;
+};
+
 const STATE_PANEL_KEY = "plotlint.statePanel";
 /** Pause after the cursor moves before asking for the state there. */
 const STATE_DEBOUNCE_MS = 300;
@@ -94,7 +105,7 @@ const readPanelPreference = () => {
  * Ctrl/Cmd+click goes to where the name under the cursor is first established.
  */
 export function ManuscriptEditor({
-  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, selection, onOpenLocation, className,
+  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, onVerdicts, selection, onOpenLocation, className,
 }: ManuscriptEditorProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<ChapterEditor | null>(null);
@@ -109,8 +120,13 @@ export function ManuscriptEditor({
 
   const client = useMemo(() => navigation ?? chapterNavigation(bookId, chapterNumber), [navigation, bookId, chapterNumber]);
   // Read by the editor's callbacks, which are bound once per editor.
-  const live = useRef({ client, showState, chapterNumber, onOpenLocation });
-  live.current = { client, showState, chapterNumber, onOpenLocation };
+  // Accept and reject decisions go to the book's verdict log, for the writer study.
+  const verdicts = useCallback((events: VerdictEvent[]) => {
+    if (onVerdicts) onVerdicts(events);
+    else void recordVerdicts(bookId, events);
+  }, [bookId, onVerdicts]);
+  const live = useRef({ client, showState, chapterNumber, onOpenLocation, verdicts });
+  live.current = { client, showState, chapterNumber, onOpenLocation, verdicts };
   const stateTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const stateRequest = useRef({ seq: 0, offset: -1, text: "" });
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -197,6 +213,8 @@ export function ManuscriptEditor({
       lint: lint ?? chapterLinter(bookId, chapterNumber),
       editorClass: "pl-manuscript-editor font-serif text-lg leading-[1.8] text-foreground/90",
       onProblems: setProblems,
+      onVerdicts: (events) => live.current.verdicts(events),
+      hidden: hiddenFor(bookId),
       onSelection: refreshStateSoon,
       onGoToDefinition: (request) => void goToDefinitionRef.current(request),
       ...(initialSelectionRef.current ? { selection: initialSelectionRef.current } : {}),
@@ -254,6 +272,7 @@ export function ManuscriptEditor({
     if (!reason) return;
     try {
       await suppressDiagnostic(bookId, diagnostic, reason);
+      live.current.verdicts([{ diagnostic, action: "intentional" }]);
       setHover(null);
       await controllerRef.current?.relintAll();
     } catch (error) {
@@ -266,14 +285,24 @@ export function ManuscriptEditor({
     setHover(null);
   };
 
+  /** "Not useful" (on the hover card or a problems row): a rejection that also hides this finding for the rest of the session. */
+  const notUseful = (diagnostic: LintDiagnostic) => {
+    controllerRef.current?.hide(diagnostic);
+    live.current.verdicts([{ diagnostic, action: "not-useful" }]);
+    setHover(null);
+  };
+
   const rows = useMemo(() => {
     const doc = controllerRef.current?.editor.state.doc;
     const lineOf = (pos: number) => (doc ? doc.resolve(Math.min(pos, doc.content.size)).index(0) + 1 : 0);
     return problemRows(problems.ranged, problems.unranged, lineOf);
   }, [problems]);
 
+  /** A drawn finding selects its text; an unranged one opens where its fact was established. */
   const reveal = (row: ProblemRow) => {
-    if (row.entryId) controllerRef.current?.reveal(row.entryId);
+    const target = rowTarget(row);
+    if (target?.kind === "range") controllerRef.current?.reveal(target.entryId);
+    else if (target?.kind === "established") openLocation(target.location);
   };
 
   return (
@@ -318,6 +347,7 @@ export function ManuscriptEditor({
         t={t}
         onSelect={reveal}
         onSuppress={(row) => void markIntentional(row.diagnostic)}
+        onNotUseful={(row) => notUseful(row.diagnostic)}
       />
       {/* Portalled: Studio's page containers animate with transforms, which would re-anchor a fixed card. */}
       {hover && typeof document !== "undefined" && createPortal(
@@ -328,6 +358,7 @@ export function ManuscriptEditor({
           onLeave={hideSoon}
           onFix={applyFix}
           onSuppress={(entry) => void markIntentional(entry.diagnostic as LintDiagnostic)}
+          onNotUseful={(entry) => notUseful(entry.diagnostic as LintDiagnostic)}
         />,
         document.body,
       )}
@@ -347,13 +378,14 @@ export function ManuscriptEditor({
   );
 }
 
-function DiagnosticCard({ hover, t, onEnter, onLeave, onFix, onSuppress }: {
+function DiagnosticCard({ hover, t, onEnter, onLeave, onFix, onSuppress, onNotUseful }: {
   readonly hover: HoverState;
   readonly t: TFunction;
   readonly onEnter: () => void;
   readonly onLeave: () => void;
   readonly onFix: (entry: DiagnosticEntry, index: number) => void;
   readonly onSuppress: (entry: DiagnosticEntry) => void;
+  readonly onNotUseful: (entry: DiagnosticEntry) => void;
 }) {
   const left = Math.max(8, Math.min(hover.left, (typeof window === "undefined" ? 1024 : window.innerWidth) - 400));
   // The card opens below the word, or above it when the word is near the bottom of the window.
@@ -409,6 +441,17 @@ function DiagnosticCard({ hover, t, onEnter, onLeave, onFix, onSuppress }: {
                 >
                   <EyeOff size={11} />
                   {t("problems.markIntentional")}
+                </button>
+                <button
+                  type="button"
+                  title={t("problems.notUsefulHint")}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => onNotUseful(entry)}
+                  className="flex items-center gap-1 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  data-testid="diagnostic-not-useful"
+                >
+                  <ThumbsDown size={11} />
+                  {t("problems.notUseful")}
                 </button>
               </div>
             )}

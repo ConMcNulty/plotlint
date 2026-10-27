@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "genre": "mystery",
+  "provisional": true,
+  "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+  "sourceBooks": [
+    {
+      "title": "The Hound of the Baskervilles",
+      "author": "Arthur Conan Doyle",
+      "gutenberg": 2852
+    },
+    {
+      "title": "The Sign of the Four",
+      "author": "Arthur Conan Doyle",
+      "gutenberg": 2097
+    },
+    {
+      "title": "The Mysterious Affair at Styles",
+      "author": "Agatha Christie",
+      "gutenberg": 863
+    },
+    {
+      "title": "The Secret Adversary",
+      "author": "Agatha Christie",
+      "gutenberg": 1155
+    }
+  ],
+  "metrics": {},
+  "bands": {
+    "metrics/lexical-diversity": {
+      "min": 60,
+      "minWords": 300
+    },
+    "metrics/sentence-rhythm": {
+      "min": 0.4,
+      "window": 8,
+      "windowCv": 0.15,
+      "minSentences": 20
+    },
+    "metrics/dialogue-ratio": {
+      "max": 0.8,
+      "minWords": 500
+    },
+    "metrics/sensory-detail": {
+      "min": 10,
+      "minWords": 500
+    },
+    "metrics/wall-of-text": {
+      "max": 350
+    }
+  }
+}

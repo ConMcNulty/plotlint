@@ -15,6 +15,8 @@ export interface TextRuleContext {
   readonly snapshot?: RuntimeStateSnapshot;
   /** Words the project accepts as spelled correctly (character names, invented terms). */
   readonly dictionary?: ReadonlyArray<string>;
+  /** This rule's `options` from the rule config, when `configureTextRules` set any. */
+  readonly options?: Readonly<Record<string, unknown>>;
 }
 
 /**

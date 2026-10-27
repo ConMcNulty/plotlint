@@ -8,7 +8,8 @@ import type { TravelFile } from "./travel.js";
 // `@plotlint/rules/node` reads them; this module only holds the schemas, so it
 // stays browser-safe.
 
-const SettingSchema = z.union([
+/** How a config sets one rule: `"off"`, a severity for all its findings, or `{ severity?, options? }`. */
+export const RuleSettingSchema = z.union([
   z.literal("off"),
   DiagnosticSeveritySchema,
   z.object({
@@ -24,7 +25,7 @@ const SettingSchema = z.union([
  */
 export const RuleConfigFileSchema = z.object({
   version: z.literal(1),
-  rules: z.record(SettingSchema).default({}),
+  rules: z.record(RuleSettingSchema).default({}),
 }).strict();
 export type RuleConfigFile = z.infer<typeof RuleConfigFileSchema>;
 
@@ -55,6 +56,34 @@ export const FramesFileSchema = z.object({
 }).strict();
 export type FramesFile = z.infer<typeof FramesFileSchema>;
 
+/**
+ * What the book's `book.json` says about its length: how many chapters are
+ * planned and whether it is completed. Structural rules use it to tell an
+ * unpaid setup in a finished book from a promise still waiting for its chapter.
+ */
+export interface BookPlan {
+  readonly targetChapters?: number;
+  /** InkOS's book status: incubating, outlining, active, paused, completed or dropped. */
+  readonly status?: string;
+}
+
+/**
+ * `packs.json`: the genre check packs the book uses (the general pack is always on),
+ * and a selection proposed by the writer agent, kept until the author accepts it:
+ * `{ "version": 1, "packs": ["romance", "fantasy"] }`.
+ */
+export const PacksFileSchema = z.object({
+  version: z.literal(1),
+  packs: z.array(z.string().min(1)).default([]),
+  proposed: z.object({
+    packs: z.array(z.string().min(1)),
+    reasoning: z.string(),
+    /** ISO time of the proposal. */
+    at: z.string(),
+  }).strict().optional(),
+}).strict();
+export type PacksFile = z.infer<typeof PacksFileSchema>;
+
 /** Everything the rule engine reads from a book's plotlint folder. Absent files are absent fields. */
 export interface BookRuleData {
   readonly config?: RuleConfigFile;
@@ -63,4 +92,8 @@ export interface BookRuleData {
   readonly invariants?: InvariantsFile;
   /** `travel.json`: travel times between places, for continuity/impossible-travel. */
   readonly travel?: TravelFile;
+  /** From the book's `book.json` beside the story folder, when it has one. */
+  readonly plan?: BookPlan;
+  /** `packs.json`: the book's genre check packs (resolved by `@plotlint/packs`). */
+  readonly packs?: PacksFile;
 }
