@@ -2,7 +2,7 @@
 // --auditor, InkOS's LLM-only ContinuityAuditor on the same mutants. Writes
 // eval/REPORT.md, eval/report.json and (with --auditor) eval/auditor-results.json.
 //
-//   node eval/run.mjs [--auditor] [--repeats 3] [--concurrency 4] [--book wenlow]
+//   node eval/run.mjs [--auditor] [--sample 4|all] [--repeats 3] [--concurrency 2] [--book wenlow]
 //
 // The auditor reads its endpoint from the environment: INKOS_LLM_API_KEY, and
 // optionally INKOS_LLM_BASE_URL (default Z.ai) and INKOS_LLM_MODEL (default glm-4.5-flash).
@@ -22,7 +22,14 @@ const option = (name, fallback) => {
 const clean = await loadCorpusBook(option("book", "wenlow"));
 const result = scoreRules(clean, allMutators);
 // The auditor sees the prose of every mutant, including those for rules not registered yet.
-const allMutants = allMutators.flatMap((m) => m.mutants(clean));
+// Free glm-4.5-flash manages about one audit a minute, so by default it gets an
+// evenly spaced sample of each mutator's mutants (--sample all for every one).
+const sample = option("sample", "4");
+const spread = (list, n) => (n >= list.length ? list : Array.from({ length: n }, (_, i) => list[Math.floor((i * list.length) / n)]));
+const allMutants = allMutators.flatMap((m) => {
+  const mutants = m.mutants(clean);
+  return sample === "all" ? mutants : spread(mutants, Number(sample));
+});
 
 let auditor;
 const resultsPath = here("./auditor-results.json");
@@ -40,7 +47,7 @@ if (flag("auditor")) {
     client, model,
     cacheDir: here("./.cache/"),
     repeats: Number(option("repeats", "3")),
-    concurrency: Number(option("concurrency", "4")),
+    concurrency: Number(option("concurrency", "2")),
     log: (line) => console.error(line),
   });
   await writeFile(resultsPath, `${JSON.stringify(baseline, null, 1)}\n`, "utf-8");

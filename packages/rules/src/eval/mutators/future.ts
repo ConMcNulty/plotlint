@@ -1,17 +1,12 @@
-import type { BookRuleData } from "../../book.js";
-import { fact, insertAfter as ins, mutator, rewrite, type CleanBook, type FactChange, type Mutator } from "../mutant.js";
+import { fact, insertAfter as ins, mutator, rewrite, type FactChange, type Mutator } from "../mutant.js";
 import { CRANE, DATE, ELSPETH, ITEM, JONAS, PASK, PASSENGERS, ROOK, SECRET, THORNE, TRAVEL } from "./words.js";
 
-// Mutators for the rules added in phase 3 alongside the eval (impossible-travel,
-// timeline-order, item-from-nowhere, world-rule-broken, knowledge-leak) and for
-// author invariants, which are still being written. Each is keyed by its rule id
-// and the harness skips it until a rule with that id is registered. The fact
-// shapes follow each rule's file header; free-form variants outside a rule's
-// vocabulary are kept on purpose, as with the other mutators.
-
-/** The corpus's `rule-data/<name>.json`, cast to whatever field type BookRuleData declares for it. */
-const ruleData = (name: string, field: string) => (clean: CleanBook): Partial<BookRuleData> =>
-  (clean.ruleData[name] === undefined ? {} : { [field]: clean.ruleData[name] } as Partial<BookRuleData>);
+// Mutators for the rules added in phase 3 alongside the eval: impossible-travel,
+// timeline-order, item-from-nowhere, world-rule-broken, knowledge-leak and author
+// invariants. Like every mutator they are keyed by rule id and skipped while no
+// rule with that id is registered. The fact shapes follow each rule's file
+// header; free-form variants outside a rule's vocabulary are kept on purpose,
+// as with the other mutators.
 
 const date = (chapter: number) => ({ subject: "story", predicate: "date", validFromChapter: chapter });
 const DATES: Record<number, string> = { 1: "1 October 1851", 2: "2 October 1851", 3: "4 October 1851", 4: "5 October 1851", 5: "7 October 1851" };
@@ -399,9 +394,9 @@ export const knowledgeLeakMutator: Mutator = mutator("continuity/knowledge-leak"
 ]);
 
 /**
- * `continuity/invariant`: the author's invariants, from the corpus's
- * `rule-data/invariants.json` (approved, and all true of the clean book), passed
- * as BookRuleData `invariants`. Each mutant breaks one of them.
+ * `continuity/invariant`: the author's invariants in the corpus's
+ * `story/plotlint/invariants.json` (approved, and all true of the clean book).
+ * Each mutant breaks one of them.
  */
 export const invariantMutator: Mutator = mutator("continuity/invariant", "An author-written invariant is broken.", () => [
   {
@@ -461,7 +456,7 @@ export const invariantMutator: Mutator = mutator("continuity/invariant", "An aut
     edits: [ins(4, "The parish council will be very glad, and some of them will be very frightened.", "Alderman Pask most of all.")],
     match: [PASK],
   },
-], ruleData("invariants", "invariants"));
+]);
 
 export const futureMutators: ReadonlyArray<Mutator> = [
   impossibleTravelMutator,

@@ -28,11 +28,11 @@ export function renderReport(result: RuleEvalResult, auditor?: { baseline: Audit
     const ar = auditorRule(rule.ruleId);
     const ruleFp = rule.cleanRate;
     const beats = a ? (ruleFp < a.cleanRate ? "yes" : ruleFp === 0 && a.cleanRate === 0 ? "tie (both 0)" : "no") : "–";
-    lines.push(`| \`${short(rule.ruleId)}\` | ${rule.mutants} | ${rule.mutants ? `${rule.caught}/${rule.mutants} (${pct(rule.recall)})` : "–"} | ${rule.cleanFindings.length} (${rate(rule.cleanRate)}) | ${rule.collateral.length} (${rate(rule.collateralRate)}) | ${ar ? `${pct(ar.recall)} (${pct(ar.recallStrict)})` : "–"} | ${a ? `${rate(a.cleanRate)} / ${ar ? rate(ar.topicalCleanRate) : "–"}` : "–"} | ${beats} |`);
+    lines.push(`| \`${short(rule.ruleId)}\` | ${rule.mutants} | ${rule.mutants ? `${rule.caught}/${rule.mutants} (${pct(rule.recall)})` : "–"} | ${rule.cleanFindings.length} (${rate(rule.cleanRate)}) | ${rule.collateral.length} (${rate(rule.collateralRate)}) | ${ar ? `${ar.caught}/${ar.mutants} ${pct(ar.recall)} (${pct(ar.recallStrict)})` : "–"} | ${a ? `${rate(a.cleanRate)} / ${ar ? rate(ar.topicalCleanRate) : "–"}` : "–"} | ${beats} |`);
   }
   for (const ar of a?.rules ?? []) {
     if (result.rules.some((r) => r.ruleId === ar.ruleId)) continue;
-    lines.push(`| \`${short(ar.ruleId)}\` (not registered) | ${ar.mutants} | – | – | – | ${pct(ar.recall)} (${pct(ar.recallStrict)}) | ${rate(a!.cleanRate)} / ${rate(ar.topicalCleanRate)} | – |`);
+    lines.push(`| \`${short(ar.ruleId)}\` (not registered) | ${ar.mutants} | – | – | – | ${ar.caught}/${ar.mutants} ${pct(ar.recall)} (${pct(ar.recallStrict)}) | ${rate(a!.cleanRate)} / ${rate(ar.topicalCleanRate)} | – |`);
   }
   const totalMutants = result.rules.reduce((n, r) => n + r.mutants, 0);
   const totalCaught = result.rules.reduce((n, r) => n + r.caught, 0);
@@ -79,10 +79,10 @@ export function renderReport(result: RuleEvalResult, auditor?: { baseline: Audit
     "",
     "## Method",
     "",
-    "- **Corpus.** `eval/corpus/wenlow`: a five-chapter story written for the eval with no continuity errors, and `facts.json`, hand-written oracle facts in the shape InkOS's settler writes (free-form subject, predicate and object; validity; `kind`; an evidence quote that is verbatim in the chapter). `story/plotlint/travel.json` is its travel graph; `rule-data/` holds data for rules without a loader yet (author invariants).",
+    "- **Corpus.** `eval/corpus/wenlow`: a five-chapter story written for the eval with no continuity errors, and `facts.json`, hand-written oracle facts in the shape InkOS's settler writes (free-form subject, predicate and object; validity; `kind`; an evidence quote that is verbatim in the chapter). `story/plotlint/` holds its travel graph and four approved author invariants, all true of the clean book.",
     "- **Mutants.** Each mutator (`src/eval/mutators/`) seeds one plausible slip per mutant into the prose (an inserted or rewritten sentence, so the auditor can see it) and into the facts as a settler would record it, and names the chapter it should be reported in. A mutator only runs when its rule id is registered.",
     "- **Rule scores.** Rules run over the oracle facts with `checkSnapshot`, chapter text and book data. Recall: the seeded rule reports the mutant's chapter. False alarms: findings on the clean book, and collateral (other rules' new findings on a mutant). A seeded rule's findings in other chapters are echoes and not counted as false alarms.",
-    "- **Auditor.** InkOS's `ContinuityAuditor` on each clean chapter (repeated, temperature 0.3) and on each mutant's chapter, with all earlier chapters as context. Clean issues are its false positives; \"on topic\" counts only those matching a rule's topic words, a fairer per-rule comparison. A mutant is caught when an issue's summary or evidence has a word from each of the mutant's keyword groups (a name and a topic); strict recall leaves out mutants whose keywords also match the clean audit of that chapter.",
+    "- **Auditor.** InkOS's `ContinuityAuditor` on each clean chapter (repeated, temperature 0.3) and on each mutant's chapter, with all earlier chapters as context. Free `glm-4.5-flash` manages about one audit a minute, so it audits an evenly spaced sample of each mutator's mutants (`--sample`, 4 by default; the recall column gives the count). Clean issues are its false positives; \"on topic\" counts only those matching a rule's topic words, a fairer per-rule comparison. A mutant is caught when an issue's summary or evidence has a word from each of the mutant's keyword groups (a name and a topic); strict recall leaves out mutants whose keywords also match the clean audit of that chapter.",
     "- **Limits.** One book, written by the same hand as the mutants; oracle facts, not a real settler's (extracted mode is not built yet), so rule recall here is an upper bound for the facts a settler gets right and a lower bound where it phrases them unusually. Keyword matching can over- or under-credit the auditor; its issues are listed in `report.json`.",
     "",
     "## How to run",
@@ -92,6 +92,7 @@ export function renderReport(result: RuleEvalResult, auditor?: { baseline: Audit
     "cd packages/rules",
     "node eval/run.mjs                      # rules only; reuses eval/auditor-results.json if present",
     "node eval/run.mjs --auditor            # also run the auditor (needs INKOS_LLM_API_KEY; cached in eval/.cache/)",
+    "node eval/run.mjs --auditor --sample all --repeats 3 --concurrency 2",
     "```",
     "",
   );

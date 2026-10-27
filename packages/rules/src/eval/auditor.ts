@@ -84,7 +84,7 @@ async function audit(chapters: ChapterTexts, chapter: number, salt: string, opti
   } catch { /* not cached */ }
 
   const auditor = new ContinuityAuditor({ client: options.client, model: options.model, projectRoot: tmpdir() });
-  const attempts = options.attempts ?? 5;
+  const attempts = options.attempts ?? 8;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       const result = await auditor.auditChapter(tmpdir(), text, chapter, undefined, { language: "en", contextPackage: { chapter, selectedContext } });
@@ -94,7 +94,7 @@ async function audit(chapters: ChapterTexts, chapter: number, salt: string, opti
     } catch (error) {
       // Z.ai's free tier returns 500/429 under load: back off and retry.
       options.log?.(`  ch${chapter} attempt ${attempt} failed: ${(error as Error).message.slice(0, 160)}`);
-      if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, 5000 * 2 ** (attempt - 1)));
+      if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, Math.min(120_000, 5000 * 2 ** (attempt - 1))));
     }
   }
   return { issues: [], failed: true };

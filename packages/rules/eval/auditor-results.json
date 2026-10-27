@@ -1,0 +1,466 @@
+{
+ "model": "glm-4.5-flash",
+ "repeats": 3,
+ "clean": [
+  {
+   "id": "clean:1:1",
+   "chapter": 1,
+   "issues": []
+  },
+  {
+   "id": "clean:1:2",
+   "chapter": 1,
+   "issues": []
+  },
+  {
+   "id": "clean:1:3",
+   "chapter": 1,
+   "issues": []
+  },
+  {
+   "id": "clean:2:1",
+   "chapter": 2,
+   "issues": []
+  },
+  {
+   "id": "clean:2:2",
+   "chapter": 2,
+   "issues": []
+  },
+  {
+   "id": "clean:2:3",
+   "chapter": 2,
+   "issues": []
+  },
+  {
+   "id": "clean:3:1",
+   "chapter": 3,
+   "issues": []
+  },
+  {
+   "id": "clean:3:2",
+   "chapter": 3,
+   "issues": []
+  },
+  {
+   "id": "clean:3:3",
+   "chapter": 3,
+   "issues": [
+    {
+     "code": "PARISH_COUNCIL_THREAT",
+     "summary": "Crane warns that one of the men who sank the Margery is still alive and serving on the parish council, creating an ongoing danger that needs to be addressed.",
+     "evidence": []
+    }
+   ]
+  },
+  {
+   "id": "clean:4:1",
+   "chapter": 4,
+   "issues": []
+  },
+  {
+   "id": "clean:4:2",
+   "chapter": 4,
+   "issues": []
+  },
+  {
+   "id": "clean:4:3",
+   "chapter": 4,
+   "issues": []
+  },
+  {
+   "id": "clean:5:1",
+   "chapter": 5,
+   "issues": []
+  },
+  {
+   "id": "clean:5:2",
+   "chapter": 5,
+   "issues": []
+  },
+  {
+   "id": "clean:5:3",
+   "chapter": 5,
+   "issues": []
+  }
+ ],
+ "mutants": [
+  {
+   "id": "dead-entity-acts/1",
+   "chapter": 4,
+   "issues": [
+    {
+     "code": "CONT-001",
+     "summary": "Absalom Crane appears alive at the chapel door despite dying in Chapter 3, creating a continuity contradiction",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/dead-entity-acts"
+  },
+  {
+   "id": "dead-entity-acts/3",
+   "chapter": 4,
+   "issues": [
+    {
+     "code": "CHARACTER_INCONSISTENCY",
+     "summary": "Chapter 4 contains dialogue attributed to Absalom Crane on line 9, but Crane died in Chapter 3. This appears to be an error in the narrative.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/dead-entity-acts"
+  },
+  {
+   "id": "dead-entity-acts/6",
+   "chapter": 4,
+   "issues": [
+    {
+     "code": "CONT-001",
+     "summary": "Chapter 3 explicitly states Jonas died of the same fever that killed Crane, but Chapter 4 shows him alive and well, creating a major continuity contradiction that invalidates the entire chapter's premise.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/dead-entity-acts"
+  },
+  {
+   "id": "dead-entity-acts/9",
+   "chapter": 5,
+   "issues": [],
+   "ruleId": "continuity/dead-entity-acts"
+  },
+  {
+   "id": "dead-then-alive/1",
+   "chapter": 5,
+   "issues": [],
+   "ruleId": "continuity/dead-then-alive"
+  },
+  {
+   "id": "dead-then-alive/3",
+   "chapter": 4,
+   "issues": [
+    {
+     "code": "PLOT_001",
+     "summary": "The letter from Tobias Marrow found in the strongbox is not mentioned in Crane's confession, creating a potential inconsistency in the narrative.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/dead-then-alive"
+  },
+  {
+   "id": "dead-then-alive/6",
+   "chapter": 2,
+   "issues": [
+    {
+     "code": "OBS-002",
+     "summary": "Innkeeper Rook claims Tobias Marrow lives at Saltmere, contradicting the belief that he died with the Margery, creating confusion about Tobias's whereabouts.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/dead-then-alive"
+  },
+  {
+   "id": "dead-then-alive/9",
+   "chapter": 2,
+   "issues": [
+    {
+     "code": "CT-001",
+     "summary": "Chapter 1 states Captain Thorne was found deceased in her room at the inn, but Chapter 2 shows her alive and active in Stavely.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/dead-then-alive"
+  },
+  {
+   "id": "two-places-at-once/1",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/two-places-at-once"
+  },
+  {
+   "id": "two-places-at-once/3",
+   "chapter": 5,
+   "issues": [],
+   "ruleId": "continuity/two-places-at-once"
+  },
+  {
+   "id": "two-places-at-once/6",
+   "chapter": 3,
+   "issues": [
+    {
+     "code": "TIMELINE_001",
+     "summary": "Chapter 3 states Elspeth is back in Wenlow, but Chapter 2 ends with her still at the Heron inn in Stavely, creating a narrative discontinuity.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/two-places-at-once"
+  },
+  {
+   "id": "two-places-at-once/9",
+   "chapter": 4,
+   "issues": [
+    {
+     "code": "COTTAGE_BREAKIN",
+     "summary": "Someone breaks into the Marrows' cottage but takes nothing, leaving boot prints, suggesting they were looking for something specific.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/two-places-at-once"
+  },
+  {
+   "id": "item-two-holders/1",
+   "chapter": 4,
+   "issues": [],
+   "ruleId": "continuity/item-two-holders"
+  },
+  {
+   "id": "item-two-holders/3",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/item-two-holders"
+  },
+  {
+   "id": "item-two-holders/6",
+   "chapter": 5,
+   "issues": [],
+   "ruleId": "continuity/item-two-holders"
+  },
+  {
+   "id": "item-two-holders/9",
+   "chapter": 5,
+   "issues": [],
+   "ruleId": "continuity/item-two-holders"
+  },
+  {
+   "id": "negative-resource/1",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/negative-resource"
+  },
+  {
+   "id": "negative-resource/3",
+   "chapter": 4,
+   "issues": [],
+   "ruleId": "continuity/negative-resource"
+  },
+  {
+   "id": "negative-resource/6",
+   "chapter": 1,
+   "issues": [],
+   "ruleId": "continuity/negative-resource"
+  },
+  {
+   "id": "negative-resource/9",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/negative-resource"
+  },
+  {
+   "id": "single-valued-conflict/1",
+   "chapter": 4,
+   "issues": [],
+   "ruleId": "continuity/single-valued-conflict"
+  },
+  {
+   "id": "single-valued-conflict/3",
+   "chapter": 4,
+   "issues": [],
+   "ruleId": "continuity/single-valued-conflict"
+  },
+  {
+   "id": "single-valued-conflict/6",
+   "chapter": 2,
+   "issues": [
+    {
+     "code": "C1-CH2-03",
+     "summary": "Major contradiction revealed - Chapter 1 states Tobias Marrow drowned with the Margery, but Chapter 2 reveals he is alive and drinks at the Heron every Friday.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/single-valued-conflict"
+  },
+  {
+   "id": "single-valued-conflict/9",
+   "chapter": 1,
+   "issues": [],
+   "ruleId": "continuity/single-valued-conflict"
+  },
+  {
+   "id": "impossible-travel/1",
+   "chapter": 2,
+   "issues": [
+    {
+     "code": "TIMELINE_001",
+     "summary": "Chapter 2 states Jonas reached Saltmere harbour (three days from Wenlow) by evening of the same day they set out, which is impossible given the established travel times.",
+     "evidence": []
+    },
+    {
+     "code": "CHARPOS_001",
+     "summary": "The chapter states Jonas reached Saltmere harbour and Elspeth went on to Stavely alone, but then immediately states both were limping when approaching Stavely, creating a contradiction.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/impossible-travel"
+  },
+  {
+   "id": "impossible-travel/3",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/impossible-travel"
+  },
+  {
+   "id": "impossible-travel/6",
+   "chapter": 4,
+   "issues": [],
+   "ruleId": "continuity/impossible-travel"
+  },
+  {
+   "id": "impossible-travel/8",
+   "chapter": 4,
+   "issues": [
+    {
+     "code": "BREAKIN-001",
+     "summary": "Someone breaks into their cottage, showing the people responsible for their father's death are still active and dangerous.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/impossible-travel"
+  },
+  {
+   "id": "timeline-order/1",
+   "chapter": 4,
+   "issues": [
+    {
+     "code": "TIMELINE_001",
+     "summary": "Chapter 4 states they set out on October 3rd, but Chapter 3 states they returned to Wenlow on October 4th after walking all the third and sleeping in a barn, creating a chronological contradiction.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/timeline-order"
+  },
+  {
+   "id": "timeline-order/3",
+   "chapter": 5,
+   "issues": [
+    {
+     "code": "TIMELINE_001",
+     "summary": "Chapter 5 begins with 'On the fourth of October' but Chapter 4 shows events happening on the fifth of October, creating a chronological contradiction.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/timeline-order"
+  },
+  {
+   "id": "timeline-order/6",
+   "chapter": 3,
+   "issues": [],
+   "ruleId": "continuity/timeline-order"
+  },
+  {
+   "id": "timeline-order/8",
+   "chapter": 4,
+   "issues": [
+    {
+     "code": "TIMELINE_001",
+     "summary": "Chapter 4 begins with October 2nd departure, but Chapter 3 shows return to Wenlow on October 4th, creating a timeline contradiction.",
+     "evidence": []
+    }
+   ],
+   "ruleId": "continuity/timeline-order"
+  },
+  {
+   "id": "item-from-nowhere/1",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/item-from-nowhere"
+  },
+  {
+   "id": "item-from-nowhere/3",
+   "chapter": 4,
+   "issues": [],
+   "ruleId": "continuity/item-from-nowhere"
+  },
+  {
+   "id": "item-from-nowhere/6",
+   "chapter": 5,
+   "issues": [],
+   "ruleId": "continuity/item-from-nowhere"
+  },
+  {
+   "id": "item-from-nowhere/8",
+   "chapter": 3,
+   "issues": [],
+   "ruleId": "continuity/item-from-nowhere"
+  },
+  {
+   "id": "world-rule-broken/1",
+   "chapter": 1,
+   "issues": [],
+   "ruleId": "continuity/world-rule-broken"
+  },
+  {
+   "id": "world-rule-broken/3",
+   "chapter": 5,
+   "issues": [],
+   "ruleId": "continuity/world-rule-broken"
+  },
+  {
+   "id": "world-rule-broken/6",
+   "chapter": 4,
+   "issues": [],
+   "ruleId": "continuity/world-rule-broken"
+  },
+  {
+   "id": "world-rule-broken/8",
+   "chapter": 5,
+   "issues": [],
+   "ruleId": "continuity/world-rule-broken"
+  },
+  {
+   "id": "knowledge-leak/1",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/knowledge-leak"
+  },
+  {
+   "id": "knowledge-leak/3",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/knowledge-leak"
+  },
+  {
+   "id": "knowledge-leak/6",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/knowledge-leak"
+  },
+  {
+   "id": "knowledge-leak/8",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/knowledge-leak"
+  },
+  {
+   "id": "invariant/1",
+   "chapter": 1,
+   "issues": [],
+   "ruleId": "continuity/invariant"
+  },
+  {
+   "id": "invariant/3",
+   "chapter": 2,
+   "issues": [],
+   "ruleId": "continuity/invariant"
+  },
+  {
+   "id": "invariant/6",
+   "chapter": 3,
+   "issues": [],
+   "ruleId": "continuity/invariant"
+  },
+  {
+   "id": "invariant/8",
+   "chapter": 1,
+   "issues": [],
+   "ruleId": "continuity/invariant"
+  }
+ ]
+}

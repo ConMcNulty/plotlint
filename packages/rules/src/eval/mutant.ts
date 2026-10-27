@@ -15,11 +15,6 @@ export interface CleanBook {
   readonly facts: ReadonlyArray<CurrentStateFact>;
   /** The corpus's `story/plotlint/` files, read as a book's are. */
   readonly book: BookRuleData;
-  /**
-   * Raw JSON from the corpus's `rule-data/` folder by base name, for rules whose
-   * data file has no loader yet (a mutator's `book` hook passes it on).
-   */
-  readonly ruleData: Readonly<Record<string, unknown>>;
 }
 
 /** Replace `find` (which must occur exactly once in the chapter) with `replace`. */

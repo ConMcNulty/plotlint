@@ -1,10 +1,8 @@
 {
- "generated": "2026-10-27T17:42:47.326Z",
+ "generated": "2026-10-27T18:36:20.196Z",
  "book": "wenlow",
  "chapters": 5,
- "skipped": [
-  "continuity/invariant"
- ],
+ "skipped": [],
  "rules": [
   {
    "ruleId": "continuity/dead-entity-acts",
@@ -961,7 +959,13 @@
      "description": "Thorne names Alderman Pask from the ledger in ch2; she only reads it in ch5.",
      "caught": true,
      "echoes": [],
-     "collateral": []
+     "collateral": [
+      {
+       "ruleId": "continuity/invariant",
+       "chapter": 2,
+       "summary": "Invariant \"Alderman Pask is not named before chapter 5.\" fails in chapter 2: the text says \"Pask\"."
+      }
+     ]
     },
     {
      "id": "knowledge-leak/7",
@@ -1204,6 +1208,247 @@
      "collateral": []
     }
    ]
+  },
+  {
+   "ruleId": "continuity/invariant",
+   "mutants": 10,
+   "caught": 10,
+   "recall": 1,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [
+    {
+     "ruleId": "continuity/invariant",
+     "chapter": 2,
+     "summary": "Invariant \"Alderman Pask is not named before chapter 5.\" fails in chapter 2: the text says \"Pask\".",
+     "mutant": "knowledge-leak/6"
+    }
+   ],
+   "collateralRate": 0.008620689655172414,
+   "outcomes": [
+    {
+     "id": "invariant/1",
+     "ruleId": "continuity/invariant",
+     "chapter": 1,
+     "description": "strongbox-secret: Elspeth knows about the flagstone in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/2",
+     "ruleId": "continuity/invariant",
+     "chapter": 2,
+     "description": "strongbox-secret: Elspeth learns of the flagstone from Rook in ch2 ('learned').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/3",
+     "ruleId": "continuity/invariant",
+     "chapter": 2,
+     "description": "strongbox-secret: Elspeth is aware of the flagstone in ch2 ('is aware of').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/4",
+     "ruleId": "continuity/invariant",
+     "chapter": 3,
+     "description": "jonas-never-reads-ledger: Jonas reads the ledger at Crane's bedside.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/5",
+     "ruleId": "continuity/invariant",
+     "chapter": 5,
+     "description": "jonas-never-reads-ledger: Jonas reads through the ledger before it goes to Thorne.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/6",
+     "ruleId": "continuity/invariant",
+     "chapter": 3,
+     "description": "thorne-not-on-gorse-hill-early: Thorne is on Gorse Hill in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/7",
+     "ruleId": "continuity/invariant",
+     "chapter": 3,
+     "description": "thorne-not-on-gorse-hill-early: Thorne is 'currently at' the abbey in ch3 (labelled location).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/8",
+     "ruleId": "continuity/invariant",
+     "chapter": 1,
+     "description": "pask-named-late: Pask is named in ch1 (text only).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/9",
+     "ruleId": "continuity/invariant",
+     "chapter": 2,
+     "description": "pask-named-late: Pask is named in ch2 (text only).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invariant/10",
+     "ruleId": "continuity/invariant",
+     "chapter": 4,
+     "description": "pask-named-late: Pask is named in ch4 (text only).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
   }
- ]
+ ],
+ "auditor": {
+  "model": "glm-4.5-flash",
+  "repeats": 3,
+  "scores": {
+   "cleanIssues": 1,
+   "cleanRuns": 15,
+   "cleanRate": 0.06666666666666667,
+   "failed": 0,
+   "rules": [
+    {
+     "ruleId": "continuity/dead-entity-acts",
+     "mutants": 4,
+     "caught": 3,
+     "caughtStrict": 3,
+     "recall": 0.75,
+     "recallStrict": 0.75,
+     "topicalCleanRate": 0.06666666666666667,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "continuity/dead-then-alive",
+     "mutants": 4,
+     "caught": 2,
+     "caughtStrict": 2,
+     "recall": 0.5,
+     "recallStrict": 0.5,
+     "topicalCleanRate": 0.06666666666666667,
+     "collateralRate": 0.25
+    },
+    {
+     "ruleId": "continuity/two-places-at-once",
+     "mutants": 4,
+     "caught": 1,
+     "caughtStrict": 1,
+     "recall": 0.25,
+     "recallStrict": 0.25,
+     "topicalCleanRate": 0,
+     "collateralRate": 0.25
+    },
+    {
+     "ruleId": "continuity/item-two-holders",
+     "mutants": 4,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": 0,
+     "recallStrict": 0,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "continuity/negative-resource",
+     "mutants": 4,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": 0,
+     "recallStrict": 0,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "continuity/single-valued-conflict",
+     "mutants": 4,
+     "caught": 1,
+     "caughtStrict": 1,
+     "recall": 0.25,
+     "recallStrict": 0.25,
+     "topicalCleanRate": 0.06666666666666667,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "continuity/impossible-travel",
+     "mutants": 4,
+     "caught": 1,
+     "caughtStrict": 1,
+     "recall": 0.25,
+     "recallStrict": 0.25,
+     "topicalCleanRate": 0,
+     "collateralRate": 0.25
+    },
+    {
+     "ruleId": "continuity/timeline-order",
+     "mutants": 4,
+     "caught": 3,
+     "caughtStrict": 3,
+     "recall": 0.75,
+     "recallStrict": 0.75,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "continuity/item-from-nowhere",
+     "mutants": 4,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": 0,
+     "recallStrict": 0,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "continuity/world-rule-broken",
+     "mutants": 4,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": 0,
+     "recallStrict": 0,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "continuity/knowledge-leak",
+     "mutants": 4,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": 0,
+     "recallStrict": 0,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "continuity/invariant",
+     "mutants": 4,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": 0,
+     "recallStrict": 0,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    }
+   ]
+  }
+ }
 }
