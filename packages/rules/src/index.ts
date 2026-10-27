@@ -10,6 +10,7 @@ export { downgradeUnreliable, frameMarkers, frameResolver, mainTimeline, OFF_TIM
 export { deadEntityActs } from "./rules/dead-entity-acts.js";
 export { deadThenAlive } from "./rules/dead-then-alive.js";
 export { itemTwoHolders } from "./rules/item-two-holders.js";
+export { knowledgeLeak } from "./rules/knowledge-leak.js";
 export { negativeResource } from "./rules/negative-resource.js";
 export { singleValuedConflict } from "./rules/single-valued-conflict.js";
 export { twoPlacesAtOnce } from "./rules/two-places-at-once.js";
