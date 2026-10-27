@@ -1,0 +1,22 @@
+# Stock phrases of romance prose, many of them overused by generated text too.
+extends: existence
+message: "Romance cliché: '%s'."
+description: >-
+  Phrases romance readers meet in every other book; generated romance leans on them
+  even harder. A specific physical detail of this moment usually lands better.
+link: https://tvtropes.org/pmwiki/pmwiki.php/Main/RomanceNovelCliches
+level: suggestion
+ignorecase: true
+plotlint:
+  skipDialogue: true
+tokens:
+  - (?:a )?breath (?:she|he|they|I) didn't know (?:she|he|they|I) (?:was|were) holding
+  - released a breath (?:she|he|they|I) didn't know
+  - butterflies in (?:her|his|their|my) stomach
+  - (?:her|his|their|my) heart (?:fluttered|did a little flip)
+  - electricity (?:shot|ran|coursed) (?:through|up)
+  - (?:orbs|pools) of (?:blue|green|brown|grey|gray|amber)
+  - (?:she|he|they) smelled of sandalwood
+  - a smile tugged at (?:her|his|their|my) lips
+  - (?:her|his|their|my) core
+  - claimed (?:her|his|their|my) lips

@@ -3,13 +3,13 @@ import { join } from "node:path";
 import { Command } from "commander";
 import { StateManager, chatCompletion, createLLMClient, loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
 import {
-  builtinRegistry, checkSnapshot, RuleRegistry, checkText, compileInvariant, evidenceCoverage, explainCheck, InvariantCheckSchema, InvariantIdSchema,
+  builtinRegistry, checkSnapshot, RuleRegistry, checkText, compileInvariant, configureTextRules, evidenceCoverage, explainCheck, InvariantCheckSchema, InvariantIdSchema,
   InvariantsFileSchema, invariantSlug, lastChapter, type ChapterTexts, type EvidenceCoverage, type Invariant, type InvariantsFile, type TextRule,
 } from "@plotlint/rules";
-import { loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
+import { loadAdaptiveOverlay, loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
 import { createHarperRule, isMostlyCjk, projectDictionary } from "@plotlint/mechanics";
-import { generalPack } from "@plotlint/style/node";
-import { baselineBands, createMetricRules, metricStateRules } from "@plotlint/metrics";
+import { createMetricRules, metricStateRules } from "@plotlint/metrics";
+import type { MetricBands } from "@plotlint/packs";
 import {
   applySuppressions,
   diagnosticFingerprint,
@@ -22,6 +22,7 @@ import {
 import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../utils.js";
 import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "@plotlint/diagnostics/node";
 import { registerStudyCommands } from "./lint-study.js";
+import { addPacksCommand, bookPacks } from "./lint-packs.js";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
@@ -38,6 +39,8 @@ interface BookLint {
   chapters: number[];
   /** Invariants waiting for `inkos lint invariant approve`. */
   proposedInvariants: number;
+  /** The check packs that ran: general, then the book's genre packs. */
+  packs: string[];
 }
 
 interface LintOptions {
@@ -94,14 +97,12 @@ function parseRatio(value: string | undefined): number {
   return ratio;
 }
 
-let generalPackRules: TextRule[] | undefined;
-
-/** L0 (Harper), L1 (the general style pack) and L2 (metrics against the general bands), as far as `layers` asks for them. */
-function textRules(layers: ReadonlySet<DiagnosticLayer>): TextRule[] {
+/** L0 (Harper), L1 (the style rules of the book's packs, general first) and L2 (metrics against the packs' bands), as far as `layers` asks for them. */
+function textRules(layers: ReadonlySet<DiagnosticLayer>, styleRules: ReadonlyArray<TextRule>, metricBands: MetricBands): TextRule[] {
   const rules: TextRule[] = [];
   if (layers.has("mechanics")) rules.push(createHarperRule());
-  if (layers.has("style")) rules.push(...(generalPackRules ??= generalPack()));
-  if (layers.has("metrics")) rules.push(...createMetricRules(baselineBands("general")));
+  if (layers.has("style")) rules.push(...styleRules);
+  if (layers.has("metrics")) rules.push(...createMetricRules(metricBands));
   return rules;
 }
 
@@ -145,9 +146,12 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
   const inScope = (diagnostic: Diagnostic) =>
     options.layers.has(diagnostic.layer) && (options.chapter === undefined || diagnostic.chapter === options.chapter);
 
-  const book = await loadBookRuleData(bookDir);
+  const loaded = await loadBookRuleData(bookDir);
   const metricIds = new Set(metricStateRules().map((rule) => rule.id));
-  for (const id of builtinRegistry.unknownIds(book.config).filter((id) => !metricIds.has(id))) logError(`${id} in story/plotlint/rules.json is not a known rule`);
+  for (const id of builtinRegistry.unknownIds(loaded.config).filter((id) => !metricIds.has(id))) logError(`${id} in story/plotlint/rules.json is not a known rule`);
+  // The book's packs set the rule config, then the checks its author keeps rejecting are lowered, then its own rules.json wins.
+  const packs = bookPacks(bookDir, loaded, [await loadAdaptiveOverlay(bookDir)]);
+  const book = { ...loaded, config: packs.config };
   const texts = await chapterTexts(bookDir);
   // State rules run by their own layer: continuity rules under `continuity`, structural ones under `structure`.
   const stateRules = builtinRegistry.list().filter((rule) => options.layers.has(rule.layer));
@@ -160,7 +164,7 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
     : [];
   const files = await chapterFiles(bookDir);
   const chapters = options.chapter === undefined ? [...files.keys()] : files.has(options.chapter) ? [options.chapter] : [];
-  const rules = textRules(options.layers);
+  const rules = configureTextRules(textRules(options.layers, packs.styleRules, packs.metrics), packs.config);
   for (const chapter of chapters) diagnostics.push(...await lintChapterText(files.get(chapter)!, chapter, rules, snapshot));
   if (options.layers.has("metrics")) {
     // Book-level metrics (repetition across chapters) read every chapter but report into each one.
@@ -186,6 +190,7 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
     // Unsupported ones cannot be approved, so they are not waiting on the author.
     proposedInvariants: book.invariants?.invariants
       .filter((invariant) => invariant.status === "proposed" && invariant.check.kind !== "unsupported").length ?? 0,
+    packs: packs.resolved.packs,
   };
 }
 
@@ -646,3 +651,5 @@ registerStudyCommands(lintCommand, async (state, bookId) => {
   const result = await lintBook(state, bookId, everything);
   return [...result.diagnostics, ...result.suppressed.map((entry) => entry.diagnostic)];
 });
+
+addPacksCommand(lintCommand);

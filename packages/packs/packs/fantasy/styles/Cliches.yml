@@ -1,0 +1,20 @@
+# Stock phrases of epic fantasy and its generated imitations.
+extends: existence
+message: "Fantasy cliché: '%s'."
+description: >-
+  Phrases that mark a secondary world as generic: the ancient evil, the chosen one, the
+  prophecy foretold. A specific name, cost or history from this world does more.
+link: https://tvtropes.org/pmwiki/pmwiki.php/Main/StandardFantasySetting
+level: suggestion
+ignorecase: true
+tokens:
+  - (?:an|the) ancient evil
+  - the chosen one
+  - (?:as )?the prophecy (?:foretold|had foretold|spoke)
+  - (?:a|the) dark lord
+  - (?:an|the) evil (?:that )?(?:stirred|awakened|awoke)
+  - since time immemorial
+  - (?:the )?fate of the (?:realm|kingdom|world) (?:hung|rested|depended)
+  - a power (?:she|he|they|I) had never felt before
+  - the very fabric of reality
+  - eyes glowing with (?:an )?(?:otherworldly|eldritch) (?:light|power)

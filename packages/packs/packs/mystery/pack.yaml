@@ -1,0 +1,19 @@
+name: mystery
+title: Mystery and detective
+description: >-
+  Fair-play mysteries: clues set up before the reveal, no one acting on what they
+  cannot know yet, a timeline alibis can be checked against.
+selection:
+  keywords: [mystery, detective, whodunit, crime, cozy mystery, noir, police procedural, sleuth, 推理, 悬疑, 侦探, 探案]
+styles: styles
+checks:
+  # Fair play: a character (the detective above all) cannot act on a secret before learning it.
+  continuity/knowledge-leak: error
+  # Alibis rest on when things happened.
+  continuity/timeline-order: error
+  # Every clue shown should matter; every solution should rest on clues shown.
+  structure/unpaid-setup: error
+  structure/unearned-payoff: error
+  structure/open-questions: warning
+metrics:
+  metrics/dialogue-ratio: { min: 0.1 }
