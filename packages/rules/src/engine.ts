@@ -18,6 +18,7 @@ import { twoPlacesAtOnce } from "./rules/two-places-at-once.js";
 import { knowledgeLeak } from "./rules/knowledge-leak.js";
 import { worldRuleBroken } from "./rules/world-rule-broken.js";
 import { structureRules } from "./rules/structure/index.js";
+import { genreRules } from "./rules/genre/index.js";
 
 export const builtinRules: ReadonlyArray<Rule> = [
   deadEntityActs, deadThenAlive, twoPlacesAtOnce, itemTwoHolders, negativeResource, singleValuedConflict,
@@ -27,6 +28,7 @@ export const builtinRules: ReadonlyArray<Rule> = [
   impossibleTravel, timelineOrder,
   invariantRule,
   ...structureRules,
+  ...genreRules,
 ];
 
 /** The built-in rules by id. Hosts that add their own rules build a registry from `builtinRules`. */

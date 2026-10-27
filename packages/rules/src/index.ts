@@ -28,6 +28,7 @@ export { singleValuedConflict } from "./rules/single-valued-conflict.js";
 export { twoPlacesAtOnce } from "./rules/two-places-at-once.js";
 export { worldRuleBroken } from "./rules/world-rule-broken.js";
 export * from "./rules/structure/index.js";
+export * from "./rules/genre/index.js";
 export type { TextDocument, TextFindingInput, TextRule, TextRuleContext } from "./text.js";
 export { checkText, textDiagnostic } from "./text.js";
 export { configureTextRules } from "./text-config.js";
