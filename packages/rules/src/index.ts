@@ -3,6 +3,8 @@ export type { CheckOptions } from "./engine.js";
 export { builtinRegistry, builtinRules, checkDelta, checkSnapshot } from "./engine.js";
 export type { ConfiguredRule } from "./registry.js";
 export { RuleRegistry } from "./registry.js";
+export type { AdaptiveDecision, AdaptiveOptions } from "./adaptive.js";
+export { adaptiveDecisions, adaptiveOverlay } from "./adaptive.js";
 export type { BookRuleData, FrameEntry, FrameKind, FramesFile, RuleConfigFile } from "./book.js";
 export { FrameEntrySchema, FrameKindSchema, FramesFileSchema, RuleConfigFileSchema } from "./book.js";
 export type { FrameResolver } from "./frames.js";
