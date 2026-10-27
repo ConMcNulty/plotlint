@@ -8,13 +8,22 @@ import type { Rule } from "./types.js";
 import { deadEntityActs } from "./rules/dead-entity-acts.js";
 import { deadThenAlive } from "./rules/dead-then-alive.js";
 import { invariantRule } from "./rules/invariant.js";
+import { itemFromNowhere } from "./rules/item-from-nowhere.js";
+import { impossibleTravel } from "./rules/impossible-travel.js";
 import { itemTwoHolders } from "./rules/item-two-holders.js";
 import { negativeResource } from "./rules/negative-resource.js";
 import { singleValuedConflict } from "./rules/single-valued-conflict.js";
+import { timelineOrder } from "./rules/timeline-order.js";
 import { twoPlacesAtOnce } from "./rules/two-places-at-once.js";
+import { knowledgeLeak } from "./rules/knowledge-leak.js";
+import { worldRuleBroken } from "./rules/world-rule-broken.js";
 
 export const builtinRules: ReadonlyArray<Rule> = [
   deadEntityActs, deadThenAlive, twoPlacesAtOnce, itemTwoHolders, negativeResource, singleValuedConflict,
+  itemFromNowhere,
+  worldRuleBroken,
+  knowledgeLeak,
+  impossibleTravel, timelineOrder,
   invariantRule,
 ];
 

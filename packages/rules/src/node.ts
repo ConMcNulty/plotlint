@@ -3,6 +3,7 @@ import { join } from "node:path";
 import type { z } from "zod";
 import { FramesFileSchema, RuleConfigFileSchema, type BookRuleData } from "./book.js";
 import { InvariantsFileSchema } from "./invariants.js";
+import { TravelFileSchema } from "./travel.js";
 
 /** A book's plotlint folder, beside its story state: `works/<id>/source/story/plotlint/`. */
 export const plotlintDir = (bookDir: string) => join(bookDir, "story", "plotlint");
@@ -28,14 +29,17 @@ export async function readPlotlintFile<S extends z.ZodTypeAny>(bookDir: string, 
   return parsed.data;
 }
 
-/** Everything the rule engine reads from a book's plotlint folder: `rules.json` and `frames.json`. */
+/** Everything the rule engine reads from a book's plotlint folder: `rules.json`, `frames.json`, `travel.json` and `invariants.json`. */
 export async function loadBookRuleData(bookDir: string): Promise<BookRuleData> {
-  const [config, frames, invariants] = await Promise.all([
+  const [config, frames, travel, invariants] = await Promise.all([
     readPlotlintFile(bookDir, "rules.json", RuleConfigFileSchema),
     readPlotlintFile(bookDir, "frames.json", FramesFileSchema),
+    readPlotlintFile(bookDir, "travel.json", TravelFileSchema),
     readPlotlintFile(bookDir, "invariants.json", InvariantsFileSchema),
   ]);
-  return { ...(config ? { config } : {}), ...(frames ? { frames } : {}), ...(invariants ? { invariants } : {}) };
+  return {
+    ...(config ? { config } : {}), ...(frames ? { frames } : {}), ...(travel ? { travel } : {}), ...(invariants ? { invariants } : {}),
+  };
 }
 
 /** Validate and write one plotlint JSON file, creating the folder; returns its path. */

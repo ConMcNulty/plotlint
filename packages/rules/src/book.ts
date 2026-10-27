@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { DiagnosticSeveritySchema } from "@plotlint/diagnostics";
 import type { InvariantsFile } from "./invariants.js";
+import type { TravelFile } from "./travel.js";
 
 // Per-book plotlint files beside the story state, in `works/<id>/source/story/plotlint/`.
 // They are plain JSON so authors, agents and the editor can all write them.
@@ -60,4 +61,6 @@ export interface BookRuleData {
   readonly frames?: FramesFile;
   /** `invariants.json`: the author's own rules (see invariants.ts); only approved ones run. */
   readonly invariants?: InvariantsFile;
+  /** `travel.json`: travel times between places, for continuity/impossible-travel. */
+  readonly travel?: TravelFile;
 }

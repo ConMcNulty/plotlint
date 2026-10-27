@@ -112,7 +112,7 @@ describe("CLI mini-flows", () => {
     });
     const plotlint = join(bookDir, "story", "plotlint");
     await mkdir(plotlint, { recursive: true });
-    await writeFile(join(plotlint, "rules.json"), JSON.stringify({ version: 1, rules: { "continuity/dead-entity-acts": "error" } }));
+    await writeFile(join(plotlint, "rules.json"), JSON.stringify({ version: 1, rules: { "continuity/dead-entity-acts": "note" } }));
     await writeFile(join(plotlint, "frames.json"), JSON.stringify({ version: 1, frames: [{ chapter: 3, frame: "flashback" }] }));
 
     const linted = JSON.parse(runWithStatus(["lint", "lint-novel", "--json"]).stdout) as {
@@ -120,11 +120,11 @@ describe("CLI mini-flows", () => {
     };
     // Chapter 3 is a flashback, so only chapter 4's fact counts, at the configured severity.
     expect(linted.books[0]!.diagnostics.map((d) => [d.ruleId, d.chapter, d.severity])).toEqual([
-      ["continuity/dead-entity-acts", 4, "error"],
+      ["continuity/dead-entity-acts", 4, "note"],
     ]);
 
     const rules = JSON.parse(run(["lint", "rules", "lint-novel", "--json"])) as { rules: Array<{ id: string; enabled: boolean; severity?: string }> };
-    expect(rules.rules.find((rule) => rule.id === "continuity/dead-entity-acts")).toMatchObject({ enabled: true, severity: "error" });
+    expect(rules.rules.find((rule) => rule.id === "continuity/dead-entity-acts")).toMatchObject({ enabled: true, severity: "note" });
     expect(rules.rules.map((rule) => rule.id)).toContain("continuity/dead-then-alive");
   });
 
