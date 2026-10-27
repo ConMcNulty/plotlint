@@ -58,6 +58,7 @@ it("runs a book-route session against a short Work with no long-form book.json",
     for (const release of releases) release();
     upstream.closeAllConnections();
     if (upstream.listening) await new Promise<void>((resolve, reject) => upstream.close(error => error ? reject(error) : resolve()));
-    await rm(root, { recursive: true, force: true });
+    // Windows can hold the harness SQLite file open briefly after the session closes.
+    await rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 }, 20000);
