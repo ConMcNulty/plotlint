@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createWorkManifest, saveWorkManifest } from "@actalk/inkos-core";
+import { StateManager, createWorkManifest, saveRuntimeStateSnapshot, saveWorkManifest } from "@actalk/inkos-core";
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const cliEntry = resolve(testDir, "..", "..", "dist", "index.js");
@@ -62,6 +62,34 @@ describe("CLI mini-flows", () => {
       shown: ["cli-script", "script"],
       episodeCount: 0,
     });
+  });
+
+  it("lints a book's runtime state and reports a dead character who acts", async () => {
+    run(["init"]);
+    await saveWorkManifest(projectDir, createWorkManifest({
+      id: "lint-novel",
+      title: "Lint Novel",
+      profileId: "longform-novel",
+      language: "en",
+    }));
+    const fact = (subject: string, predicate: string, object: string, chapter: number) => ({
+      subject, predicate, object, validFromChapter: chapter, validUntilChapter: null, sourceChapter: chapter,
+    });
+    await saveRuntimeStateSnapshot(new StateManager(projectDir).bookDir("lint-novel"), {
+      manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 3, projectionVersion: 1 },
+      currentState: { chapter: 3, facts: [fact("Mira", "status", "dead", 2), fact("Mira", "location", "harbour", 3)] },
+      hooks: { hooks: [] },
+      chapterSummaries: { rows: [] },
+    });
+
+    const linted = JSON.parse(run(["lint", "lint-novel", "--json"])) as {
+      books: Array<{ id: string; diagnostics: Array<{ ruleId: string; chapter: number; severity: string }> }>;
+    };
+
+    expect(linted.books[0]!.diagnostics.map((d) => [d.ruleId, d.chapter, d.severity])).toEqual([
+      ["continuity/dead-entity-acts", 3, "warning"],
+    ]);
+    expect(run(["lint", "lint-novel"])).toContain("ch3 warning continuity/dead-entity-acts [extracted]");
   });
 
   function run(args: string[]): string {
