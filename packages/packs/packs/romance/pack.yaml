@@ -15,5 +15,10 @@ checks:
   # Emotional beats, not stakes, carry tension; the stakes estimate fits poorly.
   structure/tension-curve: note
   structure/scene-turn: note
+  # The genre's promise (RWA): a happy or hopeful ending for the central couple.
+  structure/hopeful-ending: warning
+  # The relationship is the main plot, and both leads get a point of view.
+  structure/central-relationship: note
+  structure/both-leads-pov: note
 metrics:
   metrics/dialogue-ratio: { min: 0.15 }

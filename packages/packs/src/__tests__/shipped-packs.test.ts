@@ -66,6 +66,21 @@ describe("shipped packs", () => {
     expect(mystery.config.rules).toMatchObject({ "continuity/knowledge-leak": "error", "structure/unpaid-setup": "error" });
   });
 
+  it("turn genre checks off in general and on in their genre's pack", () => {
+    const genre = ["structure/fair-play", "structure/hopeful-ending", "structure/central-relationship", "structure/both-leads-pov"];
+    const general = resolvePacks([], packs, { knownRuleIds: known }).config.rules;
+    for (const id of genre) expect(general[id], id).toBe("off");
+    expect(general["style/invented-term-spelling"]).toBe("note");
+    expect(resolvePacks(["mystery"], packs, { knownRuleIds: known }).config.rules).toMatchObject({
+      "structure/fair-play": "warning", "structure/hopeful-ending": "off", "style/invented-term-spelling": "note",
+    });
+    const romantasy = resolvePacks(["romance", "fantasy"], packs, { knownRuleIds: known }).config.rules;
+    expect(romantasy).toMatchObject({
+      "structure/fair-play": "off", "structure/hopeful-ending": "warning", "structure/central-relationship": "note",
+      "structure/both-leads-pov": "note", "style/invented-term-spelling": "warning",
+    });
+  });
+
   it("map InkOS genre fields to a default proposal", () => {
     expect(proposeFromGenre("xuanhuan", packs)?.packs).toEqual(["fantasy"]);
     expect(proposeFromGenre("Romantasy", packs)?.packs).toEqual(["fantasy", "romance"]);

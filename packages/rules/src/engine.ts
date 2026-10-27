@@ -23,6 +23,7 @@ import { povDiscipline } from "./rules/pov-discipline.js";
 import { protagonistAgency } from "./rules/protagonist-agency.js";
 import { sceneTurn } from "./rules/scene-turn.js";
 import { tensionCurveRule } from "./rules/tension-curve.js";
+import { genreRules } from "./rules/genre/index.js";
 
 export const builtinRules: ReadonlyArray<Rule> = [
   deadEntityActs, deadThenAlive, twoPlacesAtOnce, itemTwoHolders, negativeResource, singleValuedConflict,
@@ -33,6 +34,7 @@ export const builtinRules: ReadonlyArray<Rule> = [
   invariantRule,
   ...structureRules,
   sceneTurn, goalConflictOutcome, protagonistAgency, tensionCurveRule, povDiscipline,
+  ...genreRules,
 ];
 
 /** The built-in rules by id. Hosts that add their own rules build a registry from `builtinRules`. */

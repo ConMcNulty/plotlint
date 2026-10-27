@@ -36,6 +36,7 @@ export type { ChapterTension } from "./rules/tension-curve.js";
 export { tensionCurve, tensionCurveRule } from "./rules/tension-curve.js";
 export * from "./scene-annotations.js";
 export * from "./scene-annotate.js";
+export * from "./rules/genre/index.js";
 export type { TextDocument, TextFindingInput, TextRule, TextRuleContext } from "./text.js";
 export { checkText, textDiagnostic } from "./text.js";
 export { configureTextRules } from "./text-config.js";
