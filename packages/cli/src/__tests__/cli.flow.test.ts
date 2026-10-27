@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -151,6 +151,64 @@ describe("CLI mini-flows", () => {
     expect(lint().suppressed).toEqual([]);
     expect(() => run(["lint", "suppress", "continuity/dead-entity-acts", "--reason", "x", "--fingerprint", "0000000000000000"]))
       .toThrow(/No continuity\/dead-entity-acts finding/);
+  }, 120_000);
+
+  it("lints chapter text with L0 mechanics and L1 style, at compiler-style positions", async () => {
+    run(["init"]);
+    await saveWorkManifest(projectDir, createWorkManifest({
+      id: "lint-novel",
+      title: "Lint Novel",
+      profileId: "longform-novel",
+      language: "en",
+    }));
+    const bookDir = new StateManager(projectDir).bookDir("lint-novel");
+    // "Zorvane" only passes the spelling check because story state names it.
+    await saveRuntimeStateSnapshot(bookDir, {
+      manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 1, projectionVersion: 1 },
+      currentState: {
+        chapter: 1,
+        facts: [{ subject: "Zorvane", predicate: "location", object: "harbour", validFromChapter: 1, validUntilChapter: null, sourceChapter: 1 }],
+      },
+      hooks: { hooks: [] },
+      chapterSummaries: { rows: [] },
+    });
+    await mkdir(join(bookDir, "chapters"), { recursive: true });
+    await writeFile(join(bookDir, "chapters", "0001_harbour.md"), "Zorvane walked down to the water.\nShe felt the wind and lit teh lamp.\n");
+    await writeFile(join(bookDir, "chapters", "0002_deng.md"), "她看见了港口的灯，风很冷。\n");
+    type Lint = {
+      books: Array<{
+        chapters: number[];
+        diagnostics: Array<{
+          ruleId: string; layer: string; severity: string; chapter: number; fingerprint: string;
+          range: { sourceId: string; start: number; end: number }; location: { line: number; column: number };
+        }>;
+        suppressed: Array<{ diagnostic: { ruleId: string } }>;
+      }>;
+    };
+    const lint = (...args: string[]) => (JSON.parse(run(["lint", "lint-novel", "--json", ...args])) as Lint).books[0]!;
+
+    const all = lint();
+    expect(all.chapters).toEqual([1, 2]);
+    // The Chinese chapter produces nothing: both layers are English-only.
+    expect(all.diagnostics.map((d) => [d.ruleId, d.layer, d.severity, d.chapter, d.range, d.location])).toEqual([
+      ["style/general.FilterWords", "style", "note", 1, { sourceId: "chapter:1", start: 38, end: 42 }, { line: 2, column: 5 }],
+      ["mechanics/harper", "mechanics", "warning", 1, { sourceId: "chapter:1", start: 60, end: 63 }, { line: 2, column: 27 }],
+    ]);
+    const text = run(["lint", "lint-novel"]);
+    expect(text).toContain("ch1:2:5 note style/general.FilterWords [deterministic]");
+    expect(text).toContain("ch1:2:27 warning mechanics/harper [deterministic]");
+
+    expect(lint("--layers", "style").diagnostics.map((d) => d.ruleId)).toEqual(["style/general.FilterWords"]);
+    expect(lint("--layers", "continuity").diagnostics).toEqual([]);
+    expect(lint("--chapter", "2")).toMatchObject({ chapters: [2], diagnostics: [] });
+    expect(() => run(["lint", "--layers", "spelling"])).toThrow(/--layers takes/);
+
+    const typo = all.diagnostics.find((d) => d.ruleId === "mechanics/harper")!;
+    run(["lint", "suppress", "mechanics/harper", "--reason", "dialect spelling", "--fingerprint", typo.fingerprint]);
+    const afterSuppress = lint();
+    expect(afterSuppress.diagnostics.map((d) => d.ruleId)).toEqual(["style/general.FilterWords"]);
+    expect(afterSuppress.suppressed.map((s) => s.diagnostic.ruleId)).toEqual(["mechanics/harper"]);
+    expect(run(["lint", "lint-novel"])).not.toContain("mechanics/harper");
   }, 120_000);
 
   function run(args: string[]): string {
