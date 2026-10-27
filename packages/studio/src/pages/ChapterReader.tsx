@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { fetchJson, useApi } from "../hooks/use-api";
 import type { Theme } from "../hooks/use-theme";
 import type { TFunction } from "../hooks/use-i18n";
 import { useColors } from "../hooks/use-colors";
 import { ChapterWorkspacePanel } from "../components/ChapterWorkspacePanel";
+import { ManuscriptEditor, type ManuscriptEditorHandle } from "../components/plotlint/ManuscriptEditor";
 import {
   ChevronLeft,
   Check,
@@ -42,7 +43,9 @@ export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
     `/books/${bookId}/chapters/${chapterNumber}`,
   );
   const [editing, setEditing] = useState(false);
+  // The text being edited lives in the editor; `editorRef` reads it back exactly for saving.
   const [editContent, setEditContent] = useState("");
+  const editorRef = useRef<ManuscriptEditorHandle>(null);
   const [saving, setSaving] = useState(false);
   const [workspaceRevision, setWorkspaceRevision] = useState(0);
 
@@ -63,7 +66,7 @@ export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
       await fetchJson(`/books/${bookId}/chapters/${chapterNumber}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: editContent }),
+        body: JSON.stringify({ content: editorRef.current?.getText() ?? editContent }),
       });
       setEditing(false);
       refetch();
@@ -194,11 +197,12 @@ export function ChapterReader({ bookId, chapterNumber, nav, theme, t }: {
         </header>
 
         {editing ? (
-          <textarea
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            className="w-full min-h-[60vh] bg-transparent font-serif text-lg leading-[1.8] text-foreground/90 focus:outline-none resize-none border border-border/30 rounded-lg p-6 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all"
-            autoFocus
+          <ManuscriptEditor
+            bookId={bookId}
+            chapterNumber={chapterNumber}
+            initialText={editContent}
+            handleRef={editorRef}
+            t={t}
           />
         ) : (
           <article className="prose prose-zinc dark:prose-invert max-w-none">
