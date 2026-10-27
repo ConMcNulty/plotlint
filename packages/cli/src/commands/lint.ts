@@ -9,7 +9,7 @@ import {
   type Suppression,
 } from "@plotlint/diagnostics";
 import { findProjectRoot, log, logError, resolveBookId } from "../utils.js";
-import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "../suppressions.js";
+import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "@plotlint/diagnostics/node";
 
 type FingerprintedDiagnostic = Diagnostic & { fingerprint: string };
 

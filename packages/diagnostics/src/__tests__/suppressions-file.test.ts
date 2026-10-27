@@ -2,8 +2,8 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { Suppression } from "@plotlint/diagnostics";
-import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "../suppressions.js";
+import type { Suppression } from "../index.js";
+import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "../node.js";
 
 const createdAt = "2026-10-27T00:00:00.000Z";
 const ruleId = "continuity/dead-entity-acts";
