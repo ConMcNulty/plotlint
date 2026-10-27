@@ -115,7 +115,7 @@ describe("CLI mini-flows", () => {
     await writeFile(join(plotlint, "rules.json"), JSON.stringify({ version: 1, rules: { "continuity/dead-entity-acts": "error" } }));
     await writeFile(join(plotlint, "frames.json"), JSON.stringify({ version: 1, frames: [{ chapter: 3, frame: "flashback" }] }));
 
-    const linted = JSON.parse(run(["lint", "lint-novel", "--json"])) as {
+    const linted = JSON.parse(runWithStatus(["lint", "lint-novel", "--json"]).stdout) as {
       books: Array<{ diagnostics: Array<{ ruleId: string; chapter: number; severity: string }> }>;
     };
     // Chapter 3 is a flashback, so only chapter 4's fact counts, at the configured severity.
@@ -314,6 +314,81 @@ describe("CLI mini-flows", () => {
     expect(afterSuppress.diagnostics.map((d) => d.ruleId)).toEqual(["style/general.FilterWords"]);
     expect(afterSuppress.suppressed.map((s) => s.diagnostic.ruleId)).toEqual(["mechanics/harper"]);
     expect(run(["lint", "lint-novel"])).not.toContain("mechanics/harper");
+  }, 120_000);
+
+  it("adds, approves, lists and removes author-written invariants, and lints approved ones", async () => {
+    run(["init"]);
+    await saveWorkManifest(projectDir, createWorkManifest({
+      id: "lint-novel",
+      title: "Lint Novel",
+      profileId: "longform-novel",
+      language: "en",
+    }));
+    const bookDir = new StateManager(projectDir).bookDir("lint-novel");
+    await saveRuntimeStateSnapshot(bookDir, {
+      manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 3, projectionVersion: 1 },
+      currentState: {
+        chapter: 3,
+        facts: [{ subject: "Mira", predicate: "knows", object: "Captain Voss is her father", validFromChapter: 2, validUntilChapter: null, sourceChapter: 2 }],
+      },
+      hooks: { hooks: [] },
+      chapterSummaries: { rows: [] },
+    });
+    await mkdir(join(bookDir, "chapters"), { recursive: true });
+    await writeFile(join(bookDir, "chapters", "0001_door.md"), "# Chapter 1\n\nThe door held.\nShe was inside the vault at last.\n");
+    await writeFile(join(bookDir, "chapters", "0003_end.md"), "# Chapter 3\n\nInside the vault, gold.\n");
+    type Lint = { books: Array<{ proposedInvariants: number; diagnostics: Array<{ ruleId: string; code: string; severity: string; chapter: number; location?: { line: number; column: number } }> }> };
+    const lint = () => (JSON.parse(runWithStatus(["lint", "lint-novel", "--json", "--layers", "continuity"]).stdout) as Lint).books[0]!;
+
+    const added = JSON.parse(run(["lint", "invariant", "add", "Mira must not learn the captain's identity before chapter 20", "--id", "mira-captain-identity", "--json",
+      "--check", JSON.stringify({ kind: "not-before", fact: { subject: "Mira", kind: "knowledge", object: { contains: ["captain"] } }, chapter: 20 })])) as {
+      invariant: { id: string; status: string; explanation: string };
+    };
+    expect(added.invariant).toMatchObject({
+      id: "mira-captain-identity",
+      status: "proposed",
+      explanation: "Fails when a fact whose subject is \"Mira\", of kind knowledge and whose object contains \"captain\" is in force before chapter 20.",
+    });
+    const vault = run(["lint", "invariant", "add", "the reader never sees inside the vault until the finale",
+      "--check", JSON.stringify({ kind: "text-not-before", text: { contains: ["inside the vault"] }, chapter: "last" })]);
+    expect(vault).toContain("the-reader-never-sees-inside-the-vault-until-the  proposed");
+    expect(vault).toContain("inkos lint invariant approve the-reader-never-sees-inside-the-vault-until-the");
+    expect(run(["lint", "invariant", "add", "Tomas never lies", "--check", JSON.stringify({ kind: "unsupported", reason: "Lying is a judgment." })]))
+      .toContain("tomas-never-lies  unsupported");
+    expect(() => run(["lint", "invariant", "add", "x", "--check", "{\"kind\":\"never\",\"fact\":{}}"])).toThrow(/not a valid check/);
+
+    // Proposed invariants do not run.
+    expect(lint()).toMatchObject({ proposedInvariants: 2, diagnostics: [] });
+    expect(run(["lint", "lint-novel"])).toContain("2 proposed invariants not yet approved");
+
+    run(["lint", "invariant", "approve", "mira-captain-identity"]);
+    run(["lint", "invariant", "approve", "the-reader-never-sees-inside-the-vault-until-the", "lint-novel"]);
+    expect(() => run(["lint", "invariant", "approve", "tomas-never-lies"])).toThrow(/cannot be checked deterministically/);
+    expect(() => run(["lint", "invariant", "approve", "nope"])).toThrow(/No invariant "nope"/);
+
+    const after = lint();
+    expect(after.diagnostics.map((d) => [d.ruleId, d.code, d.severity, d.chapter, d.location])).toEqual([
+      ["continuity/invariant", "the-reader-never-sees-inside-the-vault-until-the", "error", 1, { line: 4, column: 9 }],
+      ["continuity/invariant", "mira-captain-identity", "error", 2, undefined],
+    ]);
+    const text = runWithStatus(["lint", "lint-novel", "--layers", "continuity"]);
+    expect(text.status).toBe(1);
+    expect(text.stdout).toContain("ch2 error continuity/invariant [extracted]: Invariant \"Mira must not learn the captain's identity before chapter 20\" fails in chapter 2");
+    expect(text.stdout).toContain("ch1:4:9 error continuity/invariant [deterministic]");
+
+    const listed = JSON.parse(run(["lint", "invariant", "list", "--json"])) as { invariants: Array<{ id: string; status: string }> };
+    expect(listed.invariants.map((inv) => [inv.id, inv.status])).toEqual([
+      ["mira-captain-identity", "approved"],
+      ["the-reader-never-sees-inside-the-vault-until-the", "approved"],
+      ["tomas-never-lies", "proposed"],
+    ]);
+    expect(run(["lint", "invariant", "list"])).toContain("check: {\"kind\":\"not-before\"");
+
+    run(["lint", "invariant", "remove", "mira-captain-identity"]);
+    expect(lint().diagnostics.map((d) => d.code)).toEqual(["the-reader-never-sees-inside-the-vault-until-the"]);
+    const saved = JSON.parse(await readFile(join(bookDir, "story", "plotlint", "invariants.json"), "utf-8")) as { version: number; invariants: unknown[] };
+    expect(saved).toMatchObject({ version: 1 });
+    expect(saved.invariants).toHaveLength(2);
   }, 120_000);
 
   function run(args: string[]): string {
