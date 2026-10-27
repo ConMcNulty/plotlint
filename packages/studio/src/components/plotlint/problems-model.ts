@@ -1,8 +1,9 @@
 import type { DiagnosticConfidence, DiagnosticLayer, DiagnosticSeverity } from "@plotlint/diagnostics";
 import type { DiagnosticEntry } from "@plotlint/editor";
+import type { EvidenceLocation } from "@plotlint/rules";
 import type { LintDiagnostic } from "./lint-client";
 
-/** One line of the problems panel: a drawn (ranged) finding or an unranged state finding. */
+/** One line of the problems panel: a drawn (ranged) finding or an unranged (chapter- or book-level) one. */
 export interface ProblemRow {
   readonly key: string;
   readonly diagnostic: LintDiagnostic;
@@ -13,6 +14,14 @@ export interface ProblemRow {
   /** 1-based line in the chapter text, or null when it has no range. */
   readonly line: number | null;
   readonly stale: boolean;
+  /** For an unranged finding: where its first cited fact was established, to jump to; else null. */
+  readonly established: EvidenceLocation | null;
+}
+
+/** What clicking a row does: select its text, open where its fact was established, or nothing. */
+export function rowTarget(row: ProblemRow): { kind: "range"; entryId: string } | { kind: "established"; location: EvidenceLocation } | null {
+  if (row.entryId !== null) return { kind: "range", entryId: row.entryId };
+  return row.established ? { kind: "established", location: row.established } : null;
 }
 
 export type ProblemSort = "position" | "severity" | "layer" | "confidence";
@@ -47,6 +56,7 @@ export function problemRows(
       from: entry.from,
       line: lineOf(entry.from),
       stale: entry.stale,
+      established: null,
     })),
     ...unranged.map((diagnostic, index): ProblemRow => ({
       key: `u:${diagnostic.fingerprint}:${index}`,
@@ -55,6 +65,7 @@ export function problemRows(
       from: null,
       line: null,
       stale: false,
+      established: diagnostic.established ?? null,
     })),
   ];
 }

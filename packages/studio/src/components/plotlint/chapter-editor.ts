@@ -14,7 +14,7 @@ import {
   type HoverContext,
   type TextRange,
 } from "@plotlint/editor";
-import type { LintDiagnostic, LintFunction } from "./lint-client";
+import { wholeChapterOnly, type LintDiagnostic, type LintFunction } from "./lint-client";
 import type { VerdictEvent } from "./verdict-client";
 
 /**
@@ -22,7 +22,8 @@ import type { VerdictEvent } from "./verdict-client";
  * text (one paragraph per line, so `getText()` returns the text exactly as
  * loaded until it is edited), undo history, inline diagnostics, and a lint
  * loop that lints the whole chapter on open and then, after a pause in typing,
- * only the paragraphs changed since the last lint. Navigation (go to definition,
+ * only the paragraphs changed since the last lint (keeping the whole-chapter
+ * metric findings, marked stale where edited, until the next whole-chapter lint). Navigation (go to definition,
  * selecting a text range) comes from @plotlint/editor's Navigation extension.
  */
 
@@ -170,7 +171,7 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
         editor.commands.setDiagnostics(ranged, {
           sourceId,
           version: lintSnapshot.version,
-          ...(full ? {} : { ranges: result.ranges ?? ranges }),
+          ...(full ? {} : { ranges: result.ranges ?? ranges, keep: wholeChapterOnly }),
         });
         const edited = editedAway(before, editor.storage.diagnostics.all())
           .filter((diagnostic) => isShown(diagnostic) && !reportedEdited.has(diagnostic.fingerprint));

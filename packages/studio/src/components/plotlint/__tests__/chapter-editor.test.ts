@@ -115,6 +115,33 @@ describe("chapter editor", () => {
     expect(editor.problems().ranged.map((entry) => editor.editor.state.doc.textBetween(entry.from, entry.to))).toEqual(["teh", "teh", "teh"]);
   });
 
+  it("keeps whole-chapter metric findings through a partial re-lint, until the next whole-chapter lint", async () => {
+    const element = document.createElement("div");
+    document.body.append(element);
+    const paragraph = { start: TEXT.indexOf("Mira saw"), end: TEXT.indexOf("boat.") + 5 };
+    const metric = {
+      ...continuity, code: "flat-stretch", ruleId: "metrics/sentence-rhythm", layer: "metrics", severity: "note", confidence: "deterministic",
+      summary: "flat", evidence: ["CV 0.1"], fingerprint: "fp-metric", range: { sourceId: SOURCE, ...paragraph },
+    } as LintDiagnostic;
+    // Like the route: metrics only on whole-chapter lints.
+    const lint = vi.fn(async (request: LintRequest): Promise<LintResponse> => ({
+      sourceId: SOURCE, diagnostics: request.ranges ? [] : [metric], ranges: request.ranges ? [...request.ranges] : null, suppressed: 0, stateMissing: false,
+    }));
+    controller = createChapterEditor({ element, text: TEXT, sourceId: SOURCE, lint, debounceMs: 5 });
+    await controller.flush();
+    expect(controller.problems().ranged.map((entry) => entry.diagnostic.ruleId)).toEqual(["metrics/sentence-rhythm"]);
+
+    controller.editor.chain().insertContentAt(posOf(controller, paragraph.start), "Then ").run();
+    await vi.waitFor(() => expect(lint).toHaveBeenCalledTimes(2));
+    await controller.flush();
+    expect(lint.mock.calls[1]![0].ranges).toBeDefined();
+    expect(controller.problems().ranged.map((entry) => [entry.diagnostic.ruleId, entry.stale])).toEqual([["metrics/sentence-rhythm", false]]);
+
+    lint.mockResolvedValue({ sourceId: SOURCE, diagnostics: [], ranges: null, suppressed: 0, stateMissing: false });
+    await controller.relintAll();
+    expect(controller.problems().ranged).toEqual([]);
+  });
+
   it("applies a quick fix and undoes it", async () => {
     const { controller: editor } = open();
     await editor.flush();

@@ -17,6 +17,7 @@ interface LintResponse {
     fingerprint: string;
     range?: { sourceId: string; start: number; end: number };
     fixes?: Array<{ title: string; replacement: string }>;
+    established?: { chapter: number; start: number; end: number; quote: string };
   }>;
   ranges: Array<{ start: number; end: number }> | null;
   suppressed: number;
@@ -172,6 +173,78 @@ describe("plotlint lint endpoint", () => {
       version: 1, rules: { "style/general.Intensifiers": "off", "style/fantasy.Cliches": "warning" },
     }));
     expect(await ruleIds()).toEqual([["style/fantasy.Cliches", "warning"]]);
+  });
+
+  it("lays the adaptive overlay from verdicts.jsonl between the packs and rules.json", async () => {
+    const text = "An ancient evil stirred in the north. She was very tired.";
+    const intensifiers = async () => ((await (await lint({ bookId: BOOK, chapter: 1, text })).json()) as LintResponse).diagnostics
+      .filter((d) => d.ruleId === "style/general.Intensifiers").map((d) => d.severity);
+    expect(await intensifiers()).toEqual(["note"]);
+
+    // Fifteen standing rejections turn the rule off for this book; the cache sees the new file.
+    const plotlint = join(bookDir, "story", "plotlint");
+    await mkdir(plotlint, { recursive: true });
+    const verdicts = Array.from({ length: 15 }, (_, index) => JSON.stringify({
+      ruleId: "style/general.Intensifiers", fingerprint: `fp${index}`, verdict: "rejected", action: "not-useful",
+      at: new Date(Date.UTC(2026, 0, 1, 0, index)).toISOString(), layer: "style", confidence: "deterministic",
+    }));
+    await writeFile(join(plotlint, "verdicts.jsonl"), `${verdicts.join("\n")}\n`);
+    expect(await intensifiers()).toEqual([]);
+
+    // The author's own rules.json wins over what the verdicts implied.
+    await writeFile(join(plotlint, "rules.json"), JSON.stringify({ version: 1, rules: { "style/general.Intensifiers": "warning" } }));
+    expect(await intensifiers()).toEqual(["warning"]);
+  });
+
+  it("runs the L2 metrics only on whole-chapter lints, over the unsaved text", async () => {
+    const plotlint = join(bookDir, "story", "plotlint");
+    await mkdir(plotlint, { recursive: true });
+    await writeFile(join(plotlint, "rules.json"), JSON.stringify({
+      version: 1, rules: { "metrics/wall-of-text": { severity: "warning", options: { max: 12 } } },
+    }));
+    // A phrase in two saved chapters and the open chapter's unsaved text: repeated across chapters.
+    const phrase = "the brass lantern swung above black water";
+    await mkdir(join(bookDir, "chapters"), { recursive: true });
+    await writeFile(join(bookDir, "chapters", "0001_one.md"), `# One\n\nAt night ${phrase} again.\n`);
+    await writeFile(join(bookDir, "chapters", "0002_two.md"), `# Two\n\nBy morning ${phrase} once more.\n`);
+    const wall = "Rain fell on the roofs of the town while the carts rolled past the shuttered shops and the bells kept ringing for the dead.";
+    const text = `# Three\n\nShe looked up: ${phrase} still.\n\n${wall}\n\n"Go," he said.`;
+
+    const whole = await (await lint({ bookId: BOOK, chapter: 3, text })).json() as LintResponse;
+    const metrics = whole.diagnostics.filter((d) => d.layer === "metrics");
+    expect(metrics.map((d) => [d.ruleId, d.severity])).toEqual([
+      ["metrics/repeated-phrase", "note"], ["metrics/wall-of-text", "warning"],
+    ]);
+    const repeated = metrics[0]!;
+    expect(text.slice(repeated.range!.start, repeated.range!.end).toLowerCase()).toContain("brass lantern");
+    expect(wall.startsWith(text.slice(metrics[1]!.range!.start, metrics[1]!.range!.end))).toBe(true);
+
+    const start = text.indexOf("Rain");
+    const partial = await (await lint({ bookId: BOOK, chapter: 3, text, ranges: [{ start, end: start + 4 }] })).json() as LintResponse;
+    expect(partial.diagnostics.filter((d) => d.layer === "metrics")).toEqual([]);
+  });
+
+  it("points rangeless findings at where their first cited fact was established", async () => {
+    await mkdir(join(bookDir, "chapters"), { recursive: true });
+    await writeFile(join(bookDir, "chapters", "0002_two.md"), "# Two\n\nMira died at dawn on the quay.\n");
+    await saveRuntimeStateSnapshot(bookDir, {
+      manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 3, projectionVersion: 1 },
+      currentState: {
+        chapter: 3,
+        facts: [
+          { subject: "Mira", predicate: "status", object: "dead", validFromChapter: 2, validUntilChapter: null, sourceChapter: 2, evidence: { quote: "Mira died at dawn" } },
+          { subject: "Mira", predicate: "location", object: "harbour", validFromChapter: 3, validUntilChapter: null, sourceChapter: 3 },
+        ],
+      },
+      hooks: { hooks: [] },
+      chapterSummaries: { rows: [] },
+    });
+    const json = await (await lint({ bookId: BOOK, chapter: 3, text: CHAPTER })).json() as LintResponse;
+    const unranged = json.diagnostics.filter((d) => !d.range && d.layer === "continuity");
+    expect(unranged.length).toBeGreaterThan(0);
+    expect(unranged.map((d) => d.established)).toContainEqual(expect.objectContaining({ chapter: 2, quote: "Mira died at dawn" }));
+    // The link is not part of the finding's identity.
+    expect(json.diagnostics.every((d) => !d.range || d.established === undefined)).toBe(true);
   });
 
   it("finds no L0 or L1 problems in a Chinese chapter", async () => {
