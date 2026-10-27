@@ -1,6 +1,8 @@
 import type { RuntimeStateSnapshot } from "@actalk/inkos-core";
 import { checkText, type TextDocument } from "@plotlint/rules";
 import { beforeAll, describe, expect, it } from "vitest";
+import { Dialect, LocalLinter } from "harper.js";
+import { harperBinary } from "../harper.js";
 import { checkParagraphs, createHarperRule, harperLinter, isMostlyCjk, lintRange, paragraphRanges, projectDictionary } from "../index.js";
 
 const rule = createHarperRule({ language: "plaintext" });
@@ -106,4 +108,12 @@ describe("mechanics/harper", () => {
     expect(paragraphMs).toBeLessThan(100);
     expect(chapterMs).toBeLessThan(5_000);
   });
+});
+
+describe("harperBinary", () => {
+  it("loads the inlined binary on Windows, where harper.js cannot read file URLs", async () => {
+    const linter = new LocalLinter({ binary: await harperBinary("win32"), dialect: Dialect.American });
+    const lints = await linter.lint("This sentance has a typo.", { language: "plaintext" });
+    expect(lints.length).toBeGreaterThan(0);
+  }, 60_000);
 });
