@@ -7,13 +7,17 @@ import { RuleRegistry, type ConfiguredRule } from "./registry.js";
 import type { Rule } from "./types.js";
 import { deadEntityActs } from "./rules/dead-entity-acts.js";
 import { deadThenAlive } from "./rules/dead-then-alive.js";
+import { itemFromNowhere } from "./rules/item-from-nowhere.js";
 import { itemTwoHolders } from "./rules/item-two-holders.js";
 import { negativeResource } from "./rules/negative-resource.js";
 import { singleValuedConflict } from "./rules/single-valued-conflict.js";
 import { twoPlacesAtOnce } from "./rules/two-places-at-once.js";
+import { worldRuleBroken } from "./rules/world-rule-broken.js";
 
 export const builtinRules: ReadonlyArray<Rule> = [
   deadEntityActs, deadThenAlive, twoPlacesAtOnce, itemTwoHolders, negativeResource, singleValuedConflict,
+  itemFromNowhere,
+  worldRuleBroken,
 ];
 
 /** The built-in rules by id. Hosts that add their own rules build a registry from `builtinRules`. */
