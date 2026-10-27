@@ -1,0 +1,28 @@
+/* Studio's chapter editor: manuscript typography around @plotlint/editor's squiggles. */
+.pl-manuscript-editor {
+  min-height: 60vh;
+  padding: 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--border, currentColor) 30%, transparent);
+  border-radius: 0.5rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.pl-manuscript-editor:focus {
+  border-color: color-mix(in srgb, var(--primary, currentColor) 40%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary, currentColor) 10%, transparent);
+}
+/* One paragraph per line of chapter text: no extra spacing, so blank lines show as they are saved. */
+.pl-manuscript-editor p {
+  margin: 0;
+  min-height: 1.8em;
+}
+
+/* Layer badges in the problems panel use the same hues as the underlines. */
+.pl-problem-layer { --pl-layer: var(--pl-diag-judgment); color: var(--pl-layer); background: color-mix(in srgb, var(--pl-layer) 12%, transparent); }
+.pl-problem-layer--mechanics { --pl-layer: var(--pl-diag-mechanics); }
+.pl-problem-layer--style { --pl-layer: var(--pl-diag-style); }
+.pl-problem-layer--metrics { --pl-layer: var(--pl-diag-metrics); }
+.pl-problem-layer--continuity { --pl-layer: var(--pl-diag-continuity); }
+.pl-problem-layer--structure { --pl-layer: var(--pl-diag-structure); }

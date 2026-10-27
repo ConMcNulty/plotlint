@@ -14,6 +14,16 @@ export default defineConfig({
       "@actalk/inkos-core/forecast/schema": resolve(__dirname, "../core/src/forecast/schema.ts"),
       "@actalk/inkos-core/llm/api-format": resolve(__dirname, "../core/src/llm/api-format.ts"),
       "@actalk/inkos-core": resolve(__dirname, "../core/src/index.ts"),
+      // plotlint packages also resolve to source: in `pnpm -r test` the CLI's pretest
+      // rebuilds core, diagnostics and rules, emptying their dist mid-run.
+      "@plotlint/diagnostics/node": resolve(__dirname, "../diagnostics/src/node.ts"),
+      "@plotlint/diagnostics": resolve(__dirname, "../diagnostics/src/index.ts"),
+      "@plotlint/rules": resolve(__dirname, "../rules/src/index.ts"),
+      "@plotlint/mechanics": resolve(__dirname, "../mechanics/src/index.ts"),
+      "@plotlint/style/node": resolve(__dirname, "../style/src/node.ts"),
+      "@plotlint/style": resolve(__dirname, "../style/src/index.ts"),
+      "@plotlint/editor/styles.css": resolve(__dirname, "../editor/styles.css"),
+      "@plotlint/editor": resolve(__dirname, "../editor/src/index.ts"),
     },
   },
   test: {

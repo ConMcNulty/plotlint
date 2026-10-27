@@ -1,6 +1,6 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { SuppressionFileSchema, type Suppression, type SuppressionFile } from "@plotlint/diagnostics";
+import { SuppressionFileSchema, type Suppression, type SuppressionFile } from "./index.js";
 
 /**
  * Per-book plotlint suppressions live beside the book's story state, at

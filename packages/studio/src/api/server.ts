@@ -164,6 +164,12 @@ import { summarizeToolResult } from "../shared/tool-result.js";
 import { access, mkdir, readFile, readdir, rename, rm, stat, lstat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { isSafeBookId } from "./safety.js";
+import {
+  lintChapter,
+  parseLintBody as parsePlotlintLintBody,
+  parseSuppressionBody as parsePlotlintSuppressionBody,
+  suppressFinding,
+} from "./plotlint-lint.js";
 import { ApiError } from "./errors.js";
 import { buildStudioBookConfig, normalizeStudioPlatform } from "./book-create.js";
 import {
@@ -3221,6 +3227,31 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     } finally {
       await releaseLock();
     }
+  });
+
+  // --- plotlint: editor diagnostics and suppressions ---
+
+  const plotlintBookDir = async (bookId: string): Promise<string> => {
+    if (!isSafeBookId(bookId)) throw new ApiError(400, "INVALID_BOOK_ID", `Invalid book ID: "${bookId}"`);
+    const bookDir = state.bookDir(bookId);
+    const found = await stat(bookDir).then((info) => info.isDirectory(), () => false);
+    if (!found) throw new ApiError(404, "BOOK_NOT_FOUND", `Book "${bookId}" not found`);
+    return bookDir;
+  };
+
+  app.post("/api/v1/plotlint/lint", async (c) => {
+    const parsed = parsePlotlintLintBody(await c.req.json().catch(() => null));
+    if (typeof parsed === "string") throw new ApiError(400, "INVALID_LINT_REQUEST", parsed);
+    const bookDir = await plotlintBookDir(parsed.bookId);
+    return c.json(await lintChapter({ bookDir, chapter: parsed.chapter, text: parsed.text, ranges: parsed.ranges }));
+  });
+
+  app.post("/api/v1/plotlint/suppressions", async (c) => {
+    const parsed = parsePlotlintSuppressionBody(await c.req.json().catch(() => null));
+    if (typeof parsed === "string") throw new ApiError(400, "INVALID_SUPPRESSION", parsed);
+    const { bookId, ...request } = parsed;
+    const bookDir = await plotlintBookDir(bookId);
+    return c.json({ ok: true, ...(await suppressFinding(bookDir, request)) });
   });
 
   // --- Truth files ---

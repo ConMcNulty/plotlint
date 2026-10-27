@@ -15,7 +15,7 @@ import {
   type Suppression,
 } from "@plotlint/diagnostics";
 import { findProjectRoot, log, logError, resolveBookId } from "../utils.js";
-import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "../suppressions.js";
+import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "@plotlint/diagnostics/node";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
