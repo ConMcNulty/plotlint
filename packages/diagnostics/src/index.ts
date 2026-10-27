@@ -41,6 +41,13 @@ export const DiagnosticFactRefSchema = z.object({
 }).strict();
 export type DiagnosticFactRef = z.infer<typeof DiagnosticFactRefSchema>;
 
+/** A quick fix: replace the diagnostic's range with `replacement` (empty string deletes it). */
+export const DiagnosticFixSchema = z.object({
+  title: z.string().min(1),
+  replacement: z.string(),
+}).strict();
+export type DiagnosticFix = z.infer<typeof DiagnosticFixSchema>;
+
 export const DiagnosticSchema = ObservationSchema.extend({
   ruleId: z.string().min(1),
   layer: DiagnosticLayerSchema,
@@ -49,6 +56,7 @@ export const DiagnosticSchema = ObservationSchema.extend({
   chapter: z.number().int().min(0).optional(),
   range: DiagnosticRangeSchema.optional(),
   facts: z.array(DiagnosticFactRefSchema).optional(),
+  fixes: z.array(DiagnosticFixSchema).optional(),
 }).strict().refine(
   // Judged findings are notes only; they never block on their own.
   (diagnostic) => diagnostic.confidence !== "judged" || diagnostic.severity === "note",
@@ -56,6 +64,9 @@ export const DiagnosticSchema = ObservationSchema.extend({
 ).refine(
   (diagnostic) => diagnostic.evidence.length > 0 || (diagnostic.sourceRefs?.length ?? 0) > 0 || (diagnostic.facts?.length ?? 0) > 0,
   { message: "a diagnostic needs evidence, a source quote or a fact reference" },
+).refine(
+  (diagnostic) => !diagnostic.fixes?.length || diagnostic.range !== undefined,
+  { message: "a diagnostic with fixes needs a range to apply them to" },
 );
 export type Diagnostic = z.infer<typeof DiagnosticSchema>;
 
