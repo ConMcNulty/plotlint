@@ -1,7 +1,9 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { z } from "zod";
-import { FramesFileSchema, RuleConfigFileSchema, type BookPlan, type BookRuleData } from "./book.js";
+import { loadVerdicts } from "@plotlint/diagnostics/node";
+import { adaptiveOverlay, type AdaptiveOptions } from "./adaptive.js";
+import { FramesFileSchema, RuleConfigFileSchema, type BookPlan, type BookRuleData, type RuleConfigFile } from "./book.js";
 import { InvariantsFileSchema } from "./invariants.js";
 import { TravelFileSchema } from "./travel.js";
 
@@ -63,6 +65,11 @@ export async function loadBookRuleData(bookDir: string): Promise<BookRuleData> {
     ...(config ? { config } : {}), ...(frames ? { frames } : {}), ...(travel ? { travel } : {}), ...(invariants ? { invariants } : {}),
     ...(plan ? { plan } : {}),
   };
+}
+
+/** The overlay a book's verdicts imply (`story/plotlint/verdicts.jsonl`, see adaptive.ts); empty without verdicts. */
+export async function loadAdaptiveOverlay(bookDir: string, options: AdaptiveOptions = {}): Promise<RuleConfigFile> {
+  return adaptiveOverlay((await loadVerdicts(bookDir)).verdicts, options);
 }
 
 /** Validate and write one plotlint JSON file, creating the folder; returns its path. */

@@ -17,6 +17,7 @@ export default defineConfig({
       // plotlint packages also resolve to source: in `pnpm -r test` the CLI's pretest
       // rebuilds core, diagnostics and rules, emptying their dist mid-run.
       "@plotlint/diagnostics/node": resolve(__dirname, "../diagnostics/src/node.ts"),
+      "@plotlint/diagnostics/verdicts": resolve(__dirname, "../diagnostics/src/verdicts.ts"),
       "@plotlint/diagnostics": resolve(__dirname, "../diagnostics/src/index.ts"),
       "@plotlint/rules/node": resolve(__dirname, "../rules/src/node.ts"),
       "@plotlint/rules": resolve(__dirname, "../rules/src/index.ts"),
