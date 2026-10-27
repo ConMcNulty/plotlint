@@ -10,8 +10,10 @@ import { factFinding, normalize, validAt } from "./facts.js";
 // or acting again. A return from the dead can be the plot (a faked death, a
 // resurrection), so it is a warning to confirm, not an error.
 
-// Status values that are not a life: a later "buried" or "missing" does not bring anyone back.
-const NOT_ALIVE_STATUS = /(buried|burial|missing|unknown|corpse|body|remains|ghost|spirit|undead|葬|失踪|下落不明|未知|尸|鬼|魂)/u;
+// A later status counts only when it describes a living body. Settlers also
+// overwrite a death with what is said about the dead ("status · suspected of
+// theft", from a real GLM import), and "buried" or "missing" brings no one back.
+const LIVING_STATUS = /^(alive|living|not dead|survived|survivor|well|healthy|recovered|recovering|injured|wounded|hurt|bleeding|sick|ill|feverish|conscious|unconscious|awake|asleep|sleeping|exhausted|captured|imprisoned|free|true|yes|活着|存活|幸存|生还|健康|痊愈|受伤|重伤|轻伤|负伤|昏迷|清醒|苏醒|被俘|是)$/u;
 
 /** Up to this many later facts are cited, so a busy chapter does not bury the finding. */
 const MAX_CITED = 3;
@@ -40,7 +42,7 @@ export const deadThenAlive: Rule = {
         && fact.validFromChapter > death.validUntilChapter!
         && !isDeathFact(fact)
         && !POSTHUMOUS_PREDICATE.test(fact.predicate.toLowerCase())
-        && !(hasKind(fact, "status") && NOT_ALIVE_STATUS.test(fact.object.toLowerCase()))
+        && !(hasKind(fact, "status") && !LIVING_STATUS.test(fact.object.trim().toLowerCase()))
         && !deadAt(fact.validFromChapter));
       if (after.length === 0) continue;
 

@@ -1,6 +1,6 @@
 # Seeded-error evaluation
 
-Generated 2026-10-27T18:56:03.623Z by `pnpm --filter @plotlint/rules eval` (see "How to run" below). Book: `wenlow`, 5 clean chapters, 126 mutants.
+Generated 2026-10-27T19:14:01.331Z by `pnpm --filter @plotlint/rules eval` (see "How to run" below). Book: `wenlow`, 5 clean chapters, 126 mutants.
 
 Phase 3 gate (PLAN.md): recall and false-alarm rate per rule, and each rule beats the LLM-only auditor on false positives.
 

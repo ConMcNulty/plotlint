@@ -1,0 +1,54 @@
+{
+  "rows": [
+    {
+      "chapter": 1,
+      "title": "The Crossing",
+      "characters": "Elspeth Marrow, Tobias Marrow (deceased), Absalom Crane, Captain Ida Thorne, Jonas Marrow, two drovers",
+      "events": "Elspeth waits at ferry landing with father's compass and money; Captain Thorne confronts her about mysterious letter signed with Tobias's name; Elspeth learns father died when Margery sank; Crane refuses to cooperate with investigation; Elspeth tells brother Jonas; they plan to travel to Stavely at dawn",
+      "stateChanges": "Elspeth learns about mysterious letter regarding father's death; decides to investigate in Stavely; brother Jonas joins her in investigation plan",
+      "hookActivity": "Four new mysteries established: author of letter, fate of Margery and cargo, Crane's knowledge, what they'll find in Stavely",
+      "mood": "Mysterious and tense with sense of impending investigation into father's death",
+      "chapterType": "Introduction and mystery setup"
+    },
+    {
+      "chapter": 2,
+      "title": "The Heron",
+      "characters": "Elspeth Marrow, Jonas Marrow, Rook (innkeeper), Captain Thorne",
+      "events": "Elspeth and Jonas walk to Stavely, stay at The Heron inn, and learn from Captain Thorne that their father's barge was carrying stolen parish money and that Crane is gravely ill.",
+      "stateChanges": "Elspeth and Jonas arrive in Stavely; Elspeth now has 9 shillings; the Margery was carrying 60 pounds in gold that was stolen; Crane is gravely ill and may not survive the week.",
+      "hookActivity": "The mystery about the letter's author is advanced (likely Crane), the mystery about the Margery's cargo is revealed (stolen gold), and a new hook is created about Crane's potential death before he can reveal information.",
+      "mood": "Tense and mysterious, with increasing urgency as characters learn more about the conspiracy surrounding Tobias Marrow's death.",
+      "chapterType": "Investigative"
+    },
+    {
+      "chapter": 3,
+      "title": "The Ledger",
+      "characters": "Elspeth Marrow, Jonas Marrow, Absalom Crane",
+      "events": "Elspeth and Jonas return to Wenlow and meet with the dying Absalom Crane, who reveals he wrote the letter using Tobias's name and that Tobias was paid to sink the Margery but refused. Crane gives them the ledger and a key to a strongbox under the abbey chapel containing gold to validate the ledger's contents. Crane dies that night, and Elspeth gives Jonas the compass while they plan to retrieve the strongbox the next day.",
+      "stateChanges": "Absalom Crane dies, Elspeth and Jonas now possess the ledger and key, Jonas has the compass, their objective changes to retrieving the strongbox from the abbey chapel",
+      "hookActivity": "Resolved: Crane's knowledge about the Margery, whether Crane would survive, and the identity of the letter writer. Progressing: The mystery of what happened to the Margery and its cargo, and what Elspeth and Jonas will discover at the abbey chapel. New: The identities of the men who paid to sink the Margery and the plan to retrieve the strongbox.",
+      "mood": "Tense and urgent as the siblings race against time to uncover the truth before Crane's death becomes known",
+      "chapterType": "Revelation"
+    },
+    {
+      "chapter": 4,
+      "title": "Gorse Hill",
+      "characters": "Elspeth Marrow, Jonas Marrow, Captain Ida Thorne",
+      "events": "Elspeth and Jonas travel to Gorse Hill abbey ruins, retrieve the strongbox containing parish money and a letter from their father, are confronted by Captain Thorne who follows them back to Wenlow, and someone breaks into their cottage leaving boot prints",
+      "stateChanges": "Elspeth and Jonas successfully retrieve the strongbox, Thorne joins them on their return journey, and an unknown person breaks into their cottage",
+      "hookActivity": "Resolved the mystery of what was in the abbey chapel; resolved the plot to retrieve the strongbox; created new mystery about who broke into the cottage",
+      "mood": "Tense with the successful retrieval but ominous with the break-in",
+      "chapterType": "Adventure with mystery elements"
+    },
+    {
+      "chapter": 5,
+      "title": "The Ferryman",
+      "characters": "Elspeth Marrow, Jonas Marrow, Captain Ida Thorne, Absalom Crane (deceased), parish council members, ferry passengers",
+      "events": "Absalom Crane is buried in Wenlow churchyard. Elspeth gives Captain Thorne the ferry ledger containing three names including Alderman Pask. Jonas takes over the ferry service, successfully transporting three passengers across the river and charging 2 pennies each. The strongbox is secured in the vestry with the vicar and two churchwardens.",
+      "stateChanges": "Crane is now buried. Elspeth and Thorne are at the ferry landing. Jonas has taken over the ferry service with Crane's oar and his father's compass. The ferry ledger is now in Thorne's possession. The strongbox is secured in the vestry.",
+      "hookActivity": "The mystery about the identities of the men who paid to sink the Margery remains open. The mystery about who broke into the Marrows' cottage also remains open.",
+      "mood": "Somber but with a sense of resolution and new beginnings as Jonas takes on the ferryman role.",
+      "chapterType": "Aftermath and transition"
+    }
+  ]
+}
