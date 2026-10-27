@@ -10,7 +10,7 @@ import { normalize } from "./rules/facts.js";
 
 // Alive, dead, injured. Death itself is read from the object (see dead-entity-acts).
 export const STATUS_PREDICATES = new Set([
-  "status", "state", "condition", "alive", "lifestatus", "life", "vitalstatus", "health",
+  "status", "state", "condition", "alive", "lifestatus", "life", "vitalstatus", "health", "fate",
   "状态", "生死", "生死状态", "存活", "存活状态", "生命状态",
 ]);
 
@@ -19,6 +19,7 @@ export const STATUS_PREDICATES = new Set([
 // (a ranking), "在" and "处于" ("处于昏迷").
 export const LOCATION_PREDICATES = new Set([
   "location", "currentlocation", "whereabouts", "currentplace", "locatedat", "locatedin", "staysat", "stayingat",
+  "arrivedat", "arrivedin", "arrivesat", "arrivesin",
   "位置", "当前位置", "所在", "所在地", "所在位置", "所在地点", "地点", "当前地点", "当前所在", "位于", "身处", "现处",
 ]);
 
@@ -36,7 +37,7 @@ export const AGE_PREDICATES = new Set(["age", "currentage", "年龄", "年纪", 
 export type PossessionRelation = "holds" | "owns";
 
 export const HOLDER_FIRST: Readonly<Record<string, PossessionRelation>> = Object.fromEntries([
-  ...["holds", "holding", "carries", "carrying", "inpossessionof", "hasinhand",
+  ...["holds", "holding", "carries", "carrying", "inpossessionof", "hasinhand", "isholding", "iscarrying", "tookpossessionof",
     "持有", "携带", "手持", "拿着", "握着", "随身携带", "身上带着", "怀揣"].map((p) => [p, "holds" as const]),
   ...["owns", "ownerof", "拥有"].map((p) => [p, "owns" as const]),
 ]);

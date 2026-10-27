@@ -9,7 +9,7 @@ import { factFinding, normalize, validAt } from "./facts.js";
 // predicate names, and death from a small vocabulary of objects.
 // An English death word may carry its manner ("murdered with throat cut",
 // "killed by Tomas"), but only after a preposition, so "dead tired" is not a death.
-const DEAD_OBJECT = /^(dead|deceased|killed|died|slain|murdered|executed|drowned)(\s+(by|with|from|of|in|at|on)\s.*)?$|^(死亡|已死|已死亡|死了|身亡|阵亡|去世|已故|遇害|被杀)$/u;
+const DEAD_OBJECT = /^(dead|deceased|killed|died|slain|murdered|executed|drowned|passed away|passed on)(\s+(by|with|from|of|in|at|on)\s.*)?$|^(死亡|已死|已死亡|死了|身亡|阵亡|去世|已故|遇害|被杀)$/u;
 const NOT_ALIVE_OBJECT = /^(false|no|not alive|否|不|无)$/u;
 
 // Extractors also write death as a plain copula ("Harrow · is · dead") or as the

@@ -1,8 +1,11 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { checkSnapshot } from "../engine.js";
 import { builtinRegistry, builtinRules } from "../engine.js";
 import { RuleRegistry } from "../registry.js";
 import {
-  activeMutators, allMutators, auditorIssueMatches, evalBook, loadCorpusBook, runRules, scoreAuditor, scoreRules,
+  activeMutators, allMutators, auditorIssueMatches, corpusRoot, evalBook, loadCorpusBook, runRules, scoreAuditor, scoreRules,
   type AuditorBaseline, type CleanBook, type Mutant,
 } from "../eval/index.js";
 
@@ -29,6 +32,23 @@ describe("seeded-error corpus", () => {
   it("raises no findings from the built-in rules on the clean book", () => {
     const { active } = activeMutators(allMutators);
     expect(runRules(clean.facts, clean.chapters, evalBook(clean, active), builtinRegistry)).toEqual([]);
+  });
+});
+
+describe("real extraction of the clean book", () => {
+  // The story state glm-4.5-flash settled from the clean chapters (inkos import
+  // chapters, 2026-10-27). Real settler facts are messier than the oracle's, so
+  // any finding here is a false alarm a writer would see.
+  it("raises no continuity findings", async () => {
+    const dir = join(corpusRoot, "wenlow", "extracted", "glm-4.5-flash");
+    const read = async (name: string) => JSON.parse(await readFile(join(dir, name), "utf-8"));
+    const snapshot = {
+      manifest: await read("manifest.json"),
+      currentState: await read("current_state.json"),
+      hooks: await read("hooks.json"),
+      chapterSummaries: await read("chapter_summaries.json"),
+    };
+    expect(checkSnapshot(snapshot, { chapters: clean.chapters, book: clean.book })).toEqual([]);
   });
 });
 

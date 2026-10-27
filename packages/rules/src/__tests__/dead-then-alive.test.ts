@@ -55,6 +55,14 @@ describe("continuity/dead-then-alive", () => {
     )).toEqual([]);
   });
 
+  it("ignores a later status that says something about the dead rather than a life", () => {
+    // From a real glm-4.5-flash import: the accusation overwrote "status · dead".
+    expect(check(
+      fact("Tobias Marrow", "status", "dead", 1, 1),
+      fact("Tobias Marrow", "status", "suspected of theft", 2),
+    )).toEqual([]);
+  });
+
   it("ignores a death superseded in the chapter that recorded it", () => {
     // validUntil < validFrom: the settler corrected itself, the death was never in force.
     expect(check(

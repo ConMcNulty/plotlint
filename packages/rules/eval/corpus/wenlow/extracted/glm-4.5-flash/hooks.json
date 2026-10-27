@@ -1,0 +1,148 @@
+{
+  "hooks": [
+    {
+      "hookId": "breeding_program",
+      "startChapter": 0,
+      "type": "conspiracy",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Full exposure of the program's operations, leadership, and extent",
+      "notes": "The overarching conspiracy that connects past and present disappearances"
+    },
+    {
+      "hookId": "brother_cold_case",
+      "startChapter": 0,
+      "type": "backstory",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Truth about Elena's brother's death and his role in exposing the conspiracy",
+      "notes": "Personal stakes that fuel Elena's determination and reveal the town's ruthlessness"
+    },
+    {
+      "hookId": "elena_future_choice",
+      "startChapter": 0,
+      "type": "character",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Elena decides whether to stay in Wenlow or return to city life after resolving the mysteries",
+      "notes": "Character growth and thematic resolution about home, belonging, and moving forward"
+    },
+    {
+      "hookId": "elena_trauma",
+      "startChapter": 0,
+      "type": "character",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Elena confronts and processes her suppressed trauma from her brother's disappearance",
+      "notes": "Internal conflict that affects her investigation and relationships"
+    },
+    {
+      "hookId": "founders_day_showdown",
+      "startChapter": 0,
+      "type": "climax",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Public confrontation that forces the town to choose between tradition and truth",
+      "notes": "The pivotal moment where Elena's evidence is presented and the town's reaction determines the outcome"
+    },
+    {
+      "hookId": "historical_society_secrets",
+      "startChapter": 0,
+      "type": "world",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Revelation of hidden archives and the extent of the town's complicity",
+      "notes": "Key to understanding how the conspiracy has operated undetected for generations"
+    },
+    {
+      "hookId": "sarah_disappearance",
+      "startChapter": 0,
+      "type": "mystery",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Resolution of Sarah's fate and location, revelation about her connection to the breeding program",
+      "notes": "The central mystery that drives the plot forward and mirrors Elena's brother's case"
+    },
+    {
+      "hookId": "sheriff_miller_loyalty",
+      "startChapter": 0,
+      "type": "relationship",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Resolution of Sheriff Miller's divided loyalties and knowledge of the conspiracy",
+      "notes": "Critical alliance or confrontation that impacts the investigation's direction"
+    },
+    {
+      "hookId": "hook",
+      "startChapter": 1,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 3,
+      "expectedPayoff": "Identity of person who wrote letter signed with Tobias Marrow's name and their knowledge about the Margery's cargo",
+      "notes": "Crane admitted he wrote the letter using Tobias's name: 'I signed your father's name because I thought the warden would come for his name and not for mine.'"
+    },
+    {
+      "hookId": "hook-2",
+      "startChapter": 1,
+      "type": "mystery",
+      "status": "progressing",
+      "lastAdvancedChapter": 3,
+      "expectedPayoff": "What happened to the Margery and its cargo",
+      "notes": "Crane revealed: 'I ferried the Margery's crew the night she sailed, and I wrote it in the ledger, and I wrote something else in it too. Your father did not steal anything. He was paid to sink the barge and he would not, and the men who paid him sank it with him aboard.'"
+    },
+    {
+      "hookId": "hook-3",
+      "startChapter": 1,
+      "type": "character",
+      "status": "resolved",
+      "lastAdvancedChapter": 3,
+      "expectedPayoff": "What Absalom Crane knows about the Margery's sinking",
+      "notes": "Crane revealed he ferried the Margery's crew the night it sailed and that Tobias was paid to sink the barge but refused, so the men who paid him sank it with him aboard."
+    },
+    {
+      "hookId": "hook-4",
+      "startChapter": 1,
+      "type": "plot",
+      "status": "resolved",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "What Elspeth and Jonas will discover at the abbey chapel",
+      "notes": "They found the strongbox containing the parish money and a letter from their father"
+    },
+    {
+      "hookId": "hook-5",
+      "startChapter": 2,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 3,
+      "expectedPayoff": "Whether Absalom Crane will survive to reveal what he knows about the Margery",
+      "notes": "Crane died before midnight on October 4th, after revealing information about the Margery's sinking."
+    },
+    {
+      "hookId": "hook-7",
+      "startChapter": 3,
+      "type": "plot",
+      "status": "resolved",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "Retrieving the strongbox from the abbey chapel before the parish council discovers Crane's death",
+      "notes": "They successfully retrieved the strongbox and returned to Wenlow with Thorne"
+    },
+    {
+      "hookId": "hook-6",
+      "startChapter": 3,
+      "type": "mystery",
+      "status": "open",
+      "lastAdvancedChapter": 5,
+      "expectedPayoff": "The identities of the men who paid to sink the Margery and are still alive, with one on the parish council",
+      "notes": "Crane revealed: 'the men who paid him sank it with him aboard' and 'one of them is still on the parish council'"
+    },
+    {
+      "hookId": "hook-8",
+      "startChapter": 4,
+      "type": "mystery",
+      "status": "open",
+      "lastAdvancedChapter": 5,
+      "expectedPayoff": "Who broke into the Marrows' cottage and left boot prints",
+      "notes": "Someone broke into the cottage but took nothing, suggesting they were looking for something specific"
+    }
+  ]
+}

@@ -1,0 +1,1008 @@
+{
+  "chapter": 5,
+  "facts": [
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "action",
+      "object": "charged 2 pennies per passenger",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "other",
+      "evidence": {
+        "quote": "Two pennies each,\" he said. \"Six pennies. I am a man of business.\"",
+        "start": 2142,
+        "end": 2208
+      }
+    },
+    {
+      "subject": "Absalom Crane",
+      "predicate": "action",
+      "object": "ferried Margery's crew",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "other",
+      "evidence": {
+        "quote": "Mr. Crane,\" Thorne said, \"you ferried the Margery's crew across the night she sailed",
+        "start": 1821,
+        "end": 1905
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "action",
+      "object": "ferried passengers across river",
+      "validFromChapter": 5,
+      "validUntilChapter": 4,
+      "sourceChapter": 5,
+      "kind": "other",
+      "evidence": {
+        "quote": "He took them across. Elspeth watched from the landing. He rowed badly at first and then less badly, and by the far bank he had found Crane's rhythm, slow and without ever stopping.",
+        "start": 1924,
+        "end": 2104
+      },
+      "endEvidence": {
+        "quote": "Two pennies each,\" he said. \"Six pennies. I am a man of business.\"",
+        "start": 2142,
+        "end": 2208
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "action",
+      "object": "stopped laughing after hearing about letter",
+      "validFromChapter": 1,
+      "validUntilChapter": 4,
+      "sourceChapter": 1,
+      "kind": "other",
+      "evidence": {
+        "quote": "He stopped laughing.",
+        "start": 2533,
+        "end": 2553
+      },
+      "endEvidence": {
+        "quote": "He took them across. Elspeth watched from the landing. He rowed badly at first and then less badly, and by the far bank he had found Crane's rhythm, slow and without ever stopping.",
+        "start": 1924,
+        "end": 2104
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "action",
+      "object": "used father's compass at crossroads",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "other",
+      "evidence": {
+        "quote": "At the crossroads by the gibbet Elspeth took out the silver compass and checked their way, though she knew it already.",
+        "start": 366,
+        "end": 484
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "age",
+      "object": "16 years old",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "age",
+      "evidence": {
+        "quote": "Jonas was sixteen, broad in the shoulders and quick to laugh",
+        "start": 2377,
+        "end": 2437
+      }
+    },
+    {
+      "subject": "Absalom Crane",
+      "predicate": "age",
+      "object": "71 years old",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "age",
+      "evidence": {
+        "quote": "Crane was seventy-one years old",
+        "start": 359,
+        "end": 390
+      }
+    },
+    {
+      "subject": "strongbox",
+      "predicate": "contents",
+      "object": "bags of Wenlow parish money and letter from father",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "Inside, wrapped in oilcloth, were the bags of the Wenlow parish money, and on top of them a letter in her father's hand",
+        "start": 1546,
+        "end": 1665
+      }
+    },
+    {
+      "subject": "Tobias Marrow",
+      "predicate": "identity",
+      "object": "pilot of barge Margery",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "identity",
+      "evidence": {
+        "quote": "Ten years ago your father was the pilot of the barge Margery, out of Stavely",
+        "start": 1055,
+        "end": 1131
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "location",
+      "object": "Gorse Hill (abbey ruins)",
+      "validFromChapter": 4,
+      "validUntilChapter": 4,
+      "sourceChapter": 4,
+      "kind": "location",
+      "evidence": {
+        "quote": "On the fifth of October they set out for the abbey ruins on Gorse Hill",
+        "start": 25,
+        "end": 95
+      },
+      "endEvidence": {
+        "quote": "After the service she walked down to the ferry landing with Captain Thorne.",
+        "start": 282,
+        "end": 357
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "location",
+      "object": "Gorse Hill (abbey ruins)",
+      "validFromChapter": 4,
+      "validUntilChapter": 4,
+      "sourceChapter": 4,
+      "kind": "location",
+      "evidence": {
+        "quote": "On the fifth of October they set out for the abbey ruins on Gorse Hill",
+        "start": 25,
+        "end": 95
+      },
+      "endEvidence": {
+        "quote": "Jonas was sitting in the stern.",
+        "start": 1213,
+        "end": 1244
+      }
+    },
+    {
+      "subject": "Captain Ida Thorne",
+      "predicate": "location",
+      "object": "Gorse Hill (abbey ruins)",
+      "validFromChapter": 4,
+      "validUntilChapter": 4,
+      "sourceChapter": 4,
+      "kind": "location",
+      "evidence": {
+        "quote": "Captain Ida Thorne stood in the doorway with the mist behind her",
+        "start": 1884,
+        "end": 1948
+      },
+      "endEvidence": {
+        "quote": "After the service she walked down to the ferry landing with Captain Thorne.",
+        "start": 282,
+        "end": 357
+      }
+    },
+    {
+      "subject": "barge Margery",
+      "predicate": "location",
+      "object": "Lune river",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "location",
+      "evidence": {
+        "quote": "The Margery went down in the Lune on a clear night with a full hold",
+        "start": 1133,
+        "end": 1200
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "location",
+      "object": "Stavely",
+      "validFromChapter": 2,
+      "validUntilChapter": 2,
+      "sourceChapter": 2,
+      "kind": "location",
+      "evidence": {
+        "quote": "They took a room at the Heron, an inn by the bridge.",
+        "start": 670,
+        "end": 722
+      },
+      "endEvidence": {
+        "quote": "It was the fourth of October when they came back to Wenlow.",
+        "start": 25,
+        "end": 84
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "location",
+      "object": "Stavely",
+      "validFromChapter": 2,
+      "validUntilChapter": 2,
+      "sourceChapter": 2,
+      "kind": "location",
+      "evidence": {
+        "quote": "They took a room at the Heron, an inn by the bridge.",
+        "start": 670,
+        "end": 722
+      },
+      "endEvidence": {
+        "quote": "It was the fourth of October when they came back to Wenlow.",
+        "start": 25,
+        "end": 84
+      }
+    },
+    {
+      "subject": "strongbox",
+      "predicate": "location",
+      "object": "under third flagstone of abbey chapel on Gorse Hill",
+      "validFromChapter": 3,
+      "validUntilChapter": 4,
+      "sourceChapter": 3,
+      "kind": "location",
+      "evidence": {
+        "quote": "The strongbox is under the third flagstone of the abbey chapel on Gorse Hill",
+        "start": 1311,
+        "end": 1387
+      },
+      "endEvidence": {
+        "quote": "The strongbox was already locked in the vestry, with the vicar and two churchwardens sworn to it.",
+        "start": 358,
+        "end": 455
+      }
+    },
+    {
+      "subject": "strongbox",
+      "predicate": "location",
+      "object": "vestry with vicar and two churchwardens",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "location",
+      "evidence": {
+        "quote": "The strongbox was already locked in the vestry, with the vicar and two churchwardens sworn to it.",
+        "start": 358,
+        "end": 455
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "location",
+      "object": "Wenlow",
+      "validFromChapter": 3,
+      "validUntilChapter": 3,
+      "sourceChapter": 3,
+      "kind": "location",
+      "evidence": {
+        "quote": "It was the fourth of October when they came back to Wenlow.",
+        "start": 25,
+        "end": 84
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "location",
+      "object": "Wenlow",
+      "validFromChapter": 3,
+      "validUntilChapter": 3,
+      "sourceChapter": 3,
+      "kind": "location",
+      "evidence": {
+        "quote": "It was the fourth of October when they came back to Wenlow.",
+        "start": 25,
+        "end": 84
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "location",
+      "object": "Wenlow churchyard/ferry landing",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "location",
+      "evidence": {
+        "quote": "After the service she walked down to the ferry landing with Captain Thorne.",
+        "start": 282,
+        "end": 357
+      }
+    },
+    {
+      "subject": "Captain Ida Thorne",
+      "predicate": "location",
+      "object": "Wenlow churchyard/ferry landing",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "location",
+      "evidence": {
+        "quote": "After the service she walked down to the ferry landing with Captain Thorne.",
+        "start": 282,
+        "end": 357
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "location",
+      "object": "Wenlow ferry landing",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "location",
+      "evidence": {
+        "quote": "Jonas was sitting in the stern.",
+        "start": 1213,
+        "end": 1244
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "occupation",
+      "object": "ferryman",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "identity",
+      "evidence": {
+        "quote": "Someone has to,\" he said, when Elspeth looked at him. \"The parish will license me if the warden speaks for me. I asked the vicar.\"",
+        "start": 1346,
+        "end": 1476
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "occupation",
+      "object": "works at mill",
+      "validFromChapter": 1,
+      "validUntilChapter": 4,
+      "sourceChapter": 1,
+      "kind": "identity",
+      "evidence": {
+        "quote": "where her brother Jonas worked the sluice gates",
+        "start": 2328,
+        "end": 2375
+      },
+      "endEvidence": {
+        "quote": "Someone has to,\" he said, when Elspeth looked at him. \"The parish will license me if the warden speaks for me. I asked the vicar.\"",
+        "start": 1346,
+        "end": 1476
+      }
+    },
+    {
+      "subject": "mysterious letter",
+      "predicate": "origin",
+      "object": "Stavely",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "location",
+      "evidence": {
+        "quote": "She says the letter was posted in Stavely",
+        "start": 2782,
+        "end": 2823
+      }
+    },
+    {
+      "subject": "unknown person",
+      "predicate": "other",
+      "object": "boot prints in mud under cottage sill",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "in the morning they found boot prints in the mud under the sill",
+        "start": 2937,
+        "end": 3000
+      }
+    },
+    {
+      "subject": "unknown person",
+      "predicate": "other",
+      "object": "broke window at Marrows' cottage",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "But that night, back in Wenlow, someone broke a window at the Marrows' cottage and left without taking anything",
+        "start": 2820,
+        "end": 2931
+      },
+      "endEvidence": {
+        "quote": "in the morning they found boot prints in the mud under the sill",
+        "start": 2937,
+        "end": 3000
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "other",
+      "object": "carried spade and lantern",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "Jonas carried the spade and the lantern",
+        "start": 2619,
+        "end": 2658
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "other",
+      "object": "carried strongbox down hill",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "Elspeth carried the strongbox down the hill herself, though it bruised her arms",
+        "start": 2538,
+        "end": 2617
+      }
+    },
+    {
+      "subject": "Captain Ida Thorne",
+      "predicate": "other",
+      "object": "followed Elspeth and Jonas from Wenlow",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "I followed Crane's nurse, who told me where you had gone, and I followed you from the village",
+        "start": 2053,
+        "end": 2146
+      },
+      "endEvidence": {
+        "quote": "Sixty pounds in gold. The parish council will be very glad, and some of them will be very frightened",
+        "start": 2201,
+        "end": 2301
+      }
+    },
+    {
+      "subject": "Captain Ida Thorne",
+      "predicate": "other",
+      "object": "identifies money as 60 pounds in gold",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "Sixty pounds in gold. The parish council will be very glad, and some of them will be very frightened",
+        "start": 2201,
+        "end": 2301
+      },
+      "endEvidence": {
+        "quote": "That is wiser than giving it to me. I will walk beside you",
+        "start": 2476,
+        "end": 2534
+      }
+    },
+    {
+      "subject": "Captain Ida Thorne",
+      "predicate": "other",
+      "object": "walked with Elspeth and Jonas to Wenlow",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "That is wiser than giving it to me. I will walk beside you",
+        "start": 2476,
+        "end": 2534
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "plan",
+      "object": "retrieve strongbox from abbey chapel",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "goal",
+      "evidence": {
+        "quote": "We go tomorrow. Before anyone on the parish council hears that Crane is dead.",
+        "start": 2655,
+        "end": 2732
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "plan",
+      "object": "retrieve strongbox from abbey chapel",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "goal",
+      "evidence": {
+        "quote": "We go tomorrow. Before anyone on the parish council hears that Crane is dead.",
+        "start": 2655,
+        "end": 2732
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "plan",
+      "object": "travel to Stavely",
+      "validFromChapter": 1,
+      "validUntilChapter": 2,
+      "sourceChapter": 1,
+      "kind": "goal",
+      "evidence": {
+        "quote": "Then we go to Stavely,\" Jonas said. \"It is a full day's walk. We can leave at dawn",
+        "start": 2828,
+        "end": 2910
+      },
+      "endEvidence": {
+        "quote": "We go tomorrow. Before anyone on the parish council hears that Crane is dead.",
+        "start": 2655,
+        "end": 2732
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "7 shillings in purse",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "possession",
+      "evidence": {
+        "quote": "The smith wanted two shillings for the pair, and she paid him, which left her seven",
+        "start": 221,
+        "end": 304
+      },
+      "endEvidence": {
+        "quote": "Inside, wrapped in oilcloth, were the bags of the Wenlow parish money, and on top of them a letter in her father's hand",
+        "start": 1546,
+        "end": 1665
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "7 shillings in purse",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "possession",
+      "evidence": {
+        "quote": "had seven shillings in her purse, the strongbox was in the vestry, her father's name was clean, and the river went past Wenlow as it always had",
+        "start": 2260,
+        "end": 2403
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "9 shillings in purse",
+      "validFromChapter": 2,
+      "validUntilChapter": 2,
+      "sourceChapter": 2,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Elspeth paid him three shillings for the room and their supper, which left her nine.",
+        "start": 814,
+        "end": 898
+      },
+      "endEvidence": {
+        "quote": "He reached under his pillow with a shaking hand and pressed the ledger and a small iron key into her hands.",
+        "start": 1123,
+        "end": 1230
+      }
+    },
+    {
+      "subject": "ferry ledger",
+      "predicate": "possession",
+      "object": "Captain Ida Thorne",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "possession",
+      "evidence": {
+        "quote": "She gave the ledger to Captain Thorne. Thorne held it for a moment without opening it",
+        "start": 667,
+        "end": 752
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "possession",
+      "object": "Crane's oar",
+      "validFromChapter": 5,
+      "validUntilChapter": 4,
+      "sourceChapter": 5,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Jonas was sitting in the stern. He had Crane's oar across his knees",
+        "start": 1213,
+        "end": 1280
+      },
+      "endEvidence": {
+        "quote": "Jonas was sitting in the stern. He had Crane's oar across his knees and their father's silver compass on a string around his neck.",
+        "start": 1213,
+        "end": 1343
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "father's silver compass",
+      "validFromChapter": 1,
+      "validUntilChapter": 0,
+      "sourceChapter": 1,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Elspeth Marrow waited at the ferry landing with her father's silver compass in her coat pocket",
+        "start": 120,
+        "end": 214
+      },
+      "endEvidence": {
+        "quote": "and twelve shillings in her purse, which was all the money she had in the world",
+        "start": 215,
+        "end": 294
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "possession",
+      "object": "father's silver compass",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Jonas was sitting in the stern. He had Crane's oar across his knees and their father's silver compass on a string around his neck.",
+        "start": 1213,
+        "end": 1343
+      }
+    },
+    {
+      "subject": "Absalom Crane",
+      "predicate": "possession",
+      "object": "ferry ledger",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "possession",
+      "evidence": {
+        "quote": "He had three passengers that morning. Two were drovers in wet coats. The third was a tall woman in a blue cloak with a brass badge pinned at her throat.",
+        "start": 603,
+        "end": 755
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "ferry ledger",
+      "validFromChapter": 3,
+      "validUntilChapter": 2,
+      "sourceChapter": 3,
+      "kind": "possession",
+      "evidence": {
+        "quote": "He reached under his pillow with a shaking hand and pressed the ledger and a small iron key into her hands.",
+        "start": 1123,
+        "end": 1230
+      },
+      "endEvidence": {
+        "quote": "He reached under his pillow with a shaking hand and pressed the ledger and a small iron key into her hands.",
+        "start": 1123,
+        "end": 1230
+      }
+    },
+    {
+      "subject": "strongbox",
+      "predicate": "possession",
+      "object": "gold",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Without the gold, the ledger is only an old man's word.",
+        "start": 1839,
+        "end": 1894
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "letter from father",
+      "validFromChapter": 4,
+      "validUntilChapter": 4,
+      "sourceChapter": 4,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Inside, wrapped in oilcloth, were the bags of the Wenlow parish money, and on top of them a letter in her father's hand",
+        "start": 1546,
+        "end": 1665
+      },
+      "endEvidence": {
+        "quote": "had seven shillings in her purse, the strongbox was in the vestry, her father's name was clean, and the river went past Wenlow as it always had",
+        "start": 2260,
+        "end": 2403
+      }
+    },
+    {
+      "subject": "Jonas Marrow",
+      "predicate": "possession",
+      "object": "silver compass",
+      "validFromChapter": 3,
+      "validUntilChapter": 4,
+      "sourceChapter": 3,
+      "kind": "possession",
+      "evidence": {
+        "quote": "When she could speak again she took the silver compass from her pocket and gave it to Jonas.",
+        "start": 2378,
+        "end": 2470
+      },
+      "endEvidence": {
+        "quote": "Jonas was sitting in the stern. He had Crane's oar across his knees",
+        "start": 1213,
+        "end": 1280
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "small iron key",
+      "validFromChapter": 3,
+      "validUntilChapter": 3,
+      "sourceChapter": 3,
+      "kind": "possession",
+      "evidence": {
+        "quote": "He reached under his pillow with a shaking hand and pressed the ledger and a small iron key into her hands.",
+        "start": 1123,
+        "end": 1230
+      },
+      "endEvidence": {
+        "quote": "Before they left, Elspeth went to the smithy and bought a spade and a lantern",
+        "start": 142,
+        "end": 219
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "spade and lantern",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Before they left, Elspeth went to the smithy and bought a spade and a lantern",
+        "start": 142,
+        "end": 219
+      },
+      "endEvidence": {
+        "quote": "The smith wanted two shillings for the pair, and she paid him, which left her seven",
+        "start": 221,
+        "end": 304
+      }
+    },
+    {
+      "subject": "barge Margery",
+      "predicate": "possession",
+      "object": "strongbox with 60 pounds in gold",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "possession",
+      "evidence": {
+        "quote": "The Margery was not carrying grain, whatever the shipping list says. She was carrying a strongbox with the Wenlow parish money in it, sixty pounds in gold, sent to the bank at Stavely for safekeeping.",
+        "start": 1935,
+        "end": 2135
+      }
+    },
+    {
+      "subject": "Elspeth Marrow",
+      "predicate": "possession",
+      "object": "twelve shillings in purse",
+      "validFromChapter": 1,
+      "validUntilChapter": 1,
+      "sourceChapter": 1,
+      "kind": "possession",
+      "evidence": {
+        "quote": "and twelve shillings in her purse, which was all the money she had in the world",
+        "start": 215,
+        "end": 294
+      },
+      "endEvidence": {
+        "quote": "Elspeth paid him three shillings for the room and their supper, which left her nine.",
+        "start": 814,
+        "end": 898
+      }
+    },
+    {
+      "subject": "mysterious letter",
+      "predicate": "possession",
+      "object": "warden's office",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Someone has written to the warden's office to say they know where her cargo went",
+        "start": 1282,
+        "end": 1362
+      }
+    },
+    {
+      "subject": "mysterious letter",
+      "predicate": "signature",
+      "object": "Tobias Marrow's name",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "other",
+      "evidence": {
+        "quote": "The letter is signed with your father's name",
+        "start": 1364,
+        "end": 1408
+      }
+    },
+    {
+      "subject": "Absalom Crane",
+      "predicate": "status",
+      "object": "buried in Wenlow churchyard",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "status",
+      "evidence": {
+        "quote": "On the seventh of October they buried Absalom Crane in Wenlow churchyard, on the slope above the river where he could hear the water.",
+        "start": 27,
+        "end": 160
+      }
+    },
+    {
+      "subject": "barge Margery",
+      "predicate": "status",
+      "object": "cargo stolen",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "status",
+      "evidence": {
+        "quote": "The strongbox was never found.",
+        "start": 2136,
+        "end": 2166
+      }
+    },
+    {
+      "subject": "Tobias Marrow",
+      "predicate": "status",
+      "object": "dead",
+      "validFromChapter": 1,
+      "validUntilChapter": 1,
+      "sourceChapter": 1,
+      "kind": "status",
+      "evidence": {
+        "quote": "My father is dead. He drowned with the Margery.",
+        "start": 1442,
+        "end": 1489
+      },
+      "endEvidence": {
+        "quote": "I think somebody did. Your father is the easiest man to blame, because he is not here to argue.",
+        "start": 2221,
+        "end": 2316
+      }
+    },
+    {
+      "subject": "Absalom Crane",
+      "predicate": "status",
+      "object": "dead",
+      "validFromChapter": 3,
+      "validUntilChapter": 4,
+      "sourceChapter": 3,
+      "kind": "status",
+      "evidence": {
+        "quote": "Absalom Crane died a little before midnight, with the lamp still burning and the window open to the sound of the river.",
+        "start": 2116,
+        "end": 2235
+      },
+      "endEvidence": {
+        "quote": "On the seventh of October they buried Absalom Crane in Wenlow churchyard, on the slope above the river where he could hear the water.",
+        "start": 27,
+        "end": 160
+      }
+    },
+    {
+      "subject": "Absalom Crane",
+      "predicate": "status",
+      "object": "gravely ill",
+      "validFromChapter": 2,
+      "validUntilChapter": 2,
+      "sourceChapter": 2,
+      "kind": "status",
+      "evidence": {
+        "quote": "I have just had word from Wenlow. Absalom Crane is ill. The doctor says it is his chest, and that he may not see the week out.",
+        "start": 2406,
+        "end": 2532
+      },
+      "endEvidence": {
+        "quote": "Absalom Crane lay propped on three pillows, grey in the face, and his breath came short and loud.",
+        "start": 285,
+        "end": 382
+      }
+    },
+    {
+      "subject": "strongbox",
+      "predicate": "status",
+      "object": "opened",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "status",
+      "evidence": {
+        "quote": "It would not turn. She tried again, and Jonas lit the lantern so that she could see, and on the third try something gave and the lid came up",
+        "start": 1403,
+        "end": 1543
+      }
+    },
+    {
+      "subject": "barge Margery",
+      "predicate": "status",
+      "object": "sunk",
+      "validFromChapter": 1,
+      "validUntilChapter": 1,
+      "sourceChapter": 1,
+      "kind": "status",
+      "evidence": {
+        "quote": "The Margery went down in the Lune on a clear night with a full hold",
+        "start": 1133,
+        "end": 1200
+      },
+      "endEvidence": {
+        "quote": "The strongbox was never found.",
+        "start": 2136,
+        "end": 2166
+      }
+    },
+    {
+      "subject": "Tobias Marrow",
+      "predicate": "status",
+      "object": "suspected of theft",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "other",
+      "evidence": {
+        "quote": "I think somebody did. Your father is the easiest man to blame, because he is not here to argue.",
+        "start": 2221,
+        "end": 2316
+      }
+    },
+    {
+      "subject": "Tobias Marrow",
+      "predicate": "time",
+      "object": "died 10 years ago",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "time",
+      "evidence": {
+        "quote": "Ten years ago your father was the pilot of the barge Margery",
+        "start": 1055,
+        "end": 1115
+      }
+    }
+  ]
+}
