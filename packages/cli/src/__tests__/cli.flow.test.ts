@@ -92,6 +92,67 @@ describe("CLI mini-flows", () => {
     expect(run(["lint", "lint-novel"])).toContain("ch3 warning continuity/dead-entity-acts [extracted]");
   });
 
+  it("suppresses lint findings per instance and per rule, saved in the book", async () => {
+    run(["init"]);
+    await saveWorkManifest(projectDir, createWorkManifest({
+      id: "lint-novel",
+      title: "Lint Novel",
+      profileId: "longform-novel",
+      language: "en",
+    }));
+    const fact = (subject: string, predicate: string, object: string, chapter: number) => ({
+      subject, predicate, object, validFromChapter: chapter, validUntilChapter: null, sourceChapter: chapter,
+    });
+    const bookDir = new StateManager(projectDir).bookDir("lint-novel");
+    await saveRuntimeStateSnapshot(bookDir, {
+      manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 4, projectionVersion: 1 },
+      currentState: {
+        chapter: 4,
+        facts: [fact("Mira", "status", "dead", 2), fact("Mira", "location", "harbour", 3), fact("Mira", "holds", "lamp", 4)],
+      },
+      hooks: { hooks: [] },
+      chapterSummaries: { rows: [] },
+    });
+    type Lint = {
+      books: Array<{
+        diagnostics: Array<{ chapter: number; fingerprint: string }>;
+        suppressed: Array<{ diagnostic: { chapter: number }; suppression: { kind: string; reason: string } }>;
+      }>;
+    };
+    const lint = () => (JSON.parse(run(["lint", "lint-novel", "--json"])) as Lint).books[0]!;
+
+    const before = lint();
+    expect(before.diagnostics.map((d) => d.chapter)).toEqual([3, 4]);
+    const fingerprint = before.diagnostics[0]!.fingerprint;
+    expect(run(["lint", "lint-novel", "--verbose"])).toContain(`(${fingerprint})`);
+
+    run(["lint", "suppress", "continuity/dead-entity-acts", "lint-novel", "--reason", "flashback", "--fingerprint", fingerprint]);
+    const saved = JSON.parse(await readFile(join(bookDir, "story", "plotlint", "suppressions.json"), "utf-8"));
+    expect(saved).toMatchObject({
+      version: 1,
+      suppressions: [{ kind: "instance", ruleId: "continuity/dead-entity-acts", fingerprint, reason: "flashback", chapter: 3 }],
+    });
+    const afterInstance = lint();
+    expect(afterInstance.diagnostics.map((d) => d.chapter)).toEqual([4]);
+    expect(afterInstance.suppressed.map((s) => [s.diagnostic.chapter, s.suppression.reason])).toEqual([[3, "flashback"]]);
+    expect(run(["lint", "lint-novel"])).toContain("1 suppressed (--show-suppressed to list)");
+    expect(run(["lint", "lint-novel", "--show-suppressed"])).toContain("[suppressed: flashback] ch3 warning");
+
+    run(["lint", "suppress", "continuity/dead-entity-acts", "--reason", "ghost story"]);
+    const afterRule = lint();
+    expect(afterRule.diagnostics).toEqual([]);
+    expect(afterRule.suppressed.map((s) => [s.diagnostic.chapter, s.suppression.kind])).toEqual([[3, "instance"], [4, "rule"]]);
+    expect(run(["lint", "lint-novel"])).toContain("2 suppressed");
+
+    run(["lint", "unsuppress", "continuity/dead-entity-acts"]);
+    expect(lint().diagnostics.map((d) => d.chapter)).toEqual([4]);
+    const unsuppressed = JSON.parse(run(["lint", "unsuppress", "continuity/dead-entity-acts", "lint-novel", "--fingerprint", fingerprint, "--json"]));
+    expect(unsuppressed.removed.map((s: { kind: string }) => s.kind)).toEqual(["instance"]);
+    expect(lint().suppressed).toEqual([]);
+    expect(() => run(["lint", "suppress", "continuity/dead-entity-acts", "--reason", "x", "--fingerprint", "0000000000000000"]))
+      .toThrow(/No continuity\/dead-entity-acts finding/);
+  }, 120_000);
+
   function run(args: string[]): string {
     return execFileSync("node", [cliEntry, ...args], {
       cwd: projectDir,
