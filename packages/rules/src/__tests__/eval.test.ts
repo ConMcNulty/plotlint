@@ -50,6 +50,24 @@ describe("real extraction of the clean book", () => {
     };
     expect(checkSnapshot(snapshot, { chapters: clean.chapters, book: clean.book })).toEqual([]);
   });
+
+  it("raises at most a couple of structural notes, even read as a finished book", async () => {
+    const dir = join(corpusRoot, "wenlow", "extracted", "glm-4.5-flash");
+    const read = async (name: string) => JSON.parse(await readFile(join(dir, name), "utf-8"));
+    const snapshot = {
+      manifest: await read("manifest.json"),
+      currentState: await read("current_state.json"),
+      hooks: await read("hooks.json"),
+      chapterSummaries: await read("chapter_summaries.json"),
+    };
+    const structure = builtinRules.filter((rule) => rule.layer === "structure");
+    const finished = { ...clean.book, plan: { targetChapters: 5, status: "completed" } };
+    const found = checkSnapshot(snapshot, { rules: structure, chapters: clean.chapters, book: finished });
+    expect(found.length).toBeLessThanOrEqual(2);
+    expect(found.every((d) => d.severity === "note")).toBe(true);
+    // Unfinished (no plan), only overdue promises count, and none are.
+    expect(checkSnapshot(snapshot, { rules: structure, chapters: clean.chapters, book: clean.book })).toEqual([]);
+  });
 });
 
 describe("mutators", () => {
@@ -72,9 +90,10 @@ describe("mutators", () => {
   });
 
   it("are caught by their rule: every registered continuity rule has a mutator and catches most of its mutants", () => {
+    // Structure rules read hooks or scene annotations, which the seeded mutants do not change;
+    // structure.test.ts and scene-structure.test.ts cover them.
     const result = scoreRules(clean, allMutators);
-    // Structure rules read scene annotations, which the seeded mutants do not change.
-    for (const rule of builtinRules.filter((entry) => entry.layer === "continuity")) {
+    for (const rule of builtinRules.filter((r) => r.layer === "continuity")) {
       const score = result.rules.find((r) => r.ruleId === rule.id)!;
       expect(score.mutants, rule.id).toBeGreaterThanOrEqual(10);
       expect(score.recall!, rule.id).toBeGreaterThanOrEqual(0.5);

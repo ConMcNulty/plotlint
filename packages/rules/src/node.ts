@@ -1,7 +1,9 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { z } from "zod";
-import { FramesFileSchema, RuleConfigFileSchema, type BookRuleData } from "./book.js";
+import { loadVerdicts } from "@plotlint/diagnostics/node";
+import { adaptiveOverlay, type AdaptiveOptions } from "./adaptive.js";
+import { FramesFileSchema, PacksFileSchema, RuleConfigFileSchema, type BookPlan, type BookRuleData, type RuleConfigFile } from "./book.js";
 import { InvariantsFileSchema } from "./invariants.js";
 import { SceneAnnotationsFileSchema } from "./scene-annotations.js";
 import { TravelFileSchema } from "./travel.js";
@@ -30,19 +32,48 @@ export async function readPlotlintFile<S extends z.ZodTypeAny>(bookDir: string, 
   return parsed.data;
 }
 
-/** Everything the rule engine reads from a book's plotlint folder: `rules.json`, `frames.json`, `travel.json`, `invariants.json` and `scenes.json`. */
+/**
+ * The length plan in `<bookDir>/book.json` (target chapters, status). InkOS owns
+ * that file, so it is read leniently: a missing or unreadable file, or fields of
+ * the wrong type, leave the plan out rather than failing the lint.
+ */
+export async function readBookPlan(bookDir: string): Promise<BookPlan | undefined> {
+  let json: unknown;
+  try {
+    json = JSON.parse(await readFile(join(bookDir, "book.json"), "utf-8"));
+  } catch {
+    return undefined;
+  }
+  if (typeof json !== "object" || json === null) return undefined;
+  const { targetChapters, status } = json as Record<string, unknown>;
+  const plan: BookPlan = {
+    ...(typeof targetChapters === "number" && Number.isInteger(targetChapters) && targetChapters > 0 ? { targetChapters } : {}),
+    ...(typeof status === "string" ? { status } : {}),
+  };
+  return Object.keys(plan).length ? plan : undefined;
+}
+
+/** Everything the rule engine reads for a book: `rules.json`, `frames.json`, `travel.json`, `invariants.json`, `packs.json`, `scenes.json`, and the plan in `book.json`. */
 export async function loadBookRuleData(bookDir: string): Promise<BookRuleData> {
-  const [config, frames, travel, invariants, scenes] = await Promise.all([
+  const [config, frames, travel, invariants, packs, plan, scenes] = await Promise.all([
     readPlotlintFile(bookDir, "rules.json", RuleConfigFileSchema),
     readPlotlintFile(bookDir, "frames.json", FramesFileSchema),
     readPlotlintFile(bookDir, "travel.json", TravelFileSchema),
     readPlotlintFile(bookDir, "invariants.json", InvariantsFileSchema),
+    readPlotlintFile(bookDir, "packs.json", PacksFileSchema),
+    readBookPlan(bookDir),
     readPlotlintFile(bookDir, "scenes.json", SceneAnnotationsFileSchema),
   ]);
   return {
     ...(config ? { config } : {}), ...(frames ? { frames } : {}), ...(travel ? { travel } : {}), ...(invariants ? { invariants } : {}),
+    ...(packs ? { packs } : {}), ...(plan ? { plan } : {}),
     ...(scenes ? { scenes } : {}),
   };
+}
+
+/** The overlay a book's verdicts imply (`story/plotlint/verdicts.jsonl`, see adaptive.ts); empty without verdicts. */
+export async function loadAdaptiveOverlay(bookDir: string, options: AdaptiveOptions = {}): Promise<RuleConfigFile> {
+  return adaptiveOverlay((await loadVerdicts(bookDir)).verdicts, options);
 }
 
 /** Validate and write one plotlint JSON file, creating the folder; returns its path. */

@@ -17,6 +17,7 @@ import { timelineOrder } from "./rules/timeline-order.js";
 import { twoPlacesAtOnce } from "./rules/two-places-at-once.js";
 import { knowledgeLeak } from "./rules/knowledge-leak.js";
 import { worldRuleBroken } from "./rules/world-rule-broken.js";
+import { structureRules } from "./rules/structure/index.js";
 import { goalConflictOutcome } from "./rules/goal-conflict-outcome.js";
 import { povDiscipline } from "./rules/pov-discipline.js";
 import { protagonistAgency } from "./rules/protagonist-agency.js";
@@ -30,6 +31,7 @@ export const builtinRules: ReadonlyArray<Rule> = [
   knowledgeLeak,
   impossibleTravel, timelineOrder,
   invariantRule,
+  ...structureRules,
   sceneTurn, goalConflictOutcome, protagonistAgency, tensionCurveRule, povDiscipline,
 ];
 

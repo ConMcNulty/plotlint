@@ -1,6 +1,7 @@
 import type { Diagnostic } from "@plotlint/diagnostics";
 import type { SceneAnnotation } from "../scene-annotations.js";
 import type { Rule } from "../types.js";
+import { isFinished } from "./structure/common.js";
 import { annotatedScenes, anyQuote, chapterSpan, numberOption, percent, structureFinding } from "./scene-structure.js";
 
 // The tension curve: each chapter's stakes, the highest of its scenes' judged
@@ -10,7 +11,8 @@ import { annotatedScenes, anyQuote, chapterSpan, numberOption, percent, structur
 //   whose stakes stay within `flatBand` (default 1) of each other, in a book of
 //   at least `minChapters` (default 8) annotated chapters (models tend to give
 //   every scene of a short book much the same stakes);
-// - an early peak, only once the book is finished (option `finished: true`):
+// - an early peak, only once the book is finished (option `finished`, else
+//   book.json's status "completed" or its target chapter count reached):
 //   the last chapter at the highest stakes comes before `earlyPeak` (default
 //   0.6) of the way through, in a book of at least `minChapters` annotated
 //   chapters.
@@ -41,14 +43,15 @@ export const tensionCurveRule: Rule = {
   title: "Tension curve",
   rationale: "Pressure on the protagonist should build toward the climax, with rises and releases along the way. Long stretches at one level of stakes, or a peak well before the end, often leave the last part of a book feeling like an afterthought.",
   source: "Gustav Freytag, Die Technik des Dramas (1863); Robert McKee, Story (1997), 'progressive complications'",
-  check({ book, chapters, options }) {
+  check(context) {
+    const { book, chapters, options } = context;
     const curve = tensionCurve(annotatedScenes(book));
     if (curve.length === 0) return [];
     const flatRun = Math.max(2, numberOption(options, "flatRun", 5));
     const minChapters = numberOption(options, "minChapters", 8);
     const band = numberOption(options, "flatBand", 1);
     const diagnostics: Diagnostic[] = [];
-    const context = chapters ? { chapters } : {};
+    const located = chapters ? { chapters } : {};
 
     for (let i = 0; curve.length >= minChapters && i < curve.length;) {
       let low = curve[i]!.stakes;
@@ -68,7 +71,7 @@ export const tensionCurveRule: Rule = {
           chapter: run[0]!.chapter,
           summary: `Tension stays flat across ${chapterSpan(run[0]!.chapter, run[run.length - 1]!.chapter)}: stakes ${low === high ? `at ${low}` : `between ${low} and ${high}`} for ${run.length} chapters.`,
           evidence: [`stakes: ${curveLine(run)}`],
-          ...context,
+          ...located,
         }));
         i = j;
       } else {
@@ -76,7 +79,7 @@ export const tensionCurveRule: Rule = {
       }
     }
 
-    if (options.finished === true && curve.length >= minChapters) {
+    if (isFinished(context, curve[curve.length - 1]!.chapter) && curve.length >= minChapters) {
       const top = Math.max(...curve.map((point) => point.stakes));
       const index = curve.map((point) => point.stakes).lastIndexOf(top);
       const position = (index + 1) / curve.length;
@@ -88,7 +91,7 @@ export const tensionCurveRule: Rule = {
           summary: `Peak tension is in ch ${peak.chapter} of ${curve.length} annotated chapters (${percent(position)} of the way through), and the stakes never return to it.`,
           evidence: [`stakes: ${curveLine(curve)}`],
           at: { scene: peak.scene, quote: anyQuote(peak.scene) },
-          ...context,
+          ...located,
         }));
       }
     }

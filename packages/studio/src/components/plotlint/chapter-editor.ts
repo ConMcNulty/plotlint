@@ -2,6 +2,7 @@ import { Editor, Extension } from "@tiptap/core";
 import { history, redo, undo } from "@tiptap/pm/history";
 import {
   Diagnostics,
+  diagnosticsPluginKey,
   Navigation,
   PlainTextDocument,
   docToText,
@@ -14,6 +15,7 @@ import {
   type TextRange,
 } from "@plotlint/editor";
 import type { LintDiagnostic, LintFunction } from "./lint-client";
+import type { VerdictEvent } from "./verdict-client";
 
 /**
  * The chapter editor without React: a Tiptap editor over the chapter's plain
@@ -65,6 +67,14 @@ export interface ChapterEditorOptions {
   /** Select this range once the editor opens (a jump from another chapter). */
   readonly selection?: TextRange;
   readonly editorClass?: string;
+  /**
+   * Called with the verdicts the editor sees for itself: a quick fix applied
+   * (`fix`) and a finding that went away after the writer edited inside its
+   * range (`edited`, see `editedAway`).
+   */
+  readonly onVerdicts?: (events: VerdictEvent[]) => void;
+  /** Fingerprints hidden for this session ("Not useful"); shared so a reopened chapter keeps them hidden. */
+  readonly hidden?: Set<string>;
 }
 
 export interface ChapterEditor {
@@ -75,6 +85,8 @@ export interface ChapterEditor {
   /** Re-lint changed paragraphs now instead of waiting for the debounce. */
   flush(): Promise<void>;
   applyFix(id: string, fixIndex: number): boolean;
+  /** Hide one finding for the rest of the session, here and in later lints. */
+  hide(diagnostic: LintDiagnostic): void;
   /** Select a drawn diagnostic's text and scroll it into view. */
   reveal(id: string): boolean;
   /** Select a plain-text range and scroll it to the middle of the view. */
@@ -99,6 +111,10 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
   let stateMissing = false;
   let error: string | null = null;
   let lastDecorations: unknown;
+  const hidden = options.hidden ?? new Set<string>();
+  const isShown = (diagnostic: LintDiagnostic) => !hidden.has(diagnostic.fingerprint);
+  // Each finding counts as edited away at most once per editor.
+  const reportedEdited = new Set<string>();
 
   const computeProblems = (): ProblemsSnapshot => ({
     ranged: editor.storage.diagnostics.all(),
@@ -145,15 +161,21 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
         const result = await lint({ text: lintSnapshot.text, ...(ranges ? { ranges } : {}) });
         if (destroyed) return;
         error = null;
-        unranged = result.diagnostics.filter((diagnostic) => !diagnostic.range);
+        const shown = result.diagnostics.filter(isShown);
+        unranged = shown.filter((diagnostic) => !diagnostic.range);
         stateMissing = result.stateMissing;
         if (full) suppressed = result.suppressed;
-        const ranged = result.diagnostics.filter((diagnostic) => diagnostic.range);
+        const ranged = shown.filter((diagnostic) => diagnostic.range);
+        const before = editor.storage.diagnostics.all();
         editor.commands.setDiagnostics(ranged, {
           sourceId,
           version: lintSnapshot.version,
           ...(full ? {} : { ranges: result.ranges ?? ranges }),
         });
+        const edited = editedAway(before, editor.storage.diagnostics.all())
+          .filter((diagnostic) => isShown(diagnostic) && !reportedEdited.has(diagnostic.fingerprint));
+        for (const diagnostic of edited) reportedEdited.add(diagnostic.fingerprint);
+        if (edited.length > 0) options.onVerdicts?.(edited.map((diagnostic) => ({ diagnostic, action: "edited" as const })));
       } catch (caught) {
         if (destroyed) return;
         error = caught instanceof Error ? caught.message : String(caught);
@@ -241,7 +263,22 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
     getText: () => docToText(editor.state.doc),
     relintAll,
     flush: lintNow,
-    applyFix: (id, fixIndex) => editor.chain().focus().applyDiagnosticFix(id, fixIndex).run(),
+    applyFix: (id, fixIndex) => {
+      const entry = editor.storage.diagnostics.find(id);
+      const applied = editor.chain().focus().applyDiagnosticFix(id, fixIndex).run();
+      if (applied && entry) options.onVerdicts?.([{ diagnostic: entry.diagnostic as LintDiagnostic, action: "fix" }]);
+      return applied;
+    },
+    hide: (diagnostic) => {
+      hidden.add(diagnostic.fingerprint);
+      const ids = editor.storage.diagnostics.all()
+        .filter((entry) => (entry.diagnostic as LintDiagnostic).fingerprint === diagnostic.fingerprint)
+        .map((entry) => entry.id);
+      // The plugin's own "remove" meta, which applying a fix also uses: drops the squiggles without a re-lint.
+      if (ids.length > 0) editor.view.dispatch(editor.state.tr.setMeta(diagnosticsPluginKey, { type: "remove", ids }));
+      unranged = unranged.filter(isShown);
+      emit();
+    },
     reveal: (id) => {
       const entry = editor.storage.diagnostics.find(id);
       if (!entry) return false;
@@ -258,4 +295,21 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
       editor.destroy();
     },
   };
+}
+
+/**
+ * Findings the writer edited away, judged conservatively from one re-lint: a
+ * finding counts only when the writer typed inside its range (it was stale),
+ * the re-lint dropped it, and no finding of the same rule, nor one with the
+ * same fingerprint, now sits on or touches that text. A finding whose text was
+ * deleted outright, or one that moved to a neighbouring word, is not counted.
+ */
+export function editedAway(before: ReadonlyArray<DiagnosticEntry>, after: ReadonlyArray<DiagnosticEntry>): LintDiagnostic[] {
+  const afterIds = new Set(after.map((entry) => entry.id));
+  const afterFingerprints = new Set(after.map((entry) => (entry.diagnostic as LintDiagnostic).fingerprint));
+  return before.filter((entry) => {
+    const { fingerprint } = entry.diagnostic as LintDiagnostic;
+    if (!entry.stale || !fingerprint || afterIds.has(entry.id) || afterFingerprints.has(fingerprint)) return false;
+    return !after.some((other) => other.diagnostic.ruleId === entry.diagnostic.ruleId && other.from <= entry.to && other.to >= entry.from);
+  }).map((entry) => entry.diagnostic as LintDiagnostic);
 }

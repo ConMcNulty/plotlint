@@ -1,0 +1,39 @@
+{
+  "name": "@plotlint/metrics",
+  "version": "0.1.0",
+  "description": "L2 prose metrics for plotlint: lexical diversity, sentence rhythm, dialogue ratio, sensory detail and walls of text, checked against bands from reference books",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/__tests__",
+    "baselines"
+  ],
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "build": "node ../../scripts/clean-package-dist.mjs && tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "baselines": "pnpm run build && node scripts/baselines.mjs"
+  },
+  "dependencies": {
+    "@plotlint/diagnostics": "workspace:*",
+    "@plotlint/rules": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

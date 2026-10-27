@@ -1,187 +1,221 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import type { ChapterSummaryRow, CurrentStateFact, HookRecord, RuntimeStateSnapshot } from "@actalk/inkos-core";
 import {
-  builtinRegistry, checkSnapshot, goalConflictOutcome, povDiscipline, protagonistAgency, protagonistOf, sameCharacter, SceneAnnotationSchema, sceneTurn,
-  SceneAnnotationsFileSchema, tensionCurveRule, type BookRuleData, type Rule, type SceneAnnotationInput,
+  checkSnapshot, cutCandidate, dependencyGraph, openCounts, openQuestions, RuleConfigFileSchema, subplotBalance, subplots,
+  unearnedPayoff, unpaidSetup, type BookRuleData, type Rule,
 } from "../index.js";
-import { snapshot } from "./fixtures.js";
+import { loadBookRuleData, readBookPlan } from "../node.js";
+import { fact, kinded } from "./fixtures.js";
 
-type Spec = Partial<SceneAnnotationInput> & { at: string };
+const hook = (hookId: string, startChapter: number, status: HookRecord["status"], lastAdvancedChapter: number, extra: Partial<HookRecord> = {}): HookRecord => ({
+  hookId, startChapter, type: "mystery", status, lastAdvancedChapter, expectedPayoff: `the answer to ${hookId}`, notes: "", ...extra,
+});
 
-/** A scene entry: `at` is "3" (ch3.s1) or "3.2" (ch3.s2); fields default to a complete, turning scene. */
-function scene({ at, ...rest }: Spec): SceneAnnotationInput {
-  const [chapter, number = 1] = at.split(".").map(Number) as [number, number?];
+const row = (chapter: number, extra: Partial<ChapterSummaryRow> = {}): ChapterSummaryRow => ({
+  chapter, title: `Chapter ${chapter}`, characters: "", events: "", stateChanges: "", hookActivity: "", mood: "", chapterType: "", ...extra,
+});
+
+function book(last: number, parts: { facts?: CurrentStateFact[]; hooks?: HookRecord[]; rows?: ChapterSummaryRow[] } = {}): RuntimeStateSnapshot {
   return {
-    id: `ch${chapter}.s${number}`, chapter, scene: number, annotator: "llm@test-model",
-    pov: "Mira", goal: "get the ledger", opposition: "Pell", outcome: "success",
-    valueStart: { axis: "safety", value: -1 }, valueEnd: { axis: "safety", value: 1 }, stakes: 5,
-    ...rest,
+    manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: last, projectionVersion: 1 },
+    currentState: { chapter: last, facts: parts.facts ?? [] },
+    hooks: { hooks: parts.hooks ?? [] },
+    chapterSummaries: { rows: parts.rows ?? [] },
   };
 }
 
-const flat = { valueStart: { axis: "safety", value: 0 }, valueEnd: { axis: "Safety", value: 0 } };
+const finished: BookRuleData = { plan: { targetChapters: 10, status: "completed" } };
+const unfinished: BookRuleData = { plan: { targetChapters: 40, status: "active" } };
+const run = (rule: Rule, snapshot: RuntimeStateSnapshot, data: BookRuleData = {}, chapters?: Map<number, string>) =>
+  checkSnapshot(snapshot, { rules: [rule], book: data, ...(chapters ? { chapters } : {}) });
+const withOptions = (data: BookRuleData, id: string, options: Record<string, unknown>): BookRuleData =>
+  ({ ...data, config: RuleConfigFileSchema.parse({ version: 1, rules: { [id]: { options } } }) });
 
-function run(rule: Rule, specs: Spec[], options: { config?: Record<string, unknown>; protagonist?: string; chapters?: Map<number, string> } = {}) {
-  const book: BookRuleData = {
-    scenes: SceneAnnotationsFileSchema.parse({ version: 1, ...(options.protagonist ? { protagonist: options.protagonist } : {}), scenes: specs.map(scene) }),
-    ...(options.config ? { config: { version: 1, rules: { [rule.id]: { options: options.config } } } } : {}),
-  };
-  return checkSnapshot(snapshot([], 20), { rules: [rule], book, ...(options.chapters ? { chapters: options.chapters } : {}) });
-}
-
-describe("structure rules", () => {
-  it("are registered, and silent without annotations", () => {
-    for (const id of ["structure/scene-turn", "structure/goal-conflict-outcome", "structure/protagonist-agency", "structure/tension-curve", "structure/pov-discipline"]) {
-      const rule = builtinRegistry.get(id);
-      expect(rule?.layer).toBe("structure");
-      expect(rule?.source).toBeTruthy();
-      expect(checkSnapshot(snapshot([], 3), { rules: [rule!] })).toEqual([]);
-    }
-  });
-});
-
-describe("structure/scene-turn", () => {
-  it("flags a run of scenes that end where they began, ranged at the first scene's quote", () => {
-    const chapters = new Map([[14, "# Chapter 14\n\nThey waited in the boat all night, and nothing came.\n"]]);
-    const diagnostics = run(sceneTurn, [
-      { at: "13" },
-      { at: "14", ...flat, evidence: { outcome: "nothing came" } }, { at: "15", ...flat }, { at: "16.1", ...flat }, { at: "16.2", ...flat },
-      { at: "17" },
-    ], { chapters });
-    expect(diagnostics).toHaveLength(1);
-    expect(diagnostics[0]).toMatchObject({
-      ruleId: "structure/scene-turn", severity: "warning", confidence: "extracted", chapter: 14,
-      summary: "Scenes ch14.s1 to ch16.s2 end where they began: 4 scenes in a row with no change in their value.",
-      range: { sourceId: "chapter:14" },
-    });
-    const range = diagnostics[0]!.range!;
-    expect(chapters.get(14)!.slice(range.start, range.end)).toBe("nothing came");
+describe("structure/unpaid-setup", () => {
+  it("flags a hook a finished book never resolves, as a warning when it went quiet early", () => {
+    const [finding, ...rest] = run(unpaidSetup, book(10, { hooks: [hook("sister", 2, "open", 4), hook("done", 1, "resolved", 6)] }), finished);
+    expect(rest).toEqual([]);
+    expect(finding).toMatchObject({ ruleId: "structure/unpaid-setup", layer: "structure", severity: "warning", confidence: "extracted", chapter: 2 });
+    expect(finding!.summary).toBe("\"the answer to sister\", opened in ch2, last advanced in ch4, is never resolved by the last chapter (ch10).");
+    expect(finding!.evidence[0]).toMatch(/^hook sister \(mystery, open\); opened ch2; last advanced ch4/u);
   });
 
-  it("respects minRun, and does not count a change of axis or a missing value as flat", () => {
-    const specs: Spec[] = [{ at: "1", ...flat }, { at: "2", ...flat }, { at: "3" }];
-    expect(run(sceneTurn, specs)).toEqual([]);
-    expect(run(sceneTurn, specs, { config: { minRun: 2 } })).toHaveLength(1);
-    expect(run(sceneTurn, [
-      { at: "1", ...flat }, { at: "2", valueStart: { axis: "safety", value: 0 }, valueEnd: { axis: "trust", value: 0 } },
-      { at: "3", ...flat }, { at: "4", valueStart: null, valueEnd: null }, { at: "5", ...flat },
-    ], { config: { minRun: 2 } })).toEqual([]);
-  });
-});
-
-describe("structure/goal-conflict-outcome", () => {
-  const noOpposition = { opposition: null };
-
-  it("flags a stretch where most scenes lack opposition", () => {
-    const specs: Spec[] = [
-      ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map((ch) => ({ at: String(ch) })),
-      { at: "10", ...noOpposition }, { at: "11", ...noOpposition }, { at: "11.2" }, { at: "12", ...noOpposition },
-      { at: "12.2", ...noOpposition, goal: null }, { at: "13", ...noOpposition }, { at: "13.2" }, { at: "14", ...noOpposition }, { at: "14.2" },
-      ...[15, 16, 17, 18, 19].map((ch) => ({ at: String(ch) })),
-    ];
-    const diagnostics = run(goalConflictOutcome, specs);
-    expect(diagnostics).toHaveLength(1);
-    expect(diagnostics[0]).toMatchObject({
-      severity: "warning", confidence: "extracted", chapter: 10,
-      summary: "No opposition in 6 of 9 scenes in ch 10–14; no goal in 1.",
-    });
-    expect(diagnostics[0]!.evidence[0]).toBe("ch10.s1: no opposition (goal: get the ledger)");
+  it("leaves open endings (hooks the last chapter advances) alone unless asked", () => {
+    const snapshot = book(10, { hooks: [hook("sequel", 3, "open", 10)] });
+    expect(run(unpaidSetup, snapshot, finished)).toEqual([]);
+    expect(run(unpaidSetup, snapshot, withOptions(finished, "structure/unpaid-setup", { flagOpenEndings: true }))[0]).toMatchObject({ severity: "note" });
   });
 
-  it("stays quiet below the share or the scene count, and takes options", () => {
-    const half: Spec[] = [{ at: "1", ...noOpposition }, { at: "2", ...noOpposition }, { at: "3" }, { at: "4" }, { at: "5", ...noOpposition }, { at: "6" }];
-    expect(run(goalConflictOutcome, half)).toEqual([]);
-    expect(run(goalConflictOutcome, half, { config: { maxMissingShare: 0.4, minScenes: 3, window: 6 } })).toHaveLength(1);
-    expect(run(goalConflictOutcome, [{ at: "1", goal: null }, { at: "2", goal: null }, { at: "3", goal: null }])).toEqual([]);
-  });
-});
-
-describe("structure/protagonist-agency", () => {
-  const turn = (causedBy: "protagonist" | "other" | "circumstance", by?: string) =>
-    ({ turningPoint: { description: "things change", causedBy, ...(by ? { by } : {}), evidence: "x x x" } });
-
-  it("flags a protagonist who causes few turning points, inferring the protagonist from POV", () => {
-    const diagnostics = run(protagonistAgency, [
-      { at: "1", ...turn("protagonist", "Mira") }, { at: "2", ...turn("other", "Pell") }, { at: "3", ...turn("circumstance") },
-      { at: "4", pov: "Tomas", ...turn("other", "Tomas") }, { at: "5", ...turn("other", "Pell Ostrander") }, { at: "6", ...turn("circumstance", "the storm") },
+  it("in an unfinished book flags only overdue hooks: past staleAfter or past their own payoff chapter", () => {
+    const snapshot = book(12, { hooks: [hook("fresh", 8, "open", 9), hook("stale", 1, "progressing", 2), hook("due", 5, "open", 11, { paysOffInArc: "ch10" })] });
+    const found = run(unpaidSetup, snapshot, unfinished);
+    expect(found.map((d) => d.summary)).toEqual([
+      "\"the answer to stale\", opened in ch1, last advanced in ch2, has gone untouched for 10 chapters.",
+      "\"the answer to due\", opened in ch5, was due by ch10 and is still open in ch12.",
     ]);
-    expect(diagnostics).toHaveLength(1);
-    expect(diagnostics[0]).toMatchObject({
-      ruleId: "structure/protagonist-agency", severity: "warning", confidence: "extracted",
-      summary: "Mira causes 1 of 6 turning points (17%); the rest are done to them by others or by circumstance.",
-    });
-    expect(diagnostics[0]!.chapter).toBeUndefined();
+    expect(found.every((d) => d.severity === "warning")).toBe(true);
+    expect(run(unpaidSetup, snapshot, withOptions(unfinished, "structure/unpaid-setup", { staleAfter: 20, grace: 3 }))).toEqual([]);
   });
 
-  it("uses the declared protagonist, matches names by whole words, and needs enough turning points", () => {
-    const specs: Spec[] = [
-      { at: "1", ...turn("protagonist") }, { at: "2", ...turn("other", "Mira Okonkwo-Hale") }, { at: "3", ...turn("other", "Pell") },
-      { at: "4", ...turn("other", "Pell") }, { at: "5", ...turn("other", "Pell") },
+  it("treats a book with no plan as unfinished, and ignores outline hooks no chapter advanced", () => {
+    expect(run(unpaidSetup, book(5, { hooks: [hook("open", 2, "open", 3)] }))).toEqual([]);
+    expect(run(unpaidSetup, book(10, { hooks: [hook("outline", 0, "deferred", 0)] }), finished)).toEqual([]);
+  });
+
+  const ring = [
+    kinded("possession", "Mira", "holds", "poisoned ring", 3),
+    fact("poisoned ring", "origin", "the Harrow vault", 3),
+    fact("Mira", "location", "harbour", 4), fact("Mira", "location", "mill", 5),
+  ];
+  const text = (chapter: number, body: string) => [chapter, `# Chapter ${chapter}\n\n${body}\n`] as const;
+
+  it("flags an emphasised object that never returns (Chekhov's gun), with its fact and a range over its passage", () => {
+    const cited = [{ ...ring[0]!, evidence: { quote: "slipped the poisoned ring onto her finger" } }, ...ring.slice(1)];
+    const chapters = new Map([text(3, "Mira slipped the poisoned ring onto her finger."), text(4, "The harbour was cold."), text(5, "The mill was quiet.")]);
+    const [finding, ...rest] = run(unpaidSetup, book(5, { facts: cited }), { plan: { status: "completed" } }, chapters);
+    expect(rest).toEqual([]);
+    expect(finding).toMatchObject({ severity: "note", chapter: 3, summary: "The poisoned ring, introduced in ch3, never returns." });
+    expect(finding!.facts).toHaveLength(1);
+    expect(finding!.range).toMatchObject({ sourceId: "chapter:3" });
+    expect(chapters.get(3)!.slice(finding!.range!.start, finding!.range!.end)).toBe("slipped the poisoned ring onto her finger");
+  });
+
+  it("stays quiet when the object comes back in a later fact or chapter text, or is a plain prop", () => {
+    const done = { plan: { status: "completed" } };
+    expect(run(unpaidSetup, book(5, { facts: [...ring, fact("Tomas", "drinks from", "the poisoned ring", 5)] }), done)).toEqual([]);
+    expect(run(unpaidSetup, book(5, { facts: ring }), done, new Map([text(5, "She turned the ring on her finger.")]))).toEqual([]);
+    expect(run(unpaidSetup, book(5, { facts: [ring[0]!, ...ring.slice(2)] }), done)).toEqual([]);
+    expect(run(unpaidSetup, book(5, { facts: ring }), withOptions(done, "structure/unpaid-setup", { items: false }))).toEqual([]);
+  });
+});
+
+describe("structure/unearned-payoff", () => {
+  it("notes a hook raised and resolved in the same chapter", () => {
+    const [finding] = run(unearnedPayoff, book(6, { hooks: [hook("quick", 4, "resolved", 4), hook("slow", 1, "resolved", 5)] }));
+    expect(finding).toMatchObject({ severity: "note", chapter: 4 });
+    expect(finding!.summary).toMatch(/raised and resolved in the same chapter \(ch4\)/u);
+  });
+
+  it("notes a payoff with no recorded advance between, only when summaries name hooks by id", () => {
+    const hooks = [hook("H01", 1, "resolved", 5), hook("H02", 2, "open", 4)];
+    const traced = [row(1), row(2, { hookActivity: "H02 opened" }), row(3), row(4, { hookActivity: "H02 advanced" }), row(5, { hookActivity: "H01 resolved" })];
+    expect(run(unearnedPayoff, book(5, { hooks, rows: traced })).map((d) => d.chapter)).toEqual([5]);
+    const advanced = traced.map((r) => (r.chapter === 3 ? { ...r, hookActivity: "H01 deepens" } : r));
+    expect(run(unearnedPayoff, book(5, { hooks, rows: advanced }))).toEqual([]);
+    expect(run(unearnedPayoff, book(5, { hooks, rows: traced.map((r) => ({ ...r, hookActivity: "" })) }))).toEqual([]);
+  });
+});
+
+describe("structure/cut-candidate and dependencyGraph", () => {
+  const facts = [
+    kinded("possession", "Mira", "holds", "brass key", 1),
+    fact("Mira", "goal", "find her father", 1),
+    fact("Tomas", "location", "the lighthouse", 2),
+    fact("Tomas", "plays", "cards with sailors", 2),
+    kinded("possession", "Mira", "uses", "brass key", 3),
+    fact("Mira", "location", "the vault", 3),
+    fact("Mira", "goal", "open the vault", 4),
+    fact("Mira", "location", "the cliffs", 5),
+  ];
+
+  it("links chapters by what later facts name, and exports the graph", () => {
+    const graph = dependencyGraph(book(5, { facts }));
+    expect(graph.dependents("ch1").map((e) => [e.to, e.via])).toContainEqual(["ch3", "brass key"]);
+    expect(graph.dependents("ch2")).toEqual([]);
+    expect(graph.nodes.find((n) => n.id === "ch2")!.introduces).toEqual(["Tomas", "lighthouse", "cards with sailors"]);
+  });
+
+  it("flags a chapter nothing later depends on, never the last chapters or a chapter without facts", () => {
+    const found = run(cutCandidate, book(6, { facts }));
+    expect(found.map((d) => d.chapter)).toEqual([2]);
+    expect(found[0]).toMatchObject({ severity: "note", layer: "structure" });
+    expect(found[0]!.facts!.length).toBeGreaterThan(0);
+    expect(run(cutCandidate, book(6, { facts }), withOptions({}, "structure/cut-candidate", { protectLast: 5 }))).toEqual([]);
+  });
+
+  it("counts a later mention in chapter text or a summary as a dependency, and hooks that live on", () => {
+    expect(run(cutCandidate, book(6, { facts }), {}, new Map([[4, "Tomas waved from the lighthouse."]]))).toEqual([]);
+    expect(run(cutCandidate, book(6, { facts, rows: [row(5, { events: "Tomas returns" })] }))).toEqual([]);
+    expect(run(cutCandidate, book(6, { facts, hooks: [hook("cards", 2, "progressing", 4)] }))).toEqual([]);
+  });
+
+  it("flags a scene nothing later depends on, when the chapter text has scenes", () => {
+    const cited = (f: CurrentStateFact, quote: string): CurrentStateFact => ({ ...f, evidence: { quote } });
+    const chapter2 = "# Chapter 2\n\nTomas reached the lighthouse at dusk.\n\n* * *\n\nMira hid the map in the chapel.\n";
+    const scened = [
+      kinded("possession", "Mira", "holds", "brass key", 1),
+      cited(fact("Tomas", "location", "the lighthouse", 2), "Tomas reached the lighthouse"),
+      cited(fact("Mira", "hid", "the map", 2), "Mira hid the map"),
+      fact("Mira", "reads", "the map", 3), fact("Mira", "found", "the cellar", 3),
+      fact("Mira", "location", "the cellar", 4), fact("Mira", "uses", "brass key", 4), fact("Mira", "location", "cliffs", 5),
     ];
-    expect(run(protagonistAgency, specs, { protagonist: "Mira" })).toEqual([]); // 2 of 5
-    expect(run(protagonistAgency, specs, { protagonist: "Pell" })).toEqual([]); // 3 of 5
-    expect(run(protagonistAgency, specs, { protagonist: "Tomas" })[0]!.summary).toContain("Tomas causes 1 of 5");
-    expect(run(protagonistAgency, specs.slice(0, 4), { protagonist: "Tomas" })).toEqual([]);
-    expect(protagonistOf([scene({ at: "1", pov: "Tomas" }), scene({ at: "2", pov: "Mira Okonkwo-Hale" }), scene({ at: "3", pov: "Mira" })]
-      .map((entry) => SceneAnnotationSchema.parse(entry)))).toBe("Mira Okonkwo-Hale");
-    expect(sameCharacter("Mira", "Mira Okonkwo-Hale")).toBe(true);
-    expect(sameCharacter("Mir", "Mira Okonkwo-Hale")).toBe(false);
-    expect(sameCharacter("黛玉", "林黛玉")).toBe(true);
-    expect(sameCharacter("林", "林黛玉")).toBe(false);
+    const found = run(cutCandidate, book(6, { facts: scened }), {}, new Map([[2, chapter2]]));
+    expect(found.map((d) => d.summary)).toEqual([expect.stringMatching(/scene ch2\.s1/u)]);
+    expect(found[0]!.range).toMatchObject({ sourceId: "chapter:2" });
+    expect(run(cutCandidate, book(6, { facts: scened }), withOptions({}, "structure/cut-candidate", { scenes: false }), new Map([[2, chapter2]]))).toEqual([]);
   });
 });
 
-describe("structure/tension-curve", () => {
-  const stakes = (values: number[]): Spec[] => values.map((value, index) => ({ at: String(index + 1), stakes: value }));
-
-  it("notes a long flat run as a judged note", () => {
-    const diagnostics = run(tensionCurveRule, stakes([2, 4, 5, 5, 4, 5, 7, 9]));
-    expect(diagnostics).toHaveLength(1);
-    expect(diagnostics[0]).toMatchObject({
-      severity: "note", confidence: "judged", chapter: 2,
-      summary: "Tension stays flat across ch 2–6: stakes between 4 and 5 for 5 chapters.",
-    });
-    // A short book where every chapter sits at the same stakes says more about the annotator than the book.
-    expect(run(tensionCurveRule, stakes([7, 7, 7, 6, 7]))).toEqual([]);
-    expect(run(tensionCurveRule, stakes([7, 7, 7, 6, 7]), { config: { minChapters: 5 } })).toHaveLength(1);
+describe("structure/open-questions", () => {
+  it("counts open questions per chapter", () => {
+    expect(openCounts(book(5, { hooks: [hook("a", 1, "resolved", 3), hook("b", 2, "open", 2)] }), 5)).toEqual([0, 1, 2, 1, 1, 1]);
   });
 
-  it("notes an early peak only in a finished book, taking the highest scene per chapter", () => {
-    const specs: Spec[] = [...stakes([3, 9, 2, 5, 3, 6, 4, 5, 6, 7]), { at: "10.2", stakes: 8 }];
-    expect(run(tensionCurveRule, specs, { config: { flatRun: 20 } })).toEqual([]);
-    const diagnostics = run(tensionCurveRule, specs, { config: { flatRun: 20, finished: true } });
-    expect(diagnostics).toHaveLength(1);
-    expect(diagnostics[0]).toMatchObject({ severity: "note", confidence: "judged", chapter: 2 });
-    expect(diagnostics[0]!.summary).toBe("Peak tension is in ch 2 of 10 annotated chapters (20% of the way through), and the stakes never return to it.");
-    expect(run(tensionCurveRule, [...specs, { at: "11", stakes: 9 }], { config: { flatRun: 20, finished: true } })).toEqual([]);
+  it("flags a run of chapters with no open question, and a chapter that opens too many", () => {
+    const many = Array.from({ length: 7 }, (_, i) => hook(`h${i}`, 2, "resolved", 3));
+    const found = run(openQuestions, book(8, { hooks: [...many, hook("late", 7, "open", 8)] }));
+    expect(found.map((d) => d.summary).sort()).toEqual(["ch2 opens 7 questions at once.", "ch3–6 have no open question."]);
+    expect(run(openQuestions, book(8, { hooks: [...many, hook("late", 7, "open", 8)] }), withOptions({}, "structure/open-questions", { flatRun: 5, maxNew: 10 }))).toEqual([]);
   });
 
-  it("stays judged at note even when rules.json raises its severity", () => {
-    const book: BookRuleData = {
-      scenes: SceneAnnotationsFileSchema.parse({ version: 1, scenes: stakes([5, 5, 5, 5, 5, 5, 5, 5]).map(scene) }),
-      config: { version: 1, rules: { "structure/tension-curve": "error" } },
-    };
-    expect(checkSnapshot(snapshot([], 4), { rules: [tensionCurveRule], book }).map((d) => d.severity)).toEqual(["note"]);
+  it("is skipped for a book that keeps no hooks", () => {
+    expect(run(openQuestions, book(9))).toEqual([]);
   });
 });
 
-describe("structure/pov-discipline", () => {
-  it("notes each reported break, ranged at its passage", () => {
-    const text = "# Chapter 2\n\nMira watched him go. Pell secretly hated her for it.\n";
-    const diagnostics = run(povDiscipline, [
-      { at: "1" },
-      { at: "2", povBreaks: [{ quote: "Pell secretly hated her for it.", note: "Mira cannot know what Pell feels" }] },
-    ], { chapters: new Map([[2, text]]) });
-    expect(diagnostics).toHaveLength(1);
-    expect(diagnostics[0]).toMatchObject({
-      ruleId: "structure/pov-discipline", severity: "note", confidence: "judged", chapter: 2,
-      summary: "Possible viewpoint break in ch2.s1 (POV: Mira): Mira cannot know what Pell feels",
-      sourceRefs: [{ sourceId: "chapter:2", quote: "Pell secretly hated her for it." }],
-    });
-    expect(text.slice(diagnostics[0]!.range!.start, diagnostics[0]!.range!.end)).toBe("Pell secretly hated her for it.");
+describe("structure/subplot-balance", () => {
+  const facts = [fact("Mira", "goal", "find her father", 1), fact("Lena", "goal", "leave the island", 2), fact("Mira", "location", "the vault", 12)];
+  const hooks = [
+    hook("sister-feud", 2, "open", 3, { expectedPayoff: "Lena and Mira make peace" }),
+    hook("sister-letter", 3, "progressing", 4, { expectedPayoff: "What Lena's letter says" }),
+    hook("vault", 1, "open", 12, { expectedPayoff: "What Mira finds in the vault" }),
+    hook("father", 1, "open", 11, { expectedPayoff: "Where Mira's father went" }),
+    hook("storm", 5, "resolved", 9, { expectedPayoff: "Whether Mira survives the storm" }),
+  ];
+
+  it("groups hooks by the character they concern, leaving out the one every thread names", () => {
+    expect(subplots(book(12, { facts, hooks })).map((s) => [s.key, s.hooks.map((h) => h.hookId)])).toEqual([["Lena", ["sister-feud", "sister-letter"]]]);
   });
 
-  it("still reports a break whose passage was edited away, without a range", () => {
-    const diagnostics = run(povDiscipline, [{ at: "2", povBreaks: [{ quote: "gone now", note: "n" }] }], { chapters: new Map([[2, "# x\n\nother text\n"]]) });
-    expect(diagnostics[0]!.range).toBeUndefined();
+  it("flags a subplot that vanishes before the end without resolving", () => {
+    const [finding, ...rest] = run(subplotBalance, book(12, { facts, hooks }), finished);
+    expect(rest).toEqual([]);
+    expect(finding).toMatchObject({ severity: "warning", chapter: 4, summary: "The Lena subplot vanishes after ch4 (8 chapters before the end) with 2 questions unresolved." });
+    expect(run(subplotBalance, book(12, { facts, hooks }), unfinished)[0]).toMatchObject({ severity: "note" });
+    expect(run(subplotBalance, book(12, { facts, hooks }), withOptions(finished, "structure/subplot-balance", { gap: 9 }))).toEqual([]);
+  });
+
+  it("groups hooks linked by dependsOn into one thread", () => {
+    const linked = [hook("a", 1, "open", 2), hook("b", 2, "open", 2, { dependsOn: ["a"] })];
+    expect(subplots(book(10, { hooks: linked })).map((s) => s.hooks.length)).toEqual([2]);
+    expect(run(subplotBalance, book(10, { hooks: linked }), finished)).toHaveLength(1);
+  });
+});
+
+describe("book plan", () => {
+  it("reads target chapters and status from book.json, leniently", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "plotlint-plan-"));
+    try {
+      expect(await readBookPlan(dir)).toBeUndefined();
+      await writeFile(join(dir, "book.json"), JSON.stringify({ id: "x", targetChapters: 12, status: "active" }), "utf-8");
+      expect((await loadBookRuleData(dir)).plan).toEqual({ targetChapters: 12, status: "active" });
+      await writeFile(join(dir, "book.json"), "{ not json", "utf-8");
+      expect(await readBookPlan(dir)).toBeUndefined();
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 });

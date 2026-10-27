@@ -1,0 +1,19 @@
+name: romance
+title: Romance
+description: >-
+  Romance and romantic fiction, where the central relationship drives the plot:
+  agency is shared between the leads, and interiority and dialogue carry the story.
+selection:
+  keywords: [romance, romantic, romantasy, love story, rom-com, romcom, 言情, 爱情, 甜宠, 恋爱]
+styles: styles
+checks:
+  # The relationship drives the plot; "the protagonist" is two people, and much of what
+  # turns a romance is done to a lead by the other one.
+  structure/protagonist-agency: note
+  # Romance subplots often go quiet while the relationship takes over; that is the genre.
+  structure/subplot-balance: note
+  # Emotional beats, not stakes, carry tension; the stakes estimate fits poorly.
+  structure/tension-curve: note
+  structure/scene-turn: note
+metrics:
+  metrics/dialogue-ratio: { min: 0.15 }

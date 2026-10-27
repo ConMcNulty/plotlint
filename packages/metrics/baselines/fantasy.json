@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "genre": "fantasy",
+  "provisional": true,
+  "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+  "sourceBooks": [
+    {
+      "title": "Phantastes",
+      "author": "George MacDonald",
+      "gutenberg": 325
+    },
+    {
+      "title": "Lilith",
+      "author": "George MacDonald",
+      "gutenberg": 1640
+    },
+    {
+      "title": "The Well at the World's End",
+      "author": "William Morris",
+      "gutenberg": 169
+    },
+    {
+      "title": "The Wood Beyond the World",
+      "author": "William Morris",
+      "gutenberg": 3055
+    }
+  ],
+  "metrics": {},
+  "bands": {
+    "metrics/lexical-diversity": {
+      "min": 60,
+      "minWords": 300
+    },
+    "metrics/sentence-rhythm": {
+      "min": 0.4,
+      "window": 8,
+      "windowCv": 0.15,
+      "minSentences": 20
+    },
+    "metrics/dialogue-ratio": {
+      "max": 0.7,
+      "minWords": 500
+    },
+    "metrics/sensory-detail": {
+      "min": 10,
+      "minWords": 500
+    },
+    "metrics/wall-of-text": {
+      "max": 450
+    }
+  }
+}

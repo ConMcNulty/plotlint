@@ -7,6 +7,7 @@ export default defineConfig({
     // pretest rebuilds core, diagnostics and rules, emptying their dist mid-run.
     alias: {
       "@actalk/inkos-core": resolve(__dirname, "../core/src/index.ts"),
+      "@plotlint/diagnostics/verdicts": resolve(__dirname, "../diagnostics/src/verdicts.ts"),
       "@plotlint/diagnostics": resolve(__dirname, "../diagnostics/src/index.ts"),
       "@plotlint/rules": resolve(__dirname, "../rules/src/index.ts"),
     },
