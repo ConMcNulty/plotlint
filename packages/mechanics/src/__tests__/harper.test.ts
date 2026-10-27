@@ -66,6 +66,12 @@ describe("mechanics/harper", () => {
     expect(diagnostics.map((d) => text.slice(d.range!.start, d.range!.end))).toContain("teh");
   });
 
+  it("still flags a typo inside a long sentence", async () => {
+    const text = "The air grew warmer, which made no sense this high above teh sea, and the light from the top of the tower began to leak down the stairwell, pale and gold, so that Tomas could finally put the lamp out and save the oil.";
+    const diagnostics = await checkText(doc(text), [rule]);
+    expect(diagnostics.map((d) => text.slice(d.range!.start, d.range!.end))).toContain("teh");
+  });
+
   it("skips documents that are mostly CJK", async () => {
     const text = "他推开门，说：“teh 我们走吧。”天色已晚，城门快要关了。";
     expect(isMostlyCjk(text)).toBe(true);

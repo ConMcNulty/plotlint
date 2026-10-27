@@ -46,6 +46,9 @@ export function harperLinter(dialect: Dialect = Dialect.American): Promise<Harpe
     handle = (async () => {
       const linter = new LocalLinter({ binary: await harperBinary(), dialect });
       await linter.setup();
+      // Harper drops lints that overlap a longer one, so its whole-sentence length
+      // note hid typos inside long sentences. Sentence length belongs to L2 metrics.
+      await linter.setLintConfig({ ...(await linter.getLintConfig()), LongSentences: false });
       return { linter, wordsKey: "", queue: Promise.resolve() };
     })();
     handles.set(dialect, handle);
