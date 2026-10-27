@@ -43,6 +43,36 @@ describe("locateQuote", () => {
   });
 });
 
+describe("locateQuote near-verbatim fallback", () => {
+  // Misquotes glm-4.5-flash made of the phase 1 test manuscript.
+  const TEXT = [
+    "The fog came in off the Vessant Sea just after the bells rang six. Mira Okonkwo-Hale stood at the end of the pier with the brass key in her fist and watched the lantern house go dark, one window at a time.",
+    "",
+    "Harrow swore. He looked at the lantern house, then at Mira, then at the key. “Tomorrow,” he said. “Midnight. Come alone, and this time come on time.”",
+    "",
+    "She put the key back in her coat and walked home through the wet streets of Calder Reach, past the shuttered fishmongers and the chapel with its cracked bell.",
+    "",
+    "Something moved below the stairs of the customs house.",
+  ].join("\n");
+  const find = (quote: string, options = {}) => {
+    const span = locateQuote(TEXT, quote, options);
+    return span && TEXT.slice(span.start, span.end);
+  };
+
+  it("matches a quote with a speech tag dropped, a word swapped or words left out", () => {
+    expect(find("\"Tomorrow, midnight. Come alone, and this time come on time.\"")).toBe("Tomorrow,” he said. “Midnight. Come alone, and this time come on time");
+    expect(find("Something moved below the steps of the customs house.")).toBe("Something moved below the stairs of the customs house");
+    expect(find("She walked home through the wet streets of Calder Reach, past the chapel with its cracked bell.")).toBe("walked home through the wet streets of Calder Reach, past the shuttered fishmongers and the chapel with its cracked bell");
+    expect(find("stood at the end of the pier with the brass key and watched the lantern house go dark")).toBe("stood at the end of the pier with the brass key in her fist and watched the lantern house go dark");
+  });
+
+  it("rejects paraphrases, short quotes and the fallback when turned off", () => {
+    expect(find("Mira waited on the pier holding a key while the house went dark")).toBeNull();
+    expect(find("below the steps")).toBeNull();
+    expect(find("Something moved below the steps of the customs house.", { fuzzy: false })).toBeNull();
+  });
+});
+
 describe("settler evidence", () => {
   it("offers evidence and fact kinds in the tool schema", () => {
     const schema = createSettlementToolSchema() as unknown as { properties: { factOps: { properties: { upsert: { items: { properties: Record<string, unknown> } } } } } };

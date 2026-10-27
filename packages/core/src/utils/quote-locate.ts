@@ -3,9 +3,9 @@
 // Models rarely copy text byte for byte: they straighten curly quotes, turn
 // em dashes into hyphens, collapse line breaks, drop markdown emphasis, change
 // the case of a first letter or elide the middle of a long passage with "...".
-// `locateQuote` tolerates exactly those changes and nothing else, and always
-// returns offsets into the original text, so `text.slice(start, end)` is the
-// passage as the author wrote it.
+// Weaker models also drop or swap a word or two. `locateQuote` tolerates those
+// changes, and always returns offsets into the original text, so
+// `text.slice(start, end)` is the passage as the author wrote it.
 
 export interface QuoteSpan {
   readonly start: number;
@@ -17,6 +17,8 @@ export interface LocateQuoteOptions {
   readonly near?: number;
   /** Longest stretch an elided quote ("a ... b") may skip between its parts. Default 1500 characters. */
   readonly maxGap?: number;
+  /** Fall back to a near-verbatim word alignment (at least 80% of 5+ words, in order). Default true. */
+  readonly fuzzy?: boolean;
 }
 
 const FOLD: Record<string, string> = {
@@ -107,7 +109,9 @@ function trimFolded(text: string): string {
 /**
  * Find `quote` in `text` and return its offsets, or null when it is not there.
  * Exact matches win; otherwise quotes, dashes, whitespace, emphasis and case are
- * folded, and a quote elided with "..." or "…" matches its parts in order.
+ * folded, a quote elided with "..." or "…" matches its parts in order, and
+ * last a near-verbatim quote of five or more words matches the passage holding
+ * at least 80% of its words in order.
  */
 export function locateQuote(text: string, quote: string, options: LocateQuoteOptions = {}): QuoteSpan | null {
   const trimmed = quote.trim();
@@ -125,7 +129,7 @@ export function locateQuote(text: string, quote: string, options: LocateQuoteOpt
 
   // An elided quote: match each part in order, each within maxGap of the last.
   const parts = needle.split("…").map((part) => part.trim()).filter((part) => part.length > 0);
-  if (parts.length < 2) return null;
+  if (parts.length < 2) return options.fuzzy === false ? null : nearestFuzzy(text, haystack, needle, options.near);
   const maxGap = options.maxGap ?? 1500;
   const spans: QuoteSpan[] = [];
   for (const first of occurrences(haystack.text, parts[0]!)) {
@@ -141,5 +145,67 @@ export function locateQuote(text: string, quote: string, options: LocateQuoteOpt
     }
     if (ok) spans.push({ start: haystack.map[first]!, end: unfold(text, haystack, cursor - 1, 1).end });
   }
-  return nearest(spans, options.near);
+  if (spans.length > 0) return nearest(spans, options.near);
+  return options.fuzzy === false ? null : nearestFuzzy(text, haystack, needle, options.near);
+}
+
+// A near-verbatim quote: models drop words from the middle ("She walked home
+// through ..." with a clause missing), add or lose a speech tag, or swap one word
+// ("steps" for "stairs"). Align the quote's words in order against the text and
+// accept the passage when nearly all of them are there, close together.
+const WORD = /[\p{L}\p{N}]+(?:'[\p{L}]+)?/gu;
+const MIN_FUZZY_WORDS = 5;
+const MIN_FUZZY_SHARE = 0.8;
+// Words the text may have between two aligned quote words (a speech tag, a dropped clause).
+const MAX_SKIP = 6;
+
+interface Word {
+  readonly text: string;
+  readonly start: number;
+  readonly end: number;
+}
+
+function words(text: string): Word[] {
+  return [...text.matchAll(WORD)].map((match) => ({ text: match[0], start: match.index!, end: match.index! + match[0].length }));
+}
+
+function nearestFuzzy(text: string, haystack: Folded, needle: string, near: number | undefined): QuoteSpan | null {
+  const quote = words(needle).map((word) => word.text);
+  if (quote.length < MIN_FUZZY_WORDS) return null;
+  const textWords = words(haystack.text);
+  const needed = Math.ceil(quote.length * MIN_FUZZY_SHARE);
+  let best: { span: QuoteSpan; matched: number }[] = [];
+  let bestMatched = needed - 1;
+
+  // Start at each text word equal to one of the quote's first two words.
+  for (let i = 0; i < textWords.length; i += 1) {
+    const startAt = quote[0] === textWords[i]!.text ? 0 : quote[1] === textWords[i]!.text ? 1 : -1;
+    if (startAt === -1) continue;
+    let matched = 0;
+    let cursor = i;
+    let last = i;
+    for (let q = startAt; q < quote.length; q += 1) {
+      const limit = Math.min(textWords.length, cursor + MAX_SKIP + 1);
+      let found = -1;
+      for (let k = cursor; k < limit; k += 1) {
+        if (textWords[k]!.text === quote[q]) {
+          found = k;
+          break;
+        }
+      }
+      if (found === -1) continue; // a word the model changed or added
+      matched += 1;
+      last = found;
+      cursor = found + 1;
+    }
+    if (matched < bestMatched) continue;
+    const span = {
+      start: haystack.map[textWords[i]!.start]!,
+      end: unfold(text, haystack, textWords[last]!.end - 1, 1).end,
+    };
+    if (matched > bestMatched) best = [];
+    bestMatched = matched;
+    best.push({ span, matched });
+  }
+  return nearest(best.map((candidate) => candidate.span), near);
 }
