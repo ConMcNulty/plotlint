@@ -115,7 +115,7 @@ Checks run in six layers, ordered from most to least objective. Lower layers are
 - A finding without quoted evidence is not shown.
 - Judged findings are never shown as errors, only as notes, and never block the loop on their own.
 - Each check has an ID, a short rationale (why it matters) and a link to the craft source it comes from, so the writer can decide whether they agree with it.
-- Suppressions are per instance with a reason, or per check per book; both are saved in the project so agents respect them.
+- Suppressions are per instance with a reason, or per check per book; both are saved in the project so agents respect them. They live in `works/<id>/source/story/plotlint/suppressions.json` (`SuppressionFileSchema` in `@plotlint/diagnostics`). An instance is matched by `diagnosticFingerprint`, a hash of the rule, chapter, evidence, quotes and facts rather than character offsets, so it survives text moving. From the CLI: `inkos lint suppress <rule-id> [book-id] --reason <text> [--fingerprint <fp>]` and `inkos lint unsuppress`; `inkos lint --verbose` or `--json` prints fingerprints, `--show-suppressed` lists hidden findings.
 
 ## Story state and the rule engine
 
