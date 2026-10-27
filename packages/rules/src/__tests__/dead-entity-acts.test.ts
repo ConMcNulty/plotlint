@@ -64,6 +64,29 @@ describe("continuity/dead-entity-acts", () => {
     ], 9))).toEqual([]);
   });
 
+  it("recognises death written as a copula or as the manner of death", () => {
+    // As GLM extracted it from the phase 1 test manuscript.
+    const diagnostics = checkSnapshot(snapshot([
+      fact("Captain Aurel Harrow", "is", "lighthouse keeper", 1, 1),
+      fact("Captain Aurel Harrow", "is", "dead", 2),
+      fact("Captain Aurel Harrow", "died from", "throat cut and wrists tied with fishing line", 2),
+      fact("Captain Aurel Harrow", "appears", "dead but present at lantern house", 3),
+    ], 3));
+    expect(diagnostics.map((diagnostic) => [diagnostic.ruleId, diagnostic.chapter])).toEqual([["continuity/dead-entity-acts", 3]]);
+
+    expect(checkSnapshot(snapshot([
+      fact("Mira", "died from", "a cut throat", 2),
+      fact("Mira", "location", "harbour", 4),
+    ], 4)).map((diagnostic) => diagnostic.chapter)).toEqual([4]);
+  });
+
+  it("does not read other copula facts as status", () => {
+    expect(checkSnapshot(snapshot([
+      fact("Harrow", "is", "lighthouse keeper", 1),
+      fact("Harrow", "is", "a liar", 2),
+    ], 2))).toEqual([]);
+  });
+
   it("recognises Chinese status facts", () => {
     const diagnostics = checkSnapshot(snapshot([
       fact("林远", "状态", "已死亡", 3),
