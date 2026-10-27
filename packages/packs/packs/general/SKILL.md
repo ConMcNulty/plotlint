@@ -26,6 +26,8 @@ with a reason.
 | `structure/scene-turn`, `structure/goal-conflict-outcome` | note | Scene and sequel (Dwight Swain, *Techniques of the Selling Writer*); value turns (McKee). Many good scenes break these, so they stay notes here. |
 | `structure/protagonist-agency` | note | Active protagonist (screenwriting craft). Genres differ a lot here. |
 | `structure/tension-curve` | note | Rising action (Freytag's pyramid). Judged, so it is only ever a note. |
+| `style/invented-term-spelling` | note | The copyeditor's style sheet of names (*Chicago Manual of Style* 2.54): a rare spelling one or two letters, a hyphen or an apostrophe away from a name the book uses often ("Elpseth" for "Elspeth"), with a quick fix. The fantasy pack makes it a warning. |
+| `structure/fair-play`, `structure/hopeful-ending`, `structure/central-relationship`, `structure/both-leads-pov` | off | Genre conventions, not general craft: the mystery and romance packs turn them on. |
 | `style/general.*` | per rule | Filter words (Janet Burroway, *Writing Fiction*), clichés (Orwell, "Politics and the English Language"), AI-tell words (InkOS's own list), adverb clusters, intensifiers, redundancies. |
 
 ## Metric bands

@@ -1,6 +1,6 @@
 ---
 name: romance
-description: Check pack for romance. Turns protagonist agency, subplot balance and the tension curve down to notes; raises the dialogue floor; adds romance clichés.
+description: Check pack for romance. Turns protagonist agency, subplot balance and the tension curve down to notes; raises the dialogue floor; checks for a happy or hopeful ending, the relationship's share of the book and both leads' points of view; adds romance clichés.
 ---
 
 # Romance pack
@@ -17,6 +17,9 @@ stricter setting wins; your `rules.json` overrides both.
 | `structure/subplot-balance` | note | The relationship is the main plot; subplots receding during the crisis is the genre's shape. |
 | `structure/tension-curve` | note | Tension in romance is emotional (the "black moment", the dark night before the grand gesture), which a stakes estimate tracks poorly. |
 | `structure/scene-turn` | note | Many romance scenes turn on a look or a withheld word; value turns read them badly. |
+| `structure/hopeful-ending` | warning | RWA's definition of the genre: "a central love story and an emotionally satisfying and optimistic ending" (HEA, happily ever after, or HFN, happy for now). In a finished book, warns when the last relationship fact between the leads is a break-up, a parting or a death with nothing hopeful after it. The leads are the rule option `leads` (two names) or else the pair with the most relationship facts with each other. |
+| `structure/central-relationship` | note | The relationship is the main plot (RWA; Hayes): notes when the leads appear together, or their relationship changes, in less than `minShare` (default 40%) of the chapters. |
+| `structure/both-leads-pov` | note | Dual-POV convention: notes a lead who never has the point of view in the scene annotations (`story/plotlint/scenes.json`); silent until a book has them. |
 | `metrics/dialogue-ratio` | min 0.15 | Banter and confession carry the genre (Hayes; Jennifer Crusie's essays on romantic comedy); a near-silent chapter is worth a look. |
 | `style/romance.Cliches` | note | The "breath she didn't know she was holding" family of stock phrases, skipped in dialogue. |
 
@@ -24,7 +27,8 @@ stricter setting wins; your `rules.json` overrides both.
 
 These need rule functions that come in a later wave:
 
-- **Both leads get POV or interiority**: each lead's thoughts appear on the page, not only one's (dual-POV convention).
-- **The relationship drives the main plot**: turning points involve both leads.
+The happy or hopeful ending, the relationship's share of the book and both leads' points of view are now the checks above. Still to come:
+
+- **Interiority without POV**: a lead who never has a POV scene but whose thoughts the narration does show.
+- **The relationship drives the turning points**: each turning point involves both leads.
 - **Required beats**: meet, rising bond, crisis (black moment), grand gesture, in order (*Romancing the Beat*).
-- **Happy or hopeful ending (HEA/HFN)**: a warning when the ending is neither, since readers of the genre rely on it (RWA).

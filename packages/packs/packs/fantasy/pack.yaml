@@ -13,6 +13,8 @@ checks:
   # Secondary worlds live on their maps.
   continuity/impossible-travel: error
   continuity/negative-resource: error
+  # Invented names have no dictionary to keep them straight: one spelling per term.
+  style/invented-term-spelling: warning
 metrics:
   # Exposition dumps arrive as long unbroken paragraphs.
   metrics/wall-of-text: { max: 300 }
