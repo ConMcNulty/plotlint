@@ -18,6 +18,7 @@ export const isLocationFact = (fact: CurrentStateFact) => hasKind(fact, "locatio
 export const twoPlacesAtOnce: Rule = {
   id: "continuity/two-places-at-once",
   layer: "continuity",
+  title: "Two places at once",
   rationale: "A character can be in only one place at a time. Two location facts valid in the same chapter usually mean a move was recorded without ending the old location.",
   check({ snapshot }) {
     const located = snapshot.currentState.facts.filter((fact) =>

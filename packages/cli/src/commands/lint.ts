@@ -2,7 +2,8 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Command } from "commander";
 import { StateManager, loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
-import { checkSnapshot, checkText, evidenceCoverage, type ChapterTexts, type EvidenceCoverage, type TextRule } from "@plotlint/rules";
+import { builtinRegistry, checkSnapshot, checkText, evidenceCoverage, type ChapterTexts, type EvidenceCoverage, type TextRule } from "@plotlint/rules";
+import { loadBookRuleData } from "@plotlint/rules/node";
 import { createHarperRule, isMostlyCjk, projectDictionary } from "@plotlint/mechanics";
 import { generalPack } from "@plotlint/style/node";
 import {
@@ -136,7 +137,11 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
   const inScope = (diagnostic: Diagnostic) =>
     options.layers.has(diagnostic.layer) && (options.chapter === undefined || diagnostic.chapter === options.chapter);
 
-  const diagnostics: LocatedDiagnostic[] = snapshot ? checkSnapshot(snapshot).filter(inScope) : [];
+  const book = await loadBookRuleData(bookDir);
+  for (const id of builtinRegistry.unknownIds(book.config)) logError(`${id} in story/plotlint/rules.json is not a known rule`);
+  const diagnostics: LocatedDiagnostic[] = snapshot && options.layers.has("continuity")
+    ? checkSnapshot(snapshot, { chapters: await chapterTexts(bookDir), book }).filter(inScope)
+    : [];
   const files = await chapterFiles(bookDir);
   const chapters = options.chapter === undefined ? [...files.keys()] : files.has(options.chapter) ? [options.chapter] : [];
   const rules = textRules(options.layers);
@@ -332,6 +337,48 @@ lintCommand
       if (!passed) process.exitCode = 1;
     } catch (e) {
       logError(`Evidence check failed: ${e}`);
+      process.exit(1);
+    }
+  });
+
+lintCommand
+  .command("rules")
+  .description("List the continuity rules, with each one's setting in the book's story/plotlint/rules.json")
+  .argument("[book-id]", "Book ID (auto-detected if only one book); without a project, lists the defaults")
+  .option("--json", "Output JSON")
+  .action(async (bookIdArg: string | undefined, opts: { json?: boolean }, command: Command) => {
+    try {
+      opts = { ...opts, json: wantsJson(command) };
+      let config;
+      try {
+        const root = findProjectRoot();
+        const bookId = await resolveBookId(bookIdArg, root);
+        config = (await loadBookRuleData(new StateManager(root).bookDir(bookId))).config;
+      } catch (error) {
+        if (bookIdArg !== undefined) throw error;
+      }
+      const rules = builtinRegistry.configure(config).map(({ rule, enabled, severity, options }) => ({
+        id: rule.id,
+        layer: rule.layer,
+        title: rule.title ?? rule.id,
+        rationale: rule.rationale,
+        ...(rule.source ? { source: rule.source } : {}),
+        enabled,
+        ...(severity ? { severity } : {}),
+        ...(Object.keys(options).length ? { options } : {}),
+      }));
+      if (opts.json) {
+        log(JSON.stringify({ rules, unknown: builtinRegistry.unknownIds(config) }, null, 2));
+        return;
+      }
+      for (const rule of rules) {
+        const setting = !rule.enabled ? "off" : rule.severity ?? "on";
+        log(`${rule.id}  ${setting}  ${rule.title}`);
+        log(indent(rule.rationale));
+      }
+      for (const id of builtinRegistry.unknownIds(config)) logError(`${id} in rules.json is not a known rule`);
+    } catch (e) {
+      logError(`Rules failed: ${e}`);
       process.exit(1);
     }
   });

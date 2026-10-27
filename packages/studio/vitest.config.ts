@@ -18,6 +18,7 @@ export default defineConfig({
       // rebuilds core, diagnostics and rules, emptying their dist mid-run.
       "@plotlint/diagnostics/node": resolve(__dirname, "../diagnostics/src/node.ts"),
       "@plotlint/diagnostics": resolve(__dirname, "../diagnostics/src/index.ts"),
+      "@plotlint/rules/node": resolve(__dirname, "../rules/src/node.ts"),
       "@plotlint/rules": resolve(__dirname, "../rules/src/index.ts"),
       "@plotlint/mechanics": resolve(__dirname, "../mechanics/src/index.ts"),
       "@plotlint/style/node": resolve(__dirname, "../style/src/node.ts"),

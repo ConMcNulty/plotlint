@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
     }
   },
   "files": [
@@ -24,9 +28,11 @@
   },
   "dependencies": {
     "@actalk/inkos-core": "workspace:*",
-    "@plotlint/diagnostics": "workspace:*"
+    "@plotlint/diagnostics": "workspace:*",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "typescript": "^5.8.0",
     "vitest": "^3.0.0"
   },

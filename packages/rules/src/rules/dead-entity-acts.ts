@@ -23,7 +23,7 @@ const DEATH_PREDICATES = new Set([
 ]);
 
 // Facts that may still change after a death without the character acting.
-const POSTHUMOUS_PREDICATE = /(cause.?of.?death|death|died|buried|burial|grave|tomb|body|corpse|remains|remembered|memory|legacy|estate|inherit|will|mourn|funeral|ghost|spirit|死|葬|墓|遗|尸|悼|纪念|鬼|魂)/u;
+export const POSTHUMOUS_PREDICATE = /(cause.?of.?death|death|died|buried|burial|grave|tomb|body|corpse|remains|remembered|memory|legacy|estate|inherit|will|mourn|funeral|ghost|spirit|死|葬|墓|遗|尸|悼|纪念|鬼|魂)/u;
 
 export function isDeathFact(fact: CurrentStateFact): boolean {
   const predicate = normalize(fact.predicate);
@@ -37,6 +37,7 @@ export function isDeathFact(fact: CurrentStateFact): boolean {
 export const deadEntityActs: Rule = {
   id: "continuity/dead-entity-acts",
   layer: "continuity",
+  title: "Dead characters act",
   rationale: "A character recorded as dead should not gain new state (move, hold things, learn things) unless the story brings them back or the scene is a flashback.",
   check({ snapshot }) {
     const facts = snapshot.currentState.facts;

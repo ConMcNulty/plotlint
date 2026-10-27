@@ -1,6 +1,14 @@
-export type { Rule, RuleContext } from "./types.js";
-export { builtinRules, checkDelta, checkSnapshot } from "./engine.js";
+export type { Rule, RuleContext, RuleSetting } from "./types.js";
+export type { CheckOptions } from "./engine.js";
+export { builtinRegistry, builtinRules, checkDelta, checkSnapshot } from "./engine.js";
+export type { ConfiguredRule } from "./registry.js";
+export { RuleRegistry } from "./registry.js";
+export type { BookRuleData, FrameEntry, FrameKind, FramesFile, RuleConfigFile } from "./book.js";
+export { FrameEntrySchema, FrameKindSchema, FramesFileSchema, RuleConfigFileSchema } from "./book.js";
+export type { FrameResolver } from "./frames.js";
+export { downgradeUnreliable, frameMarkers, frameResolver, mainTimeline, OFF_TIMELINE } from "./frames.js";
 export { deadEntityActs } from "./rules/dead-entity-acts.js";
+export { deadThenAlive } from "./rules/dead-then-alive.js";
 export { itemTwoHolders } from "./rules/item-two-holders.js";
 export { negativeResource } from "./rules/negative-resource.js";
 export { singleValuedConflict } from "./rules/single-valued-conflict.js";
