@@ -1,51 +1,153 @@
+import { readdir, readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { Command } from "commander";
-import { StateManager, loadRuntimeStateSnapshot } from "@actalk/inkos-core";
-import { checkSnapshot } from "@plotlint/rules";
+import { StateManager, loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
+import { checkSnapshot, checkText, type TextRule } from "@plotlint/rules";
+import { createHarperRule, isMostlyCjk, projectDictionary } from "@plotlint/mechanics";
+import { generalPack } from "@plotlint/style/node";
 import {
   applySuppressions,
   diagnosticFingerprint,
+  DiagnosticLayerSchema,
   formatDiagnostic,
   type Diagnostic,
+  type DiagnosticLayer,
   type Suppression,
 } from "@plotlint/diagnostics";
 import { findProjectRoot, log, logError, resolveBookId } from "../utils.js";
 import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "../suppressions.js";
 
-type FingerprintedDiagnostic = Diagnostic & { fingerprint: string };
+/** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
+interface Location { line: number; column: number }
+
+type LocatedDiagnostic = Diagnostic & { location?: Location };
+type FingerprintedDiagnostic = LocatedDiagnostic & { fingerprint: string };
 
 interface BookLint {
   id: string;
   diagnostics: FingerprintedDiagnostic[];
   suppressed: Array<{ diagnostic: FingerprintedDiagnostic; suppression: Suppression }>;
   stateMissing?: true;
+  /** Chapters whose text was checked. */
+  chapters: number[];
 }
 
-const withFingerprint = (diagnostic: Diagnostic): FingerprintedDiagnostic =>
-  ({ ...diagnostic, fingerprint: diagnosticFingerprint(diagnostic) });
+interface LintOptions {
+  layers: ReadonlySet<DiagnosticLayer>;
+  chapter?: number;
+}
 
-/** Run the checks over one book and split the findings by its saved suppressions. */
-async function lintBook(state: StateManager, id: string): Promise<BookLint> {
-  const bookDir = state.bookDir(id);
-  const { suppressions } = await loadSuppressions(bookDir);
-  let diagnostics: Diagnostic[];
+const everything: LintOptions = { layers: new Set(DiagnosticLayerSchema.options) };
+
+/** Parse `--layers mechanics,style`; an unknown name is an error rather than a silent no-op. */
+function parseLayers(value: string | undefined): Set<DiagnosticLayer> {
+  if (value === undefined) return new Set(DiagnosticLayerSchema.options);
+  const names = value.split(",").map((name) => name.trim()).filter(Boolean);
+  if (names.length === 0 || names.some((name) => !DiagnosticLayerSchema.safeParse(name).success)) {
+    throw new Error(`--layers takes a comma-separated list of ${DiagnosticLayerSchema.options.join(", ")}; got "${value}"`);
+  }
+  return new Set(names as DiagnosticLayer[]);
+}
+
+function parseChapter(value: string | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  if (!/^\d+$/u.test(value)) throw new Error(`--chapter takes a chapter number; got "${value}"`);
+  return Number(value);
+}
+
+// Chapter text lives at `<bookDir>/chapters/0001_<title>.md`, as InkOS's writer saves it.
+async function chapterFiles(bookDir: string): Promise<Map<number, string>> {
+  const chaptersDir = join(bookDir, "chapters");
+  let files: string[];
   try {
-    diagnostics = checkSnapshot(await loadRuntimeStateSnapshot(bookDir));
+    files = await readdir(chaptersDir);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return new Map();
+    throw error;
+  }
+  const byNumber = new Map<number, string>();
+  for (const file of files.sort()) {
+    const match = file.match(/^(\d+)_.*\.md$/u);
+    if (match && !byNumber.has(Number(match[1]))) byNumber.set(Number(match[1]), join(chaptersDir, file));
+  }
+  return new Map([...byNumber].sort(([a], [b]) => a - b));
+}
+
+let generalPackRules: TextRule[] | undefined;
+
+/** L0 (Harper) and L1 (the general style pack), as far as `layers` asks for them. */
+function textRules(layers: ReadonlySet<DiagnosticLayer>): TextRule[] {
+  const rules: TextRule[] = [];
+  if (layers.has("mechanics")) rules.push(createHarperRule());
+  if (layers.has("style")) rules.push(...(generalPackRules ??= generalPack()));
+  return rules;
+}
+
+function locate(text: string, offset: number): Location {
+  const lineStart = text.lastIndexOf("\n", offset - 1) + 1;
+  return { line: text.slice(0, offset).split("\n").length, column: offset - lineStart + 1 };
+}
+
+/** Text rules over one chapter file. Both layers are English-only, so a CJK chapter gets no findings. */
+async function lintChapterText(
+  path: string,
+  chapter: number,
+  rules: ReadonlyArray<TextRule>,
+  snapshot: RuntimeStateSnapshot | undefined,
+): Promise<LocatedDiagnostic[]> {
+  const text = await readFile(path, "utf-8");
+  if (rules.length === 0 || isMostlyCjk(text)) return [];
+  const diagnostics = await checkText({ sourceId: `chapter:${chapter}`, chapter, text }, rules,
+    snapshot ? { snapshot, dictionary: projectDictionary(snapshot) } : {});
+  return diagnostics.map((diagnostic) => ({ ...diagnostic, location: locate(text, diagnostic.range!.start) }));
+}
+
+// The fingerprint covers the finding itself, not where the CLI found it in the file.
+const withFingerprint = ({ location, ...diagnostic }: LocatedDiagnostic): FingerprintedDiagnostic =>
+  ({ ...diagnostic, ...(location ? { location } : {}), fingerprint: diagnosticFingerprint(diagnostic) });
+
+async function loadSnapshot(bookDir: string): Promise<RuntimeStateSnapshot | undefined> {
+  try {
+    return await loadRuntimeStateSnapshot(bookDir);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    return { id, diagnostics: [], suppressed: [], stateMissing: true };
+    return undefined;
   }
+}
+
+/** Run the checks over one book's state and chapter text and split the findings by its saved suppressions. */
+async function lintBook(state: StateManager, id: string, options: LintOptions): Promise<BookLint> {
+  const bookDir = state.bookDir(id);
+  const { suppressions } = await loadSuppressions(bookDir);
+  const snapshot = await loadSnapshot(bookDir);
+  const inScope = (diagnostic: Diagnostic) =>
+    options.layers.has(diagnostic.layer) && (options.chapter === undefined || diagnostic.chapter === options.chapter);
+
+  const diagnostics: LocatedDiagnostic[] = snapshot ? checkSnapshot(snapshot).filter(inScope) : [];
+  const files = await chapterFiles(bookDir);
+  const chapters = options.chapter === undefined ? [...files.keys()] : files.has(options.chapter) ? [options.chapter] : [];
+  const rules = textRules(options.layers);
+  for (const chapter of chapters) diagnostics.push(...await lintChapterText(files.get(chapter)!, chapter, rules, snapshot));
+
   const { kept, suppressed } = applySuppressions(diagnostics, suppressions);
   return {
     id,
     diagnostics: kept.map(withFingerprint),
     suppressed: suppressed.map((entry) => ({ diagnostic: withFingerprint(entry.diagnostic), suppression: entry.suppression })),
+    ...(snapshot ? {} : { stateMissing: true as const }),
+    chapters,
   };
 }
 
 const indent = (text: string) => text.replace(/^/gmu, "  ");
 
 function formatFinding(diagnostic: FingerprintedDiagnostic, verbose: boolean): string {
-  const text = formatDiagnostic(diagnostic);
+  let text = formatDiagnostic(diagnostic);
+  // A ranged finding points into its chapter file like a compiler error: `ch3:12:5 warning ...`.
+  if (diagnostic.location && diagnostic.chapter !== undefined) {
+    const where = `ch${diagnostic.chapter}`;
+    text = `${where}:${diagnostic.location.line}:${diagnostic.location.column}${text.slice(where.length)}`;
+  }
   if (!verbose) return text;
   const [head, ...rest] = text.split("\n");
   return [`${head} (${diagnostic.fingerprint})`, ...rest].join("\n");
@@ -58,13 +160,18 @@ const describeSuppression = (suppression: Suppression) =>
 const wantsJson = (command: Command) => command.optsWithGlobals<{ json?: boolean }>().json === true;
 
 export const lintCommand = new Command("lint")
-  .description("Run plotlint's deterministic story checks over a book's runtime state")
+  .description("Run plotlint's deterministic checks over a book's runtime state and chapter text")
   .argument("[book-id]", "Book ID (optional, checks all if omitted)")
   .option("--json", "Output JSON")
+  .option("--layers <list>", `Only these layers, comma-separated (${DiagnosticLayerSchema.options.join(", ")}); default all`)
+  .option("--chapter <n>", "Only findings in this chapter")
   .option("--show-suppressed", "Also list findings hidden by suppressions")
   .option("--verbose", "Show each finding's fingerprint, for `inkos lint suppress --fingerprint`")
-  .action(async (bookIdArg: string | undefined, opts: { json?: boolean; showSuppressed?: boolean; verbose?: boolean }) => {
+  .action(async (bookIdArg: string | undefined, opts: {
+    json?: boolean; layers?: string; chapter?: string; showSuppressed?: boolean; verbose?: boolean;
+  }) => {
     try {
+      const options: LintOptions = { layers: parseLayers(opts.layers), chapter: parseChapter(opts.chapter) };
       const root = findProjectRoot();
       const state = new StateManager(root);
       const allBookIds = await state.listBooks();
@@ -73,7 +180,7 @@ export const lintCommand = new Command("lint")
       }
 
       const results: BookLint[] = [];
-      for (const id of bookIdArg ? [bookIdArg] : allBookIds) results.push(await lintBook(state, id));
+      for (const id of bookIdArg ? [bookIdArg] : allBookIds) results.push(await lintBook(state, id, options));
 
       if (opts.json) {
         log(JSON.stringify({ books: results }, null, 2));
@@ -82,7 +189,7 @@ export const lintCommand = new Command("lint")
         for (const result of results) {
           log(`${result.id}:`);
           if (result.stateMissing) log("  no runtime state yet");
-          else if (result.diagnostics.length === 0) log("  no problems");
+          if (result.diagnostics.length === 0 && (!result.stateMissing || result.chapters.length > 0)) log("  no problems");
           for (const diagnostic of result.diagnostics) log(indent(formatFinding(diagnostic, verbose)));
           if (result.suppressed.length === 0) continue;
           if (opts.showSuppressed) {
@@ -129,7 +236,7 @@ lintCommand
       let suppression: Suppression;
       if (opts.fingerprint) {
         // Record where the finding is and what it said, so the file reads well to a human.
-        const result = await lintBook(state, bookId);
+        const result = await lintBook(state, bookId, everything);
         const finding = [...result.diagnostics, ...result.suppressed.map((entry) => entry.diagnostic)]
           .find((diagnostic) => diagnostic.ruleId === ruleId && diagnostic.fingerprint === opts.fingerprint);
         if (!finding) {
