@@ -331,6 +331,43 @@ describe("CLI mini-flows", () => {
     expect(run(["lint", "lint-novel"])).not.toContain("mechanics/harper");
   }, 120_000);
 
+  it("lints L2 metrics: walls of text per chapter and phrases repeated across chapters", async () => {
+    run(["init"]);
+    await saveWorkManifest(projectDir, createWorkManifest({
+      id: "lint-novel",
+      title: "Lint Novel",
+      profileId: "longform-novel",
+      language: "en",
+    }));
+    const bookDir = new StateManager(projectDir).bookDir("lint-novel");
+    await mkdir(join(bookDir, "chapters"), { recursive: true });
+    const wall = Array.from({ length: 40 }, (_, i) => `the clerk read clause ${i} of the treaty aloud`).join(" and ");
+    await writeFile(join(bookDir, "chapters", "0001_one.md"), "# Chapter 1\n\nRain fell on the market. Her heart skipped a beat.\n");
+    await writeFile(join(bookDir, "chapters", "0002_two.md"), "# Chapter 2\n\nSnow buried the road.\n\nHer heart skipped a beat again.\n");
+    await writeFile(join(bookDir, "chapters", "0003_three.md"), `# Chapter 3\n\nFog crept along the canal. Her heart skipped a beat.\n\nThen ${wall}.\n`);
+    type Lint = { books: Array<{ diagnostics: Array<{ ruleId: string; severity: string; chapter: number; location: { line: number; column: number } }> }> };
+    const lint = (...args: string[]) => (JSON.parse(run(["lint", "lint-novel", "--json", ...args])) as Lint).books[0]!;
+
+    const metrics = lint("--layers", "metrics").diagnostics
+      .map((d) => [d.ruleId, d.severity, d.chapter, d.location] as const)
+      .sort((a, b) => a[2] - b[2] || a[0].localeCompare(b[0]));
+    // The treaty paragraph is both a wall of text and too repetitive for the lexical-diversity floor.
+    expect(metrics).toEqual([
+      ["metrics/repeated-phrase", "note", 2, { line: 5, column: 1 }],
+      ["metrics/lexical-diversity", "note", 3, { line: 3, column: 1 }],
+      ["metrics/repeated-phrase", "note", 3, { line: 3, column: 28 }],
+      ["metrics/wall-of-text", "note", 3, { line: 5, column: 1 }],
+    ]);
+    expect(lint("--layers", "metrics", "--chapter", "3").diagnostics.map((d) => d.chapter)).toEqual([3, 3, 3]);
+    expect(lint("--layers", "style").diagnostics.filter((d) => d.ruleId.startsWith("metrics/"))).toEqual([]);
+    expect(run(["lint", "lint-novel", "--layers", "metrics"])).toContain("ch2:5:1 note metrics/repeated-phrase [deterministic]");
+
+    const plotlint = join(bookDir, "story", "plotlint");
+    await mkdir(plotlint, { recursive: true });
+    await writeFile(join(plotlint, "rules.json"), JSON.stringify({ version: 1, rules: { "metrics/repeated-phrase": "off" } }));
+    expect(lint("--layers", "metrics").diagnostics.map((d) => d.ruleId).sort()).toEqual(["metrics/lexical-diversity", "metrics/wall-of-text"]);
+  }, 120_000);
+
   it("adds, approves, lists and removes author-written invariants, and lints approved ones", async () => {
     run(["init"]);
     await saveWorkManifest(projectDir, createWorkManifest({
