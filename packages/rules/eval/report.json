@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-27T18:36:20.196Z",
+ "generated": "2026-10-27T18:56:03.623Z",
  "book": "wenlow",
  "chapters": 5,
  "skipped": [],
@@ -7,8 +7,8 @@
   {
    "ruleId": "continuity/dead-entity-acts",
    "mutants": 11,
-   "caught": 10,
-   "recall": 0.9090909090909091,
+   "caught": 11,
+   "recall": 1,
    "cleanFindings": [],
    "cleanRate": 0,
    "collateral": [],
@@ -112,7 +112,7 @@
      "ruleId": "continuity/dead-entity-acts",
      "chapter": 4,
      "description": "Crane's death recorded as 'fate · passed away' (outside the death vocabulary); he mends nets at the landing in ch4.",
-     "caught": false,
+     "caught": true,
      "echoes": [],
      "collateral": []
     },
@@ -141,8 +141,8 @@
   {
    "ruleId": "continuity/dead-then-alive",
    "mutants": 11,
-   "caught": 10,
-   "recall": 0.9090909090909091,
+   "caught": 11,
+   "recall": 1,
    "cleanFindings": [],
    "cleanRate": 0,
    "collateral": [],
@@ -234,7 +234,7 @@
      "ruleId": "continuity/dead-then-alive",
      "chapter": 5,
      "description": "Crane's death recorded as 'fate · passed away' (outside the death vocabulary) and ended; alive in ch5.",
-     "caught": false,
+     "caught": true,
      "echoes": [],
      "collateral": []
     },
@@ -252,8 +252,8 @@
   {
    "ruleId": "continuity/two-places-at-once",
    "mutants": 11,
-   "caught": 10,
-   "recall": 0.9090909090909091,
+   "caught": 11,
+   "recall": 1,
    "cleanFindings": [],
    "cleanRate": 0,
    "collateral": [],
@@ -318,7 +318,7 @@
      "ruleId": "continuity/two-places-at-once",
      "chapter": 4,
      "description": "Jonas has arrived at Saltmere while on Gorse Hill (free-form 'arrived at', no kind label).",
-     "caught": false,
+     "caught": true,
      "echoes": [],
      "collateral": []
     },
@@ -363,8 +363,8 @@
   {
    "ruleId": "continuity/item-two-holders",
    "mutants": 11,
-   "caught": 9,
-   "recall": 0.8181818181818182,
+   "caught": 11,
+   "recall": 1,
    "cleanFindings": [],
    "cleanRate": 0,
    "collateral": [],
@@ -438,7 +438,7 @@
      "ruleId": "continuity/item-two-holders",
      "chapter": 2,
      "description": "Rook produces Crane's ledger while Crane holds it (free-form 'took possession of').",
-     "caught": false,
+     "caught": true,
      "echoes": [],
      "collateral": []
     },
@@ -447,7 +447,7 @@
      "ruleId": "continuity/item-two-holders",
      "chapter": 5,
      "description": "Thorne is carrying the compass Jonas wears (free-form 'is carrying', labelled possession).",
-     "caught": false,
+     "caught": true,
      "echoes": [],
      "collateral": []
     },
@@ -585,8 +585,8 @@
   {
    "ruleId": "continuity/single-valued-conflict",
    "mutants": 11,
-   "caught": 10,
-   "recall": 0.9090909090909091,
+   "caught": 11,
+   "recall": 1,
    "cleanFindings": [],
    "cleanRate": 0,
    "collateral": [],
@@ -660,7 +660,7 @@
      "ruleId": "continuity/single-valued-conflict",
      "chapter": 3,
      "description": "Jonas is 'seventeen' in ch3, written as a word, which the age reader does not parse.",
-     "caught": false,
+     "caught": true,
      "echoes": [],
      "collateral": []
     },
@@ -798,8 +798,8 @@
   {
    "ruleId": "continuity/world-rule-broken",
    "mutants": 10,
-   "caught": 6,
-   "recall": 0.6,
+   "caught": 8,
+   "recall": 0.8,
    "cleanFindings": [],
    "cleanRate": 0,
    "collateral": [],
@@ -864,7 +864,7 @@
      "ruleId": "continuity/world-rule-broken",
      "chapter": 5,
      "description": "Jonas takes four across, recorded as 'ferried · four passengers' (free-form).",
-     "caught": false,
+     "caught": true,
      "echoes": [],
      "collateral": []
     },
@@ -891,7 +891,7 @@
      "ruleId": "continuity/world-rule-broken",
      "chapter": 5,
      "description": "Jonas takes eight across ('passengers · eight', a word numeral).",
-     "caught": false,
+     "caught": true,
      "echoes": [],
      "collateral": []
     }

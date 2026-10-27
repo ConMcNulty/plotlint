@@ -124,8 +124,17 @@ export interface ParsedQuantity {
 const ARABIC = /^([-−–+]|minus\s+|负)?\s*(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?\s*([\p{L}][\p{L}\s.']{0,23})?$/iu;
 const CHINESE = /^(负)?([零〇一二两三四五六七八九十百千万亿]+)([\p{L}]{0,8})$/u;
 
+// English number words up to ninety-nine ("seventeen", "twenty-one"), as settlers copy them from prose.
+const ENGLISH_UNITS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+  "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+const ENGLISH_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+const ENGLISH = new RegExp(
+  `^(minus\\s+)?(?:(${ENGLISH_TENS.filter(Boolean).join("|")})(?:[-\\s](${ENGLISH_UNITS.slice(1, 10).join("|")}))?|(${ENGLISH_UNITS.join("|")}))\\b\\s*([\\p{L}][\\p{L}\\s.']{0,23})?$`,
+  "iu",
+);
+
 /**
- * Read a value like "-1,200 gold", "−5", "minus 3 arrows", "负50灵石" or "负三十枚金币"
+ * Read a value like "-1,200 gold", "−5", "minus 3 arrows", "seventeen", "负50灵石" or "负三十枚金币"
  * as a number with an optional unit. Anything else (ranges, prose, "about 5") is null.
  */
 export function parseQuantity(raw: string): ParsedQuantity | null {
@@ -135,6 +144,13 @@ export function parseQuantity(raw: string): ParsedQuantity | null {
     const sign = arabic[1] && arabic[1] !== "+" ? -1 : 1;
     const value = Number(`${arabic[2]!.replace(/,/gu, "")}${arabic[3] ?? ""}`);
     return { value: sign * value, unit: (arabic[4] ?? "").trim() };
+  }
+  const english = ENGLISH.exec(text);
+  if (english) {
+    const value = english[4] !== undefined
+      ? ENGLISH_UNITS.indexOf(english[4].toLowerCase())
+      : ENGLISH_TENS.indexOf(english[2]!.toLowerCase()) * 10 + (english[3] ? ENGLISH_UNITS.indexOf(english[3].toLowerCase()) : 0);
+    return { value: english[1] ? -value : value, unit: (english[5] ?? "").trim() };
   }
   const chinese = CHINESE.exec(text);
   if (chinese) {

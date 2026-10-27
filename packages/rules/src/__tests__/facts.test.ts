@@ -29,6 +29,10 @@ describe("fact helpers", () => {
     expect(parseQuantity("一千两百")).toEqual({ value: 1200, unit: "" });
     expect(parseQuantity("两万")).toEqual({ value: 20000, unit: "" });
     expect(parseQuantity("十七岁")).toEqual({ value: 17, unit: "岁" });
-    for (const text of ["-5 to 10", "about -5", "a few", "5%", "-3 (after the fight)", "1,2"]) expect(parseQuantity(text)).toBeNull();
+    expect(parseQuantity("seventeen")).toEqual({ value: 17, unit: "" });
+    expect(parseQuantity("Twenty-one years old")).toEqual({ value: 21, unit: "years old" });
+    expect(parseQuantity("eight passengers")).toEqual({ value: 8, unit: "passengers" });
+    expect(parseQuantity("minus four shillings")).toEqual({ value: -4, unit: "shillings" });
+    for (const text of ["someone", "seventh", "ones", "-5 to 10", "about -5", "a few", "5%", "-3 (after the fight)", "1,2"]) expect(parseQuantity(text)).toBeNull();
   });
 });
