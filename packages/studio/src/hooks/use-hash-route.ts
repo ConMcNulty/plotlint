@@ -11,7 +11,7 @@ export type HashRoute =
   | { page: "services" }
   | { page: "project-settings" }
   | { page: "service-detail"; serviceId: string }
-  | { page: "chapter"; bookId: string; chapterNumber: number }
+  | { page: "chapter"; bookId: string; chapterNumber: number; select?: { start: number; end: number } }
   | { page: "analytics"; bookId: string }
   | { page: "truth"; bookId: string }
   | { page: "daemon" }

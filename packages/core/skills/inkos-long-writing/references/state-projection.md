@@ -8,6 +8,10 @@ Extract only what the chapter establishes. Track character action and physical s
 
 Update the supplied runtime state instead of rebuilding it from scratch. Preserve unrelated facts and stable IDs. Character knowledge is scoped to what each person witnessed or learned. If the chapter stops at a threshold, the state must not move the character beyond it. Outline material is planning context, not evidence that an event happened.
 
+## Cite and type every fact op
+
+Every upserted fact and every expiry cites `evidence`: the exact passage from this chapter's body that establishes the change, copied character for character (one sentence or clause, not a summary or paraphrase). A fact you cannot point to in the text is not established by this chapter, so leave it out. Label each upsert with its `kind`: `status` (alive, dead, injured, missing), `location`, `possession`, `knowledge`, `relationship`, `resource`, `age`, `identity`, `trait`, `goal`, `world_rule`, `time` or `other`. Use one predicate name per kind for a subject (for example always `location`, never both `location` and `whereabouts`).
+
 ## Hook identity and lifecycle
 
 - Reuse an existing hook ID whenever the new wording continues the same unresolved promise, even if names, numbers, evidence form, or phrasing change.

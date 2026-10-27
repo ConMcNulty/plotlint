@@ -59,7 +59,8 @@ interface BookState {
   readonly key: string;
   readonly snapshot: RuntimeStateSnapshot | null;
   readonly dictionary: string[];
-  readonly stateDiagnostics: Diagnostic[];
+  /** The L3 findings, checked on first use (navigation reads the snapshot without them). */
+  stateDiagnostics(): Diagnostic[];
 }
 
 const STATE_FILES = ["manifest.json", "current_state.json", "hooks.json", "chapter_summaries.json"];
@@ -89,14 +90,20 @@ async function bookState(bookDir: string): Promise<BookState> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
+  let checked: Diagnostic[] | undefined;
   const state: BookState = {
     key,
     snapshot,
     dictionary: snapshot ? projectDictionary(snapshot) : [],
-    stateDiagnostics: snapshot ? checkSnapshot(snapshot) : [],
+    stateDiagnostics: () => (checked ??= snapshot ? checkSnapshot(snapshot) : []),
   };
   bookStates.set(bookDir, state);
   return state;
+}
+
+/** The book's runtime state snapshot (cached like the lint's), or null when it has none yet. */
+export async function bookSnapshot(bookDir: string): Promise<RuntimeStateSnapshot | null> {
+  return (await bookState(bookDir)).snapshot;
 }
 
 /** Expand ranges to the whole (blank-line separated) paragraphs they touch, merged and clamped. */
@@ -165,7 +172,7 @@ export async function lintChapter(request: ChapterLintRequest): Promise<ChapterL
 
   const textDiagnostics = [...mechanics, ...style]
     .sort((a, b) => a.range!.start - b.range!.start || a.range!.end - b.range!.end || a.ruleId.localeCompare(b.ruleId));
-  const stateDiagnostics = state.stateDiagnostics.filter((diagnostic) => diagnostic.chapter === chapter);
+  const stateDiagnostics = state.stateDiagnostics().filter((diagnostic) => diagnostic.chapter === chapter);
 
   const { kept, suppressed } = applySuppressions([...textDiagnostics, ...stateDiagnostics], suppressions);
   return {

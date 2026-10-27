@@ -28,16 +28,46 @@ const ChapterSummaryToolSchema = Type.Object({
   chapterType: Type.String(),
 });
 
+// plotlint: every fact op cites the passage that establishes it, and upserts
+// carry a typed kind. The host locates each quote in the chapter text.
+const FactEvidenceToolSchema = Type.String({
+  minLength: 1,
+  description: "Exact verbatim passage from this chapter's body that establishes this change: one sentence or clause, copied character for character, at most about 200 characters.",
+});
+
+const FactKindToolSchema = Type.Union([
+  Type.Literal("status"),
+  Type.Literal("location"),
+  Type.Literal("possession"),
+  Type.Literal("knowledge"),
+  Type.Literal("relationship"),
+  Type.Literal("resource"),
+  Type.Literal("age"),
+  Type.Literal("identity"),
+  Type.Literal("trait"),
+  Type.Literal("goal"),
+  Type.Literal("world_rule"),
+  Type.Literal("time"),
+  Type.Literal("other"),
+], {
+  description: "What the fact records: status (alive, dead, injured, missing), location, possession (holds or owns), knowledge (knows or believes), relationship, resource (a counted amount), age, identity (name, alias, role), trait, goal, world_rule (a law or cost of the setting), time, or other.",
+});
+
 const StateFactToolSchema = Type.Object({
   subject: Type.String({ minLength: 1, description: "Stable entity or scope the fact describes." }),
   predicate: Type.String({ minLength: 1, description: "Natural-language relation or state name." }),
   object: Type.String({ minLength: 1, description: "Value explicitly established by the chapter." }),
+  kind: Type.Optional(FactKindToolSchema),
+  // Required by the prompt and checked by the host, which asks once for missing
+  // quotes; optional in the schema so one uncited op cannot fail a settlement.
+  evidence: Type.Optional(FactEvidenceToolSchema),
 });
 
 const StateFactSelectorToolSchema = Type.Object({
   subject: Type.String({ minLength: 1 }),
   predicate: Type.String({ minLength: 1 }),
   object: Type.Optional(Type.String({ minLength: 1 })),
+  evidence: Type.Optional(FactEvidenceToolSchema),
 });
 
 export const SettlementToolSchema = Type.Object({

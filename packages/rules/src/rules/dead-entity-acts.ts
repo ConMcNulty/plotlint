@@ -1,14 +1,12 @@
 import type { CurrentStateFact } from "@actalk/inkos-core";
 import type { Diagnostic } from "@plotlint/diagnostics";
 import type { Rule } from "../types.js";
+import { hasKind } from "../predicates.js";
 import { factFinding, normalize, validAt } from "./facts.js";
 
 // Settler facts are free-form subject-predicate-object strings in English or
-// Chinese, so death is recognised from a small vocabulary rather than a type.
-export const STATUS_PREDICATES = new Set([
-  "status", "state", "condition", "alive", "lifestatus", "life", "vitalstatus", "health",
-  "状态", "生死", "生死状态", "存活", "存活状态", "生命状态",
-]);
+// Chinese, so a status fact is recognised from its kind or a small vocabulary of
+// predicate names, and death from a small vocabulary of objects.
 const DEAD_OBJECT = /^(dead|deceased|killed|died|slain|murdered|executed|死亡|已死|已死亡|死了|身亡|阵亡|去世|已故|遇害|被杀)$/u;
 const NOT_ALIVE_OBJECT = /^(false|no|not alive|否|不|无)$/u;
 
@@ -28,7 +26,7 @@ const POSTHUMOUS_PREDICATE = /(cause.?of.?death|death|died|buried|burial|grave|t
 export function isDeathFact(fact: CurrentStateFact): boolean {
   const predicate = normalize(fact.predicate);
   if (DEATH_PREDICATES.has(predicate)) return true;
-  if (!STATUS_PREDICATES.has(predicate) && !COPULA_PREDICATES.has(predicate)) return false;
+  if (!hasKind(fact, "status") && !COPULA_PREDICATES.has(predicate)) return false;
   const object = fact.object.trim().toLowerCase();
   if (predicate === "alive" || predicate === "存活") return NOT_ALIVE_OBJECT.test(object);
   return DEAD_OBJECT.test(object);
@@ -57,7 +55,7 @@ export const deadEntityActs: Rule = {
         && fact.validFromChapter > death.validFromChapter
         && validAt(death, fact.validFromChapter)
         && !isDeathFact(fact)
-        && !STATUS_PREDICATES.has(normalize(fact.predicate))
+        && !hasKind(fact, "status")
         && !POSTHUMOUS_PREDICATE.test(fact.predicate.toLowerCase()));
 
       const byChapter = new Map<number, CurrentStateFact[]>();

@@ -2,7 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Command } from "commander";
 import { StateManager, loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
-import { checkSnapshot, checkText, type TextRule } from "@plotlint/rules";
+import { checkSnapshot, checkText, evidenceCoverage, type ChapterTexts, type EvidenceCoverage, type TextRule } from "@plotlint/rules";
 import { createHarperRule, isMostlyCjk, projectDictionary } from "@plotlint/mechanics";
 import { generalPack } from "@plotlint/style/node";
 import {
@@ -71,6 +71,19 @@ async function chapterFiles(bookDir: string): Promise<Map<number, string>> {
     if (match && !byNumber.has(Number(match[1]))) byNumber.set(Number(match[1]), join(chaptersDir, file));
   }
   return new Map([...byNumber].sort(([a], [b]) => a - b));
+}
+
+async function chapterTexts(bookDir: string): Promise<ChapterTexts> {
+  const files = await chapterFiles(bookDir);
+  return new Map(await Promise.all([...files].map(async ([chapter, path]) => [chapter, await readFile(path, "utf-8")] as const)));
+}
+
+/** Parse `--min 0.9`; the phase 2 gate is 0.95. */
+function parseRatio(value: string | undefined): number {
+  if (value === undefined) return 0.95;
+  const ratio = Number(value);
+  if (!/^(?:\d+\.?\d*|\.\d+)$/u.test(value.trim()) || ratio > 1) throw new Error(`--min takes a ratio from 0 to 1; got "${value}"`);
+  return ratio;
 }
 
 let generalPackRules: TextRule[] | undefined;
@@ -266,6 +279,59 @@ lintCommand
       }
     } catch (e) {
       logError(`Suppress failed: ${e}`);
+      process.exit(1);
+    }
+  });
+
+const percent = (ratio: number) => `${(ratio * 100).toFixed(1)}%`;
+
+/** The gate line, a per-chapter table and the fact ops that fail, for `inkos lint evidence`. */
+function formatCoverage(bookId: string, coverage: EvidenceCoverage, min: number): string[] {
+  const verdict = coverage.ratio >= min ? `meets the ${percent(min)} gate` : `below the ${percent(min)} gate`;
+  const lines = [`${bookId}: ${coverage.valid}/${coverage.total} fact ops have a valid evidence span (${percent(coverage.ratio)}), ${verdict}`];
+  if (coverage.total === 0) return lines;
+  const rows = [["chapter", "valid", "total", "ratio"], ...coverage.byChapter.map((row) =>
+    [`ch${row.chapter}`, String(row.valid), String(row.total), percent(row.valid / row.total)])];
+  const widths = rows[0]!.map((_, column) => Math.max(...rows.map((row) => row[column]!.length)));
+  for (const row of rows) lines.push(`  ${row.map((cell, column) => column === 0 ? cell.padEnd(widths[column]!) : cell.padStart(widths[column]!)).join("  ")}`);
+  if (coverage.issues.length > 0) lines.push("  failing fact ops:");
+  for (const issue of coverage.issues) {
+    const { fact } = issue;
+    const cited = issue.op === "upsert" ? fact.evidence : fact.endEvidence;
+    // A quote that is not in the chapter is shown, so the writer can see what the settler claimed.
+    const quote = issue.status === "not-found" && cited ? ` "${cited.quote.length > 60 ? `${cited.quote.slice(0, 57)}...` : cited.quote}"` : "";
+    lines.push(`    ${issue.status} ch${issue.chapter} ${issue.op}: ${fact.subject} · ${fact.predicate} · ${fact.object}${quote}`);
+  }
+  return lines;
+}
+
+lintCommand
+  .command("evidence")
+  .description("Check that each settled fact op cites a passage still in its chapter (the phase 2 evidence gate)")
+  .argument("[book-id]", "Book ID (auto-detected if only one book)")
+  .option("--min <ratio>", "Fail when fewer than this share of fact ops validate (default 0.95)")
+  .option("--json", "Output JSON")
+  .action(async (bookIdArg: string | undefined, opts: { min?: string; json?: boolean }, command: Command) => {
+    try {
+      opts = { ...opts, json: wantsJson(command) };
+      const min = parseRatio(opts.min);
+      const root = findProjectRoot();
+      const bookId = await resolveBookId(bookIdArg, root);
+      const bookDir = new StateManager(root).bookDir(bookId);
+      const snapshot = await loadSnapshot(bookDir);
+      // A book with no settled state has no fact ops to check.
+      const coverage = snapshot ? evidenceCoverage(snapshot, await chapterTexts(bookDir)) : undefined;
+      const passed = coverage === undefined || coverage.ratio >= min;
+      if (opts.json) {
+        log(JSON.stringify({ bookId, min, passed, ...(coverage ?? { stateMissing: true }) }, null, 2));
+      } else if (!coverage) {
+        log(`${bookId}: no runtime state yet`);
+      } else {
+        for (const line of formatCoverage(bookId, coverage, min)) log(line);
+      }
+      if (!passed) process.exitCode = 1;
+    } catch (e) {
+      logError(`Evidence check failed: ${e}`);
       process.exit(1);
     }
   });

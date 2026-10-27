@@ -170,6 +170,12 @@ import {
   parseSuppressionBody as parsePlotlintSuppressionBody,
   suppressFinding,
 } from "./plotlint-lint.js";
+import {
+  definitionsOf,
+  parseDefinitionBody as parsePlotlintDefinitionBody,
+  parseStateBody as parsePlotlintStateBody,
+  stateAtCursor,
+} from "./plotlint-navigate.js";
 import { ApiError } from "./errors.js";
 import { buildStudioBookConfig, normalizeStudioPlatform } from "./book-create.js";
 import {
@@ -3229,7 +3235,7 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     }
   });
 
-  // --- plotlint: editor diagnostics and suppressions ---
+  // --- plotlint: editor diagnostics, suppressions and navigation ---
 
   const plotlintBookDir = async (bookId: string): Promise<string> => {
     if (!isSafeBookId(bookId)) throw new ApiError(400, "INVALID_BOOK_ID", `Invalid book ID: "${bookId}"`);
@@ -3252,6 +3258,23 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     const { bookId, ...request } = parsed;
     const bookDir = await plotlintBookDir(bookId);
     return c.json({ ok: true, ...(await suppressFinding(bookDir, request)) });
+  });
+
+  // State at cursor and go to definition, over the runtime state's evidence spans.
+  app.post("/api/v1/plotlint/state", async (c) => {
+    const parsed = parsePlotlintStateBody(await c.req.json().catch(() => null));
+    if (typeof parsed === "string") throw new ApiError(400, "INVALID_STATE_REQUEST", parsed);
+    const { bookId, ...request } = parsed;
+    const bookDir = await plotlintBookDir(bookId);
+    return c.json(await stateAtCursor({ bookDir, ...request }));
+  });
+
+  app.post("/api/v1/plotlint/definition", async (c) => {
+    const parsed = parsePlotlintDefinitionBody(await c.req.json().catch(() => null));
+    if (typeof parsed === "string") throw new ApiError(400, "INVALID_DEFINITION_REQUEST", parsed);
+    const { bookId, ...request } = parsed;
+    const bookDir = await plotlintBookDir(bookId);
+    return c.json(await definitionsOf({ bookDir, ...request }));
   });
 
   // --- Truth files ---

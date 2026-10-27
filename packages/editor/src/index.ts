@@ -22,3 +22,14 @@ export {
 } from "./plugin.js";
 export { Diagnostics, PlainTextDocument, type DiagnosticsOptions, type DiagnosticsStorage } from "./extension.js";
 export { confidenceLabel, renderDiagnosticDetails, type DetailsOptions } from "./details.js";
+export {
+  Navigation,
+  nameCandidatesAt,
+  scrollSelectionToCenter,
+  selectionTextRange,
+  textRangeSelection,
+  wordRangeAt,
+  type DefinitionRequest,
+  type NavigationOptions,
+  type NavigationStorage,
+} from "./navigation.js";

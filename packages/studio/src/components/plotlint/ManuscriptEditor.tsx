@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from "react";
 import { createPortal } from "react-dom";
-import { EyeOff, Wrench } from "lucide-react";
+import { EyeOff, ListTree, SearchX, Wrench } from "lucide-react";
 import type { Editor } from "@tiptap/core";
-import { confidenceLabel, type DiagnosticEntry } from "@plotlint/editor";
+import { confidenceLabel, OffsetMap, type DefinitionRequest, type DiagnosticEntry, type TextRange } from "@plotlint/editor";
 import "@plotlint/editor/styles.css";
 import "./plotlint.css";
 import type { TFunction } from "../../hooks/use-i18n";
 import { cn } from "../../lib/utils";
 import { createChapterEditor, type ChapterEditor, type ProblemsSnapshot } from "./chapter-editor";
 import { chapterLinter, chapterSourceId, suppressDiagnostic, type LintDiagnostic, type LintFunction } from "./lint-client";
+import { fetchStateAt, findDefinition, type Definition, type EntityAtCursor, type EvidenceLocation, type StateAtCursorResponse } from "./navigate-client";
 import { ProblemsPanel } from "./ProblemsPanel";
+import { StatePanel } from "./StatePanel";
 import { problemRows, type ProblemRow } from "./problems-model";
 
 export interface ManuscriptEditorHandle {
@@ -17,6 +19,15 @@ export interface ManuscriptEditorHandle {
   getText(): string;
   /** The underlying Tiptap editor, once mounted. */
   editor(): Editor | null;
+  /** Select a plain-text range and scroll it into view. */
+  revealRange(range: TextRange): void;
+}
+
+/** The state-at-cursor and go-to-definition lookups for the open chapter. */
+export interface NavigationClient {
+  stateAt(offset: number, text: string): Promise<StateAtCursorResponse>;
+  /** The first of `names` that resolves, with its definitions in reading order; null when none does. */
+  definition(names: ReadonlyArray<string>, text: string): Promise<{ name: string; definitions: Definition[] } | null>;
 }
 
 export interface ManuscriptEditorProps {
@@ -28,6 +39,12 @@ export interface ManuscriptEditorProps {
   readonly handleRef?: Ref<ManuscriptEditorHandle>;
   /** Override the lint route (tests). */
   readonly lint?: LintFunction;
+  /** Override the state and definition routes (tests). */
+  readonly navigation?: NavigationClient;
+  /** Select this text range once the editor opens (a jump from another chapter). */
+  readonly selection?: TextRange;
+  /** Open a passage in another chapter (an "established" link or a definition there). */
+  readonly onOpenLocation?: (location: EvidenceLocation) => void;
   readonly className?: string;
 }
 
@@ -39,16 +56,64 @@ interface HoverState {
   readonly anchorBottom: number;
 }
 
+interface CursorState {
+  readonly entities: EntityAtCursor[] | null;
+  readonly loading: boolean;
+  readonly error: string | null;
+  readonly stateMissing: boolean;
+}
+
+interface Notice {
+  readonly text: string;
+  readonly left: number;
+  readonly top: number;
+}
+
 const EMPTY: ProblemsSnapshot = { ranged: [], unranged: [], suppressed: 0, linting: true, error: null, stateMissing: false };
 
-/** The Tiptap chapter editor with plotlint squiggles, a hover card per finding, and the problems panel below. */
-export function ManuscriptEditor({ bookId, chapterNumber, initialText, t, handleRef, lint, className }: ManuscriptEditorProps) {
+const chapterNavigation = (bookId: string, chapter: number): NavigationClient => ({
+  stateAt: (offset, text) => fetchStateAt(bookId, chapter, offset, text),
+  definition: (names, text) => findDefinition(bookId, names, { chapter, text }),
+});
+
+const STATE_PANEL_KEY = "plotlint.statePanel";
+/** Pause after the cursor moves before asking for the state there. */
+const STATE_DEBOUNCE_MS = 300;
+
+const readPanelPreference = () => {
+  try {
+    return window.localStorage.getItem(STATE_PANEL_KEY) !== "hidden";
+  } catch {
+    return true;
+  }
+};
+
+/**
+ * The Tiptap chapter editor with plotlint squiggles, a hover card per finding,
+ * the state at the cursor beside it, and the problems panel below. F12 or
+ * Ctrl/Cmd+click goes to where the name under the cursor is first established.
+ */
+export function ManuscriptEditor({
+  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, selection, onOpenLocation, className,
+}: ManuscriptEditorProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<ChapterEditor | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const initialTextRef = useRef(initialText);
+  const initialSelectionRef = useRef(selection);
   const [problems, setProblems] = useState<ProblemsSnapshot>(EMPTY);
   const [hover, setHover] = useState<HoverState | null>(null);
+  const [showState, setShowState] = useState(readPanelPreference);
+  const [cursor, setCursor] = useState<CursorState>({ entities: null, loading: false, error: null, stateMissing: false });
+  const [notice, setNotice] = useState<Notice | null>(null);
+
+  const client = useMemo(() => navigation ?? chapterNavigation(bookId, chapterNumber), [navigation, bookId, chapterNumber]);
+  // Read by the editor's callbacks, which are bound once per editor.
+  const live = useRef({ client, showState, chapterNumber, onOpenLocation });
+  live.current = { client, showState, chapterNumber, onOpenLocation };
+  const stateTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const stateRequest = useRef({ seq: 0, offset: -1, text: "" });
+  const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const cancelHide = () => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -58,6 +123,69 @@ export function ManuscriptEditor({ bookId, chapterNumber, initialText, t, handle
     cancelHide();
     hideTimer.current = setTimeout(() => setHover(null), 250);
   };
+
+  /** Ask for the state at the cursor now, unless neither the cursor nor the text moved since the last ask. */
+  const refreshState = useCallback(async (force = false) => {
+    const controller = controllerRef.current;
+    if (!controller || !live.current.showState) return;
+    const offset = controller.selection().end;
+    const text = controller.getText();
+    const last = stateRequest.current;
+    if (!force && last.offset === offset && last.text === text) return;
+    const seq = last.seq + 1;
+    stateRequest.current = { seq, offset, text };
+    setCursor((previous) => ({ ...previous, loading: true }));
+    try {
+      const result = await live.current.client.stateAt(offset, text);
+      if (stateRequest.current.seq !== seq) return;
+      setCursor({ entities: result.entities, loading: false, error: null, stateMissing: result.stateMissing });
+    } catch (error) {
+      if (stateRequest.current.seq !== seq) return;
+      // Ask again on the next cursor move.
+      stateRequest.current = { ...stateRequest.current, offset: -1 };
+      setCursor((previous) => ({ ...previous, loading: false, error: error instanceof Error ? error.message : String(error) }));
+    }
+  }, []);
+  const refreshStateSoon = useCallback(() => {
+    if (stateTimer.current) clearTimeout(stateTimer.current);
+    stateTimer.current = setTimeout(() => { stateTimer.current = undefined; void refreshState(); }, STATE_DEBOUNCE_MS);
+  }, [refreshState]);
+
+  /** A short notice under a text position that fades on its own. */
+  const showNotice = useCallback((text: string, at: TextRange) => {
+    const view = controllerRef.current?.editor.view;
+    if (!view) return;
+    let coords: { left: number; bottom: number };
+    try {
+      coords = view.coordsAtPos(OffsetMap.fromDoc(view.state.doc).toPos(at.start));
+    } catch {
+      // No layout (tests): under the editor's top edge instead.
+      const rect = view.dom.getBoundingClientRect();
+      coords = { left: rect.left, bottom: rect.top };
+    }
+    if (noticeTimer.current) clearTimeout(noticeTimer.current);
+    setNotice({ text, left: coords.left, top: coords.bottom + 4 });
+    noticeTimer.current = setTimeout(() => setNotice(null), 2500);
+  }, []);
+
+  /** Select a passage: here when it is in this chapter, otherwise through the reader. */
+  const openLocation = useCallback((location: EvidenceLocation) => {
+    if (location.chapter === live.current.chapterNumber) controllerRef.current?.revealRange(location);
+    else live.current.onOpenLocation?.(location);
+  }, []);
+
+  const goToDefinition = useCallback(async (request: DefinitionRequest) => {
+    try {
+      const found = request.names.length > 0 ? await live.current.client.definition(request.names, request.text) : null;
+      const first = found?.definitions[0];
+      if (first) openLocation(first.location);
+      else showNotice(request.names[0] ? `${t("state.noDefinition")}: ${request.names[0]}` : t("state.noDefinition"), request.range);
+    } catch (error) {
+      showNotice(error instanceof Error ? error.message : String(error), request.range);
+    }
+  }, [openLocation, showNotice, t]);
+  const goToDefinitionRef = useRef(goToDefinition);
+  goToDefinitionRef.current = goToDefinition;
 
   useEffect(() => {
     const element = mountRef.current;
@@ -69,6 +197,9 @@ export function ManuscriptEditor({ bookId, chapterNumber, initialText, t, handle
       lint: lint ?? chapterLinter(bookId, chapterNumber),
       editorClass: "pl-manuscript-editor font-serif text-lg leading-[1.8] text-foreground/90",
       onProblems: setProblems,
+      onSelection: refreshStateSoon,
+      onGoToDefinition: (request) => void goToDefinitionRef.current(request),
+      ...(initialSelectionRef.current ? { selection: initialSelectionRef.current } : {}),
       onHover: (entries, context) => {
         if (entries.length === 0 || !context.anchor) {
           hideSoon();
@@ -81,13 +212,16 @@ export function ManuscriptEditor({ bookId, chapterNumber, initialText, t, handle
     });
     controllerRef.current = controller;
     setProblems(controller.problems());
+    void refreshState(true);
     return () => {
       cancelHide();
+      if (stateTimer.current) clearTimeout(stateTimer.current);
+      if (noticeTimer.current) clearTimeout(noticeTimer.current);
       controller.destroy();
       controllerRef.current = null;
     };
     // The editor is created once per chapter; text edits live inside it.
-  }, [bookId, chapterNumber, lint]);
+  }, [bookId, chapterNumber, lint, refreshState, refreshStateSoon]);
 
   // The card is fixed to where the word was; close it when the page scrolls.
   useEffect(() => {
@@ -100,7 +234,20 @@ export function ManuscriptEditor({ bookId, chapterNumber, initialText, t, handle
   useImperativeHandle(handleRef, () => ({
     getText: () => controllerRef.current?.getText() ?? initialTextRef.current,
     editor: () => controllerRef.current?.editor ?? null,
+    revealRange: (range) => controllerRef.current?.revealRange(range),
   }), []);
+
+  const toggleState = () => {
+    const next = !showState;
+    setShowState(next);
+    live.current = { ...live.current, showState: next };
+    try {
+      window.localStorage.setItem(STATE_PANEL_KEY, next ? "shown" : "hidden");
+    } catch {
+      // Storage can be refused (a private window); the toggle still works on this page.
+    }
+    if (next) void refreshState(true);
+  };
 
   const markIntentional = useCallback(async (diagnostic: LintDiagnostic) => {
     const reason = window.prompt(t("problems.reasonPrompt"))?.trim();
@@ -131,7 +278,37 @@ export function ManuscriptEditor({ bookId, chapterNumber, initialText, t, handle
 
   return (
     <div className={cn("space-y-6", className)}>
-      <div ref={mountRef} className="pl-manuscript" data-testid="manuscript-editor" />
+      <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
+        <span>{t("state.gotoHint")}</span>
+        <button
+          type="button"
+          aria-pressed={showState}
+          onClick={toggleState}
+          className={cn(
+            "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-medium transition-colors",
+            showState ? "border-primary/30 bg-primary/10 text-primary" : "border-border/50 hover:text-foreground",
+          )}
+          data-testid="state-toggle"
+        >
+          <ListTree size={12} />
+          {t("state.toggle")}
+        </button>
+      </div>
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
+        <div ref={mountRef} className="pl-manuscript min-w-0 flex-1" data-testid="manuscript-editor" />
+        {showState && (
+          <StatePanel
+            entities={cursor.entities}
+            chapter={chapterNumber}
+            loading={cursor.loading}
+            error={cursor.error}
+            stateMissing={cursor.stateMissing}
+            t={t}
+            onOpen={openLocation}
+            className="xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:w-80 xl:shrink-0 xl:overflow-y-auto"
+          />
+        )}
+      </div>
       <ProblemsPanel
         rows={rows}
         suppressed={problems.suppressed}
@@ -152,6 +329,18 @@ export function ManuscriptEditor({ bookId, chapterNumber, initialText, t, handle
           onFix={applyFix}
           onSuppress={(entry) => void markIntentional(entry.diagnostic as LintDiagnostic)}
         />,
+        document.body,
+      )}
+      {notice && typeof document !== "undefined" && createPortal(
+        <div
+          role="status"
+          data-testid="goto-notice"
+          className="fixed z-50 flex items-center gap-1.5 rounded-lg border border-border bg-popover px-2.5 py-1.5 text-xs text-popover-foreground shadow-lg"
+          style={{ left: Math.max(8, notice.left), top: notice.top }}
+        >
+          <SearchX size={12} className="text-muted-foreground" />
+          {notice.text}
+        </div>,
         document.body,
       )}
     </div>

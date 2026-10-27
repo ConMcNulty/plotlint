@@ -5,6 +5,7 @@ import type { BookRules } from "../models/book-rules.js";
 import { buildWriterSystemPrompt } from "./writer-prompts.js";
 import { buildSettlerSystemPrompt, buildSettlerUserPrompt } from "./settler-prompts.js";
 import { createSettlementToolSchema } from "./settler-tool.js";
+import { resolveFactEvidence, unresolvedEvidenceError } from "./settler-evidence.js";
 import { ChapterDraftToolSchema } from "./writer-tool.js";
 import { readBookRules } from "./rules-reader.js";
 import type { ChapterIntent, ChapterMemo, ContextPackage } from "../models/input-governance.js";
@@ -308,8 +309,12 @@ export class WriterAgent extends BaseAgent {
       governedControlBlock,
       validationFeedback: params.validationFeedback,
       language: resolvedLang,
-    }) + `\n\n## Settlement baseline\nApply the delta to this exact baseline. Existing hook operations may name only its hook IDs. Later projections in retrieved context are references, not the baseline to be mutated.\n${JSON.stringify({ chapter: params.baselineSnapshot.manifest.lastAppliedChapter, currentState: params.baselineSnapshot.currentState, hooks: params.baselineSnapshot.hooks, allowNewHooks: params.allowNewHooks ?? true })}`;
+    }) + `\n\n## Settlement baseline\nApply the delta to this exact baseline. Existing hook operations may name only its hook IDs. Later projections in retrieved context are references, not the baseline to be mutated.\n${JSON.stringify({ chapter: params.baselineSnapshot.manifest.lastAppliedChapter, currentState: baselineForPrompt(params.baselineSnapshot.currentState), hooks: params.baselineSnapshot.hooks, allowNewHooks: params.allowNewHooks ?? true })}`;
     const knownHookIds = new Set(params.baselineSnapshot.hooks.hooks.map((hook) => hook.hookId));
+    // plotlint: ask once for corrected quotes when some are not in the chapter;
+    // after that, keep those ops without offsets. Uncited ops are kept as they
+    // are rather than costing another call; `inkos lint evidence` reports them.
+    let evidenceRetries = 1;
     const { result, usage } = await this.submitStructured(
       [
         { role: "system", content: systemPrompt },
@@ -322,16 +327,28 @@ export class WriterAgent extends BaseAgent {
           ? "Submit only chapter-grounded incremental state changes. The host owns the chapter number."
           : "只提交正文有证据的增量状态变更；章节号由宿主持有。",
         parameters: createSettlementToolSchema(params.allowNewHooks),
-        validate: (value) => validateSettlementHookIds(value, knownHookIds),
+        validate: (value) => {
+          validateSettlementHookIds(value, knownHookIds);
+          const wrongQuotes = resolveFactEvidence(value.factOps, params.content).unresolved.filter((issue) => issue.quote !== undefined);
+          if (wrongQuotes.length > 0 && evidenceRetries > 0) {
+            evidenceRetries -= 1;
+            throw unresolvedEvidenceError(wrongQuotes);
+          }
+          return value;
+        },
       },
       { temperature: 0.3, maxTokens: Math.min(16384, this.ctx.client.defaults.maxTokens) },
     );
+    const { factOps, unresolved } = resolveFactEvidence(result.factOps, params.content);
+    if (unresolved.length > 0) {
+      this.logWarn(resolvedLang, {
+        zh: `第${params.chapterNumber}章有 ${unresolved.length} 条事实缺少证据引文或引文不在正文中，已保留但没有位置`,
+        en: `Settler evidence missing or not found in chapter ${params.chapterNumber} for ${unresolved.length} fact op(s); kept without offsets`,
+      });
+    }
     const runtimeStateDelta = RuntimeStateDeltaSchema.parse({
       chapter: params.chapterNumber,
-      factOps: {
-        upsert: result.factOps.upsert,
-        expire: result.factOps.expire,
-      },
+      factOps,
       hookOps: {
         upsert: result.hookOps.upsert,
         mention: result.hookOps.mention,
@@ -698,6 +715,14 @@ ${selectedContext || "- none"}\n`;
       .replace(/\s+/g, "_")
       .slice(0, 50);
   }
+}
+
+/** The settler's baseline without evidence passages, which would only add prompt tokens. */
+function baselineForPrompt(currentState: RuntimeStateSnapshot["currentState"]): RuntimeStateSnapshot["currentState"] {
+  return {
+    ...currentState,
+    facts: currentState.facts.map(({ evidence: _evidence, endEvidence: _endEvidence, ...fact }) => fact),
+  };
 }
 
 function validateSettlementHookIds<T extends {

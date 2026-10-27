@@ -26,3 +26,12 @@
 .pl-problem-layer--metrics { --pl-layer: var(--pl-diag-metrics); }
 .pl-problem-layer--continuity { --pl-layer: var(--pl-diag-continuity); }
 .pl-problem-layer--structure { --pl-layer: var(--pl-diag-structure); }
+
+/* Fact kind badges in the state panel: the common kinds get a hue, the rest stay grey. */
+.pl-fact-kind { --pl-kind: #80868b; color: var(--pl-kind); background: color-mix(in srgb, var(--pl-kind) 12%, transparent); }
+.pl-fact-kind--status { --pl-kind: #d93025; }
+.pl-fact-kind--location { --pl-kind: #1a73e8; }
+.pl-fact-kind--possession { --pl-kind: #e8710a; }
+.pl-fact-kind--knowledge { --pl-kind: #8e44ad; }
+.pl-fact-kind--relationship { --pl-kind: #c2185b; }
+.pl-fact-kind--resource { --pl-kind: #188038; }

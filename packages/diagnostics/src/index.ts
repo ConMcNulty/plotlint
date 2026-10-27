@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ObservationSchema } from "@actalk/inkos-core";
+import { CurrentStateFactSchema, ObservationSchema } from "@actalk/inkos-core";
 
 /** Check layers, ordered from most to least objective (see docs/plotlint/PLAN.md). */
 export const DiagnosticLayerSchema = z.enum([
@@ -30,15 +30,12 @@ export const DiagnosticRangeSchema = z.object({
 }).strict().refine((range) => range.end >= range.start, { message: "range end precedes start" });
 export type DiagnosticRange = z.infer<typeof DiagnosticRangeSchema>;
 
-/** A state fact a finding rests on, so the editor can jump to where it was established. */
-export const DiagnosticFactRefSchema = z.object({
-  subject: z.string().min(1),
-  predicate: z.string().min(1),
-  object: z.string().min(1),
-  validFromChapter: z.number().int().min(0),
-  validUntilChapter: z.number().int().min(0).nullable(),
-  sourceChapter: z.number().int().min(0),
-}).strict();
+/**
+ * A state fact a finding rests on, so the editor can jump to where it was established.
+ * Rules cite facts as the state stores them, with the settler's kind and evidence
+ * passages, so this is the state's own fact schema rather than a copy that drifts.
+ */
+export const DiagnosticFactRefSchema = CurrentStateFactSchema;
 export type DiagnosticFactRef = z.infer<typeof DiagnosticFactRefSchema>;
 
 /** A quick fix: replace the diagnostic's range with `replacement` (empty string deletes it). */
