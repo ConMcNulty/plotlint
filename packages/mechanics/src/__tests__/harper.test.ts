@@ -66,6 +66,13 @@ describe("mechanics/harper", () => {
     expect(diagnostics.map((d) => text.slice(d.range!.start, d.range!.end))).toContain("teh");
   });
 
+  it("accepts British and American spellings alike but still flags misspellings", async () => {
+    const text = "She recognised the colour of the harbour and took offence. He liked the color of the harbor. Then she recieved a letter.";
+    const diagnostics = await checkText(doc(text), [rule]);
+    const flagged = diagnostics.filter((d) => d.code === "spelling").map((d) => text.slice(d.range!.start, d.range!.end));
+    expect(flagged).toEqual(["recieved"]);
+  });
+
   it("still flags a typo inside a long sentence", async () => {
     const text = "The air grew warmer, which made no sense this high above teh sea, and the light from the top of the tower began to leak down the stairwell, pale and gold, so that Tomas could finally put the lamp out and save the oil.";
     const diagnostics = await checkText(doc(text), [rule]);
