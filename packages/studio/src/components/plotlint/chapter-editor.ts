@@ -2,12 +2,16 @@ import { Editor, Extension } from "@tiptap/core";
 import { history, redo, undo } from "@tiptap/pm/history";
 import {
   Diagnostics,
+  Navigation,
   PlainTextDocument,
   docToText,
   getDiagnosticsState,
+  scrollSelectionToCenter,
   textToDoc,
+  type DefinitionRequest,
   type DiagnosticEntry,
   type HoverContext,
+  type TextRange,
 } from "@plotlint/editor";
 import type { LintDiagnostic, LintFunction } from "./lint-client";
 
@@ -16,7 +20,8 @@ import type { LintDiagnostic, LintFunction } from "./lint-client";
  * text (one paragraph per line, so `getText()` returns the text exactly as
  * loaded until it is edited), undo history, inline diagnostics, and a lint
  * loop that lints the whole chapter on open and then, after a pause in typing,
- * only the paragraphs changed since the last lint.
+ * only the paragraphs changed since the last lint. Navigation (go to definition,
+ * selecting a text range) comes from @plotlint/editor's Navigation extension.
  */
 
 /** Undo and redo for the plain-text document (Mod-z, Shift-Mod-z, Mod-y). */
@@ -53,6 +58,12 @@ export interface ChapterEditorOptions {
   readonly onProblems?: (problems: ProblemsSnapshot) => void;
   readonly onHover?: (entries: DiagnosticEntry[], context: HoverContext) => void;
   readonly onChange?: (text: string) => void;
+  /** Called when the selection moves or the text changes. */
+  readonly onSelection?: (selection: TextRange) => void;
+  /** Called on F12 or Ctrl/Cmd+click with the names to look up. */
+  readonly onGoToDefinition?: (request: DefinitionRequest) => void;
+  /** Select this range once the editor opens (a jump from another chapter). */
+  readonly selection?: TextRange;
   readonly editorClass?: string;
 }
 
@@ -66,6 +77,10 @@ export interface ChapterEditor {
   applyFix(id: string, fixIndex: number): boolean;
   /** Select a drawn diagnostic's text and scroll it into view. */
   reveal(id: string): boolean;
+  /** Select a plain-text range and scroll it to the middle of the view. */
+  revealRange(range: TextRange): void;
+  /** The selection as a plain-text range. */
+  selection(): TextRange;
   problems(): ProblemsSnapshot;
   destroy(): void;
 }
@@ -176,11 +191,15 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
         },
         onHover: options.onHover,
       }),
+      Navigation.configure({ onGoToDefinition: options.onGoToDefinition }),
     ],
     content: textToDoc(options.text),
     editorProps: options.editorClass ? { attributes: { class: options.editorClass, spellcheck: "false" } } : { attributes: { spellcheck: "false" } },
     onUpdate: ({ editor: current }) => {
       options.onChange?.(docToText(current.state.doc));
+    },
+    onSelectionUpdate: ({ editor: current }) => {
+      options.onSelection?.(current.storage.navigation.selection());
     },
     onTransaction: ({ editor: current, transaction }) => {
       const decorations = getDiagnosticsState(current.state)?.decorations;
@@ -211,6 +230,12 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
   };
   void relintAll();
 
+  const revealRange = (range: TextRange) => {
+    editor.chain().focus().selectTextRange(range).run();
+    scrollSelectionToCenter(editor.view);
+  };
+  if (options.selection) revealRange(options.selection);
+
   return {
     editor,
     getText: () => docToText(editor.state.doc),
@@ -223,6 +248,8 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
       editor.chain().focus().setTextSelection({ from: entry.from, to: entry.to }).scrollIntoView().run();
       return true;
     },
+    revealRange,
+    selection: () => editor.storage.navigation.selection(),
     problems: computeProblems,
     destroy: () => {
       destroyed = true;
