@@ -20,6 +20,7 @@ import {
 } from "@plotlint/diagnostics";
 import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../utils.js";
 import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "@plotlint/diagnostics/node";
+import { registerStudyCommands } from "./lint-study.js";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
@@ -621,3 +622,9 @@ invariantCommand
       process.exit(1);
     }
   });
+
+// `inkos lint study` and `inkos lint verdict` (lint-study.ts); a verdict looks its finding up among shown and suppressed ones.
+registerStudyCommands(lintCommand, async (state, bookId) => {
+  const result = await lintBook(state, bookId, everything);
+  return [...result.diagnostics, ...result.suppressed.map((entry) => entry.diagnostic)];
+});
