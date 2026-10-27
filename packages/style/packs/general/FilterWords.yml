@@ -1,0 +1,19 @@
+# Perception verbs that put the viewpoint character between the reader and the scene.
+extends: existence
+message: "Filter word '%s': consider showing what is perceived instead of the act of perceiving."
+description: >-
+  Filter words ("she saw the door open") report a perception instead of rendering it
+  ("the door opened"), which adds distance in close point of view. Often fine; worth a look
+  when they cluster. Skipped inside dialogue, where characters speak however they speak.
+link: https://en.wikipedia.org/wiki/Show,_don%27t_tell
+level: suggestion
+ignorecase: true
+plotlint:
+  skipDialogue: true
+tokens:
+  - saw
+  - heard
+  - felt
+  - noticed
+  - reali[sz]ed
+  - could (?:see|hear|feel|smell)
