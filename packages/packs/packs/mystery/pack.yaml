@@ -15,5 +15,7 @@ checks:
   structure/unpaid-setup: error
   structure/unearned-payoff: error
   structure/open-questions: warning
+  # Knox and Van Dine: the culprit on stage early, the solution resting on clues shown before the reveal.
+  structure/fair-play: warning
 metrics:
   metrics/dialogue-ratio: { min: 0.1 }

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { DiagnosticSeveritySchema } from "@plotlint/diagnostics";
 import type { InvariantsFile } from "./invariants.js";
+import type { SceneAnnotationsFile } from "./scene-annotations.js";
 import type { TravelFile } from "./travel.js";
 
 // Per-book plotlint files beside the story state, in `works/<id>/source/story/plotlint/`.
@@ -96,4 +97,6 @@ export interface BookRuleData {
   readonly plan?: BookPlan;
   /** `packs.json`: the book's genre check packs (resolved by `@plotlint/packs`). */
   readonly packs?: PacksFile;
+  /** `scenes.json`: per-scene annotations (POV, goal, opposition, values, stakes) for the structure rules. */
+  readonly scenes?: SceneAnnotationsFile;
 }

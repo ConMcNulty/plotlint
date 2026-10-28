@@ -90,8 +90,8 @@ describe("mutators", () => {
   });
 
   it("are caught by their rule: every registered continuity rule has a mutator and catches most of its mutants", () => {
-    // Structural rules read hooks, which the corpus's oracle state does not have;
-    // they are covered by structure.test.ts and the clean-book checks above.
+    // Structure rules read hooks or scene annotations, which the seeded mutants do not change;
+    // structure.test.ts and scene-structure.test.ts cover them.
     const result = scoreRules(clean, allMutators);
     for (const rule of builtinRules.filter((r) => r.layer === "continuity")) {
       const score = result.rules.find((r) => r.ruleId === rule.id)!;

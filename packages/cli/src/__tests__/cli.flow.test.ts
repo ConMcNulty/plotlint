@@ -143,6 +143,31 @@ describe("CLI mini-flows", () => {
     expect(rules.rules.map((rule) => rule.id)).toContain("continuity/dead-then-alive");
   });
 
+  it("runs the structure checks over scenes.json, without story state, pointing into the chapter", async () => {
+    run(["init"]);
+    await saveWorkManifest(projectDir, createWorkManifest({ id: "lint-novel", title: "Lint Novel", profileId: "longform-novel", language: "en" }));
+    const bookDir = new StateManager(projectDir).bookDir("lint-novel");
+    await mkdir(join(bookDir, "chapters"), { recursive: true });
+    await writeFile(join(bookDir, "chapters", "0002_two.md"), "# Chapter 2\n\nMira watched him go.\nPell secretly hated her for it.\n");
+    const flat = { valueStart: { axis: "safety", value: 0 }, valueEnd: { axis: "safety", value: 0 } };
+    const scene = (chapter: number, extra: Record<string, unknown> = {}) => ({
+      id: `ch${chapter}.s1`, chapter, scene: 1, pov: "Mira", goal: "wait", opposition: "Pell", annotator: "llm@test-model", ...flat, ...extra,
+    });
+    await mkdir(join(bookDir, "story", "plotlint"), { recursive: true });
+    await writeFile(join(bookDir, "story", "plotlint", "scenes.json"), JSON.stringify({ version: 1, scenes: [
+      scene(1), scene(2, { povBreaks: [{ quote: "Pell secretly hated her for it.", note: "Mira cannot know what Pell feels" }] }), scene(3),
+    ] }));
+
+    type Lint = { books: Array<{ diagnostics: Array<{ ruleId: string; chapter: number; severity: string; location?: { line: number; column: number } }> }> };
+    const linted = (JSON.parse(runWithStatus(["lint", "lint-novel", "--json", "--layers", "structure"]).stdout) as Lint).books[0]!;
+    expect(linted.diagnostics.map((d) => [d.ruleId, d.chapter, d.severity, d.location])).toEqual([
+      // The general pack keeps scene-turn a note.
+      ["structure/scene-turn", 1, "note", undefined],
+      ["structure/pov-discipline", 2, "note", { line: 4, column: 1 }],
+    ]);
+    expect(run(["lint", "lint-novel", "--layers", "structure"])).toContain("ch2:4:1 note structure/pov-discipline [judged]");
+  });
+
   it("suppresses lint findings per instance and per rule, saved in the book", async () => {
     run(["init"]);
     await saveWorkManifest(projectDir, createWorkManifest({

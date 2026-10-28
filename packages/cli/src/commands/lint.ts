@@ -6,6 +6,9 @@ import {
   builtinRegistry, checkSnapshot, RuleRegistry, checkText, compileInvariant, configureTextRules, evidenceCoverage, explainCheck, InvariantCheckSchema, InvariantIdSchema,
   InvariantsFileSchema, invariantSlug, lastChapter, type ChapterTexts, type EvidenceCoverage, type Invariant, type InvariantsFile, type TextRule,
 } from "@plotlint/rules";
+import {
+  annotateChapter, mergeSceneAnnotations, SceneAnnotationsFileSchema, staleSceneAnnotations, type ChapterAnnotation, type SceneAnnotationsFile,
+} from "@plotlint/rules";
 import { loadAdaptiveOverlay, loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
 import { createHarperRule, isMostlyCjk, projectDictionary } from "@plotlint/mechanics";
 import { createMetricRules, metricStateRules } from "@plotlint/metrics";
@@ -138,6 +141,13 @@ async function loadSnapshot(bookDir: string): Promise<RuntimeStateSnapshot | und
   }
 }
 
+const emptySnapshot = (): RuntimeStateSnapshot => ({
+  manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 0, projectionVersion: 1 },
+  currentState: { chapter: 0, facts: [] },
+  hooks: { hooks: [] },
+  chapterSummaries: { rows: [] },
+});
+
 /** Run the checks over one book's state and chapter text and split the findings by its saved suppressions. */
 async function lintBook(state: StateManager, id: string, options: LintOptions): Promise<BookLint> {
   const bookDir = state.bookDir(id);
@@ -154,9 +164,11 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
   const book = { ...loaded, config: packs.config };
   const texts = await chapterTexts(bookDir);
   // State rules run by their own layer: continuity rules under `continuity`, structural ones under `structure`.
+  // Structure rules over scene annotations need no story state, so they run on an empty one.
   const stateRules = builtinRegistry.list().filter((rule) => options.layers.has(rule.layer));
-  const diagnostics: LocatedDiagnostic[] = snapshot && stateRules.length > 0
-    ? checkSnapshot(snapshot, { rules: stateRules, chapters: texts, book }).filter(inScope).map((diagnostic) => {
+  const ruleState = snapshot ?? (book.scenes ? emptySnapshot() : undefined);
+  const diagnostics: LocatedDiagnostic[] = ruleState && stateRules.length > 0
+    ? checkSnapshot(ruleState, { rules: stateRules, chapters: texts, book }).filter(inScope).map((diagnostic) => {
       // Invariants over the chapter text point into the chapter file like text findings.
       const text = diagnostic.range && diagnostic.chapter !== undefined ? texts.get(diagnostic.chapter) : undefined;
       return text === undefined ? diagnostic : { ...diagnostic, location: locate(text, diagnostic.range!.start) };
@@ -644,3 +656,97 @@ registerStudyCommands(lintCommand, async (state, bookId) => {
 });
 
 addPacksCommand(lintCommand);
+
+// Scene annotations for the structure rules, saved in `story/plotlint/scenes.json`.
+// The configured LLM annotates each chapter's scenes; unchanged scenes and
+// entries the author wrote (annotator "author") are kept.
+
+const SCENES = "scenes.json";
+
+/** Transient upstream failures (rate limits, overloaded servers) get a few slower retries on top of the client's own. */
+async function withBackoff<T>(call: () => Promise<T>, attempts = 4): Promise<T> {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await call();
+    } catch (error) {
+      if (attempt >= attempts || !/\b(?:429|500|502|503|504)\b|rate limit|overloaded|timed? ?out|ECONNRESET/iu.test(String(error))) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 5_000 * attempt));
+    }
+  }
+}
+
+lintCommand
+  .command("annotate")
+  .description("Annotate each scene (POV, goal, opposition, outcome, values, stakes) with the configured LLM, for the structure checks")
+  .argument("[book-id]", "Book ID (auto-detected if only one book)")
+  .option("--chapter <n>", "Only this chapter")
+  .option("--force", "Re-annotate scenes whose text has not changed (entries by the author are still kept)")
+  .option("--json", "Output JSON")
+  .action(async (bookIdArg: string | undefined, opts: { chapter?: string; force?: boolean; json?: boolean }, command: Command) => {
+    try {
+      opts = { ...opts, json: wantsJson(command) };
+      const only = parseChapter(opts.chapter);
+      const root = findProjectRoot();
+      const bookId = await resolveBookId(bookIdArg, root);
+      const bookDir = new StateManager(root).bookDir(bookId);
+      const texts = await chapterTexts(bookDir);
+      const chapters = only === undefined ? [...texts.keys()] : texts.has(only) ? [only] : [];
+      if (chapters.length === 0) throw new Error(only === undefined ? `"${bookId}" has no chapters` : `"${bookId}" has no chapter ${only}`);
+
+      // The global --service/--base-url/--api-format/--model/--api-key-env flags apply, as for every LLM command.
+      const config = await loadConfig({ requireApiKey: true });
+      const client = createLLMClient(config.llm);
+      const complete = (messages: ReadonlyArray<{ role: "system" | "user" | "assistant"; content: string }>) =>
+        withBackoff(async () => (await chatCompletion(client, config.llm.model, messages, { temperature: 0, maxTokens: 16_384 })).content);
+      const names = stateNames(await loadSnapshot(bookDir)).slice(0, 40);
+      let file: SceneAnnotationsFile = await readPlotlintFile(bookDir, SCENES, SceneAnnotationsFileSchema) ?? { version: 1, scenes: [] };
+
+      const results: ChapterAnnotation[] = [];
+      const failed: Array<{ chapter: number; error: string }> = [];
+      for (const chapter of chapters) {
+        try {
+          const result = await annotateChapter(chapter, texts.get(chapter)!, complete, {
+            annotator: `llm@${config.llm.model}`,
+            existing: file.scenes,
+            ...(opts.force ? { force: true } : {}),
+            ...(file.protagonist ? { protagonist: file.protagonist } : {}),
+            ...(names.length ? { names } : {}),
+          });
+          results.push(result);
+          // Saved after every chapter, so an interrupted run keeps what it did.
+          file = { ...file, scenes: mergeSceneAnnotations(file.scenes, result.scenes, [chapter]) };
+          await writePlotlintFile(bookDir, SCENES, SceneAnnotationsFileSchema, file);
+          if (!opts.json) {
+            const { given, located } = result.quotes;
+            log(`ch${chapter}: ${result.annotated.length} annotated, ${result.kept.length} kept`
+              + (result.missing.length ? `, ${result.missing.length} not annotated (${result.missing.join(", ")})` : "")
+              + (given ? `, ${located}/${given} quotes located` : ""));
+          }
+        } catch (error) {
+          failed.push({ chapter, error: String(error) });
+          if (!opts.json) logError(`ch${chapter}: ${error}`);
+        }
+      }
+
+      const given = results.reduce((sum, result) => sum + result.quotes.given, 0);
+      const located = results.reduce((sum, result) => sum + result.quotes.located, 0);
+      const annotated = file.scenes.filter((entry) => chapters.includes(entry.chapter)).length;
+      const stale = staleSceneAnnotations(file, texts).map((entry) => entry.id);
+      const path = join(plotlintDir(bookDir), SCENES);
+      if (opts.json) {
+        log(JSON.stringify({
+          bookId, path, chapters: results.map(({ scenes: _scenes, ...rest }) => rest), failed,
+          scenes: annotated, quotes: { given, located }, stale,
+        }, null, 2));
+      } else {
+        log(`${bookId}: ${annotated} scene${annotated === 1 ? "" : "s"} annotated in ${chapters.length} chapter${chapters.length === 1 ? "" : "s"}`
+          + (given ? `, ${located} of ${given} new quotes located in the text` : "") + ` (${path})`);
+        if (stale.length) log(`  ${stale.length} scene${stale.length === 1 ? "" : "s"} changed since annotated: ${stale.join(", ")}`);
+        log("  Run `inkos lint --layers structure` for the structure checks.");
+      }
+      if (failed.length) process.exitCode = 1;
+    } catch (e) {
+      logError(`Annotate failed: ${e}`);
+      process.exit(1);
+    }
+  });
