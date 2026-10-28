@@ -20,11 +20,16 @@ chapters were drafted from.
   144 quotes found in their scene (5 dropped). Chapters 2, 12 and 13 needed a
   second run; ch7 failed every run until the reply parser learnt to escape
   dialogue quotes the model leaves unescaped (fix 4 below).
+- **Hooks.** `inkos lint hooks reconcile` with `glm-4.5-flash` (one call per
+  hook, 29 hooks the ledger leaves open; hook-8 was asked
+  again on a second run after its answer was dropped): 21 resolved by a later
+  chapter with a located quote, 8 kept open. Saved in `story/plotlint/hooks.json`.
 - **Lint.** `inkos lint packs use mystery romance`, then `inkos lint --json`,
   after merging master (measured bands, `metrics/predictability`).
-- `extracted/glm-4.5-flash/` holds the settled state and `scenes.json`; the test
+- `extracted/glm-4.5-flash/` holds the settled state and `scenes.json`,
+  `story/plotlint/hooks.json` the hook overlay; the test
   `packages/packs/src/__tests__/lessing-fen.test.ts` pins every state-rule
-  finding with the three packs applied.
+  finding with the three packs and the overlay applied.
 
 ## Planted problems
 
@@ -50,17 +55,18 @@ the tracked-object miss on P2 from the settler's state plus a homonym.
 | Culprit Vane on the page in ch1, clues before the ch12 reveal | `structure/fair-play` | yes |
 | Romance: central couple, hopeful ending, Kit's POV in ch7 | `central-relationship`, `hopeful-ending`, `both-leads-pov` | yes, all three |
 | Kit's key given ch11, used ch12 | `unpaid-setup` | yes |
-| Silas Rudd red herring explained in ch9 | `unpaid-setup` | **no**: hook-17 and hook-20 are never resolved in the ledger (false alarms) |
+| Silas Rudd red herring explained in ch9 | `unpaid-setup` | **yes, with the hook overlay** (was no: hook-17 and hook-20 are never resolved in the ledger; the overlay resolves both in ch9 on Silas's letter) |
 | Nell drives the plot | `protagonist-agency` | **no**: "Nell Ashby causes 7 of 36 turning points (19%)" (debatable, below) |
 | No POV breaks were written | `pov-discipline` | yes |
 
 ## Every other finding, judged
 
-State rules, final run (34 findings, pinned by the test):
+State rules, final run with the hook overlay (13 findings, pinned by the test;
+34 without it):
 
 | Finding | Count | Verdict |
 | --- | --- | --- |
-| `unpaid-setup` on hooks other than P1/P2 | 27 | **25 false alarms**, 2 debatable. The settler opens a hook per sub-question ("Discover why the lantern was hidden in the reeds", "Investigate Silas Rudd's potential involvement") and rarely resolves it, even when the prose answers it (Vane's confession in ch12.s1 answers most of them; Silas's letter in ch9.s1 two; ch13 the three sequel-style hooks opened in ch12). Debatable: hook-7 "Nell confronts Ambrose with the mud evidence" (she confronts him, never with the mud) and hook-12 "Examine the ledgers Vane took" (the box of ledgers from ch2 is indeed never examined). The rule is right about the ledger and wrong about the book. |
+| `unpaid-setup` on hooks other than P1/P2 | 6 (27 without the overlay) | With the overlay: **5 false alarms** (hook-8, hook-9, hook-21, hook-25, hook-26), 1 debatable (hook-7); see "Hook reconcile" below. Without it: **25 false alarms**, 2 debatable. The settler opens a hook per sub-question ("Discover why the lantern was hidden in the reeds", "Investigate Silas Rudd's potential involvement") and rarely resolves it, even when the prose answers it (Vane's confession in ch12.s1 answers most of them; Silas's letter in ch9.s1 two; ch13 the three sequel-style hooks opened in ch12). Debatable: hook-7 "Nell confronts Ambrose with the mud evidence" (she confronts him, never with the mud) and hook-12 "Examine the ledgers Vane took" (the box of ledgers from ch2 is indeed never examined). The rule is right about the ledger and wrong about the book. |
 | `protagonist-agency` 7 of 36 | 1 | **debatable**. The annotator credits revelations to whoever speaks (Hollis, Ivy, Kit, Silas), which is fair for an amateur detective who is told things; Nell's choices drive the investigation, but most turns are information handed to her. Also two turns marked `circumstance` with `by: "Nell"`. |
 | `tension-curve` flat ch1–6 (7 to 8) | 1 | **debatable**. True of the annotation; the first act does keep a steady level (an arrest in ch5 is 7). |
 | `style/invented-term-spelling` "Dorbit" for "Dorrit" (ch5) | 1 | **true** (a real slip of the drafting model) |
@@ -85,6 +91,44 @@ Text rules (final run, not pinned: bands are being re-measured):
 | `style/mystery.Cliches` | 2 | **true**: "This was no accident" (ch1), "The pieces clicked into place" (ch4). |
 | Harper (94), general style pack (95) | — | Not scored here (L0/L1). |
 
+## Hook reconcile
+
+`unpaid-setup` warnings before and after `inkos lint hooks reconcile`, judged
+as above:
+
+| | Warnings | True (P1, P2) | Debatable | False alarm |
+| --- | --- | --- | --- | --- |
+| Before (ledger only) | 29 | 2 | 2 (hook-7, hook-12) | 25 |
+| After (ledger + overlay) | 8 | 2 | 1 (hook-7) | 5 |
+
+- **Planted problems still caught.** P1 (hook-5, Bea) and P2 (hook-4, the
+  whistle) stay open: the model found nothing in ch3–13 that answers them.
+  `subplot-balance` still fires on Bea at ch5, `cut-candidate` still on ch8
+  (the cut test reads the ledger as is; only the promise-keeping rules
+  `unpaid-setup`, `unearned-payoff`, `open-questions`, `subplot-balance` and
+  `fair-play` read it through the overlay). `unearned-payoff`,
+  `open-questions` and `fair-play` stay quiet.
+- **The 21 resolutions.** 20 close false alarms, most on Vane's confession in
+  ch12 ("I hid it there after," for the lantern in the reeds; "I pushed him
+  in."), Silas's letter in ch9 (hook-17, hook-20), the ledger pages in ch10
+  (hook-18, hook-22), and the courtship and clerkship in ch13 (hook-32 to
+  hook-35). One closes a debatable one: hook-12 "Examine the ledgers Vane
+  took" on Nell taking the ledger from the safe in ch11 (a different ledger
+  from the box in ch2). Weakest evidence: hook (ch1, "Nell begins
+  investigating...") on a ch3 line where she only *wants* to ask why the gate
+  was opened; the hook's own wording is about beginning, so it is not wrong,
+  and it was a false alarm either way. No true finding was resolved.
+- **The 5 left.** hook-8 (why Ambrose lied: the ch12 confession answers it,
+  but the model twice named a chapter its quote was not in, so the answer was
+  dropped), hook-9 and hook-26 (the model held that Nell never investigates
+  the finances or the codicil herself, which is a fair reading of a badly
+  worded hook), hook-21 and hook-25 (no sentence states the link; Vane is
+  arrested rather than "more dangerous").
+- **Wenlow and the lantern book.** One hook each to check (wenlow hook-2 "What
+  happened to the Margery", the lantern book's h1 "Who began scratching Mira's
+  name"); the model kept both open, which is right for the lantern book and
+  leaves wenlow's findings unchanged.
+
 ## Fixes made
 
 1. `continuity/dead-entity-acts` (`POSTHUMOUS_PREDICATE`): what an inquest finds
@@ -106,14 +150,19 @@ Text rules (final run, not pinned: bands are being re-measured):
    answered questions open.
 7. CLI: `inkos lint annotate --chapter N` annotated every chapter, since the
    parent `lint` command's own `--chapter` took the flag; it now falls back to it.
+8. Hook overlay: `inkos lint hooks reconcile` asks the LLM whether a later
+   chapter answers each hook the ledger leaves open, keeps an answer only with a
+   quote found in that chapter, and saves `story/plotlint/hooks.json`; the
+   promise-keeping structure rules read the ledger through it. 21 of 25 false
+   `unpaid-setup` alarms gone, both planted ones kept.
 
 ## Open issues
 
-- The hook ledger is the main source of false structure findings: 25 of 29
-  `unpaid-setup` warnings are questions the prose answers. A settler step that
-  resolves sub-question hooks at the reveal, or a check that a hook's question is
-  answered in the prose after its last advance, is needed before
-  `unpaid-setup` is trustworthy on a finished mystery.
+- The hook ledger was the main source of false structure findings (25 of 29
+  `unpaid-setup` warnings). With the hook overlay 5 of 8 remain false; they are
+  hooks worded as tasks ("Nell investigates ... more thoroughly") that no
+  sentence settles, and one answer the model could not quote in the right
+  chapter. Reconcile costs one long call per open hook (all later chapters).
 - The annotator does not mark static scenes as static (P3 missed by
   `scene-turn`): it reads "nothing new learned" as a small loss. The prompt could
   say that recap and routine scenes keep the same value.

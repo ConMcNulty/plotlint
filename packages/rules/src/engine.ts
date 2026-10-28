@@ -2,6 +2,7 @@ import { applyRuntimeStateDelta, type RuntimeStateDelta, type RuntimeStateSnapsh
 import { DiagnosticSchema, sortDiagnostics, type Diagnostic } from "@plotlint/diagnostics";
 import type { BookRuleData } from "./book.js";
 import type { ChapterTexts } from "./evidence.js";
+import { applyHookOverlay } from "./hook-overlay.js";
 import { downgradeUnreliable, frameResolver, mainTimeline } from "./frames.js";
 import { RuleRegistry, type ConfiguredRule } from "./registry.js";
 import type { Rule } from "./types.js";
@@ -67,10 +68,14 @@ function run(
   const frames = frameResolver(options.book?.frames, options.chapters);
   const main = mainTimeline(snapshot, frames);
   const previous = extra.previous && mainTimeline(extra.previous, frames);
+  // Rules about kept promises see the hooks the overlay (`story/plotlint/hooks.json`) resolves as resolved in their chapter.
+  const overlay = options.book?.hooks;
+  const overlaid = overlay && { main: applyHookOverlay(main, overlay, options.chapters), previous: previous && applyHookOverlay(previous, overlay, options.chapters) };
   const diagnostics = configured(options).flatMap(({ rule, severity, options: ruleOptions }) => {
+    const state = rule.hookOverlay && overlaid ? overlaid : { main, previous };
     const found = rule.check({
-      snapshot: main,
-      ...(previous ? { previous } : {}),
+      snapshot: state.main,
+      ...(state.previous ? { previous: state.previous } : {}),
       ...(extra.delta ? { delta: extra.delta } : {}),
       ...(options.chapters ? { chapters: options.chapters } : {}),
       ...(options.book ? { book: options.book } : {}),

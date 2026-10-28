@@ -14,6 +14,7 @@ import { hookPromise, hookStart, numberOption, renderHook, structureFinding, sum
 export const unearnedPayoff: Rule = {
   id: "structure/unearned-payoff",
   layer: "structure",
+  hookOverlay: true,
   title: "Payoffs without a setup",
   rationale: "A payoff satisfies when the reader has carried the question for a while. One that is resolved in the same chapter it is raised, or after chapters in which it never comes up, can feel unearned; plant it earlier or keep it alive in between.",
   source: "Robert McKee, Story (1997), ch. 10 \"Setups and Payoffs\"; Blake Snyder, Save the Cat! (2005), on planting and payoff",

@@ -79,6 +79,7 @@ export function subplots(snapshot: RuntimeStateSnapshot): Subplot[] {
 export const subplotBalance: Rule = {
   id: "structure/subplot-balance",
   layer: "structure",
+  hookOverlay: true,
   title: "Subplots that vanish",
   rationale: "A subplot the reader is following that drops out for many chapters without being resolved reads as forgotten. Bring it back, resolve it, or cut it.",
   source: "Robert McKee, Story (1997), ch. 11 on subplots; Donald Maass, Writing the Breakout Novel (2001), ch. 8 \"Subplots\"",

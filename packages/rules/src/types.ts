@@ -30,6 +30,12 @@ export interface Rule {
   readonly rationale: string;
   /** Where the craft advice behind the rule comes from: a URL or a citation. */
   readonly source?: string;
+  /**
+   * Read the hook ledger with the book's hook overlay applied (`story/plotlint/hooks.json`):
+   * hooks a later chapter answers count as resolved there. For rules about whether
+   * promises are kept; rules that only ask what a chapter sets up read the ledger as is.
+   */
+  readonly hookOverlay?: boolean;
   check(context: RuleContext): Diagnostic[];
 }
 
