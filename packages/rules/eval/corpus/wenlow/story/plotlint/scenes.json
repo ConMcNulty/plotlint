@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "protagonist": "Elspeth Marrow",
+  "scenes": [
+    {
+      "id": "ch1.s1",
+      "chapter": 1,
+      "scene": 1,
+      "pov": "Elspeth Marrow",
+      "goal": "find out who wrote the letter signed with her dead father's name",
+      "opposition": "Crane will not let the warden read his ledger and rows away",
+      "outcome": "mixed",
+      "valueStart": { "axis": "truth about the Margery", "value": -2 },
+      "valueEnd": { "axis": "truth about the Margery", "value": -1 },
+      "turningPoint": {
+        "description": "Captain Thorne shows Elspeth a letter about the Margery's cargo signed with her father's name",
+        "causedBy": "other",
+        "by": "Ida Thorne",
+        "evidence": "The letter is signed with your father's name."
+      },
+      "stakes": 3,
+      "evidence": {
+        "goal": "\"I would like to know who wrote this letter.\"",
+        "opposition": "\"Not today, Captain.\" He pushed off from the landing without another word",
+        "outcome": "\"Then we go to Stavely,\" Jonas said."
+      },
+      "annotator": "author"
+    },
+    {
+      "id": "ch2.s1",
+      "chapter": 2,
+      "scene": 1,
+      "pov": "Elspeth Marrow",
+      "goal": "learn in Stavely who posted the letter",
+      "opposition": "the boy who carried the letter does not know who paid him, and the warden suspects their father",
+      "outcome": "mixed",
+      "valueStart": { "axis": "father's good name", "value": 0 },
+      "valueEnd": { "axis": "father's good name", "value": -1 },
+      "turningPoint": {
+        "description": "Thorne tells them the Margery carried the parish gold, and that Crane is dying",
+        "causedBy": "other",
+        "by": "Ida Thorne",
+        "evidence": "She was carrying a strongbox with the Wenlow parish money in it, sixty pounds in gold, sent to the bank at Stavely for safekeeping."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "\"Then you'll want to know that the warden came in on horseback this afternoon.",
+        "opposition": "\"And you think my father stole it,\" Elspeth said.",
+        "outcome": "If he knows anything, he will not know it for long."
+      },
+      "annotator": "author"
+    },
+    {
+      "id": "ch3.s1",
+      "chapter": 3,
+      "scene": 1,
+      "pov": "Elspeth Marrow",
+      "goal": "get the truth from Crane before he dies",
+      "opposition": "Crane's ten years of silence and his failing breath",
+      "outcome": "success",
+      "valueStart": { "axis": "truth about the Margery", "value": -1 },
+      "valueEnd": { "axis": "truth about the Margery", "value": 1 },
+      "turningPoint": {
+        "description": "Crane confesses he wrote the letter and gives Elspeth the ledger and the key to the strongbox",
+        "causedBy": "other",
+        "by": "Absalom Crane",
+        "evidence": "He reached under his pillow with a shaking hand and pressed the ledger and a small iron key into her hands."
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "\"You wrote the letter,\" Elspeth said.",
+        "opposition": "\"I was a coward for ten years, Elspeth. I am too tired to be one now.\"",
+        "outcome": "\"The strongbox is under the third flagstone of the abbey chapel on Gorse Hill,\" Crane said."
+      },
+      "annotator": "author"
+    },
+    {
+      "id": "ch4.s1",
+      "chapter": 4,
+      "scene": 1,
+      "pov": "Elspeth Marrow",
+      "goal": "dig up the strongbox from under the abbey chapel floor",
+      "opposition": "the warden appears and demands the box",
+      "outcome": "success",
+      "valueStart": { "axis": "safety of the parish gold", "value": -1 },
+      "valueEnd": { "axis": "safety of the parish gold", "value": 1 },
+      "turningPoint": {
+        "description": "Elspeth refuses to hand the strongbox to Thorne and carries it back to Wenlow herself",
+        "causedBy": "protagonist",
+        "by": "Elspeth Marrow",
+        "evidence": "\"We are taking it back to Wenlow ourselves,\" said Elspeth."
+      },
+      "stakes": 9,
+      "evidence": {
+        "goal": "Elspeth counted the flagstones from the chapel door.",
+        "opposition": "\"Now you give that box to me.\"",
+        "outcome": "Elspeth carried the strongbox down the hill herself, though it bruised her arms."
+      },
+      "annotator": "author"
+    },
+    {
+      "id": "ch5.s1",
+      "chapter": 5,
+      "scene": 1,
+      "pov": "Elspeth Marrow",
+      "goal": "clear her father's name",
+      "opposition": "Alderman Pask and the men on the parish council who sank the Margery",
+      "outcome": "success",
+      "valueStart": { "axis": "father's good name", "value": -1 },
+      "valueEnd": { "axis": "father's good name", "value": 2 },
+      "turningPoint": {
+        "description": "Elspeth gives the ledger to the warden and names Alderman Pask",
+        "causedBy": "protagonist",
+        "by": "Elspeth Marrow",
+        "evidence": "She gave the ledger to Captain Thorne."
+      },
+      "stakes": 6,
+      "evidence": {
+        "goal": "\"The ledger,\" Thorne said. \"It is time.\"",
+        "opposition": "\"There are three names in it,\" Elspeth said. \"One of them is Alderman Pask.\"",
+        "outcome": "her father's name was clean"
+      },
+      "annotator": "author"
+    }
+  ]
+}

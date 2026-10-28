@@ -35,5 +35,6 @@ checks:
 metrics:
   # Relative to the book itself, not to reference books: the floor is a robust
   # z-score of a five-sentence stretch's surprisal (a Kneser-Ney trigram model
-  # trained on the other chapters) against all stretches of the book.
-  metrics/predictability: { min: -2.5, window: 5 }
+  # trained on the other chapters) against all stretches of the book. Plain prose
+  # stays above -4.6 in the reference novels; reused passages fall to -7 or lower.
+  metrics/predictability: { min: -6, window: 5 }

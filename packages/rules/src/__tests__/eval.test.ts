@@ -5,35 +5,72 @@ import { checkSnapshot } from "../engine.js";
 import { builtinRegistry, builtinRules } from "../engine.js";
 import { RuleRegistry } from "../registry.js";
 import {
-  activeMutators, allMutators, auditorIssueMatches, corpusRoot, evalBook, loadCorpusBook, runRules, scoreAuditor, scoreRules,
-  type AuditorBaseline, type CleanBook, type Mutant,
+  activeMutators, allMutators, auditorIssueMatches, corpusOf, CORPUS_BOOKS, corpusRoot, evalBook, loadCorpusBook, runRules, scoreAuditor, scoreBooks, scoreRules,
+  type AuditorBaseline, type CleanBook, type Mutant, type RuleEvalResult,
 } from "../eval/index.js";
+import { locateSceneQuote } from "../scene-annotations.js";
 
 let clean: CleanBook;
+let books: CleanBook[];
 beforeAll(async () => {
-  clean = await loadCorpusBook("wenlow");
+  books = await Promise.all(CORPUS_BOOKS.map((name) => loadCorpusBook(name)));
+  clean = books.find((book) => book.name === "wenlow")!;
 });
 
-const allMutants = () => allMutators.flatMap((m) => m.mutants(clean));
+const bookOf = (name: string) => books.find((book) => book.name === name)!;
+const allMutants = () => allMutators.flatMap((m) => m.mutants(bookOf(corpusOf(m))));
 
 describe("seeded-error corpus", () => {
   it("has five chapters and oracle facts whose evidence quotes are verbatim in their chapter", () => {
     expect(clean.chapters.size).toBe(5);
     expect(clean.facts.length).toBeGreaterThan(40);
-    for (const fact of clean.facts) {
-      expect(clean.chapters.get(fact.sourceChapter), `${fact.subject} · ${fact.predicate}`).toContain(fact.evidence!.quote);
+    for (const book of books) {
+      for (const fact of book.facts) {
+        expect(book.chapters.get(fact.sourceChapter), `${book.name}: ${fact.subject} · ${fact.predicate}`).toContain(fact.evidence!.quote);
+      }
     }
   });
 
-  it("loads the travel graph as book data", () => {
+  it("loads the travel graph, the finished plan, rule options and the author's scene annotations as book data", () => {
     expect(clean.book.travel?.routes.length).toBeGreaterThan(0);
+    for (const book of books) {
+      expect(book.book.plan, book.name).toEqual({ targetChapters: book.chapters.size, status: "completed" });
+      const scenes = book.book.scenes!.scenes;
+      expect(scenes.map((scene) => scene.chapter), book.name).toEqual([...book.chapters.keys()]);
+      for (const scene of scenes) {
+        expect(scene.annotator).toBe("author");
+        for (const quote of [scene.turningPoint?.evidence, ...Object.values(scene.evidence)]) {
+          expect(locateSceneQuote(scene, quote, book.chapters), `${book.name} ${scene.id}: ${quote}`).not.toBeNull();
+        }
+      }
+    }
+    expect(Object.keys(clean.book.config!.rules)).toContain("structure/tension-curve");
   });
 
-  it("raises no findings from the built-in rules on the clean book", () => {
-    const { active } = activeMutators(allMutators);
-    expect(runRules(clean.facts, clean.chapters, evalBook(clean, active), builtinRegistry)).toEqual([]);
+  it("has oracle hooks whose setups and payoffs fall inside the book", () => {
+    expect(clean.hooks.length).toBeGreaterThanOrEqual(8);
+    for (const book of books) {
+      for (const hook of book.hooks) {
+        expect(hook.startChapter, hook.hookId).toBeGreaterThan(0);
+        expect(hook.lastAdvancedChapter, hook.hookId).toBeGreaterThan(hook.startChapter);
+        expect(hook.lastAdvancedChapter, hook.hookId).toBeLessThanOrEqual(book.chapters.size);
+      }
+    }
+  });
+
+  it("raises no findings from the built-in rules on the clean books", () => {
+    for (const book of books) {
+      const { active } = activeMutators(allMutators.filter((m) => corpusOf(m) === book.name));
+      expect(runRules({ facts: book.facts, chapters: book.chapters, hooks: book.hooks, book: evalBook(book, active) }, builtinRegistry), book.name).toEqual([]);
+    }
   });
 });
+
+/** The book's data without its plan: an unfinished book, where only overdue setups count. */
+const unfinished = (book: CleanBook) => {
+  const { plan: _plan, ...rest } = book.book;
+  return rest;
+};
 
 describe("real extraction of the clean book", () => {
   // The story state glm-4.5-flash settled from the clean chapters (inkos import
@@ -48,7 +85,7 @@ describe("real extraction of the clean book", () => {
       hooks: await read("hooks.json"),
       chapterSummaries: await read("chapter_summaries.json"),
     };
-    expect(checkSnapshot(snapshot, { chapters: clean.chapters, book: clean.book })).toEqual([]);
+    expect(checkSnapshot(snapshot, { chapters: clean.chapters, book: unfinished(clean) })).toEqual([]);
   });
 
   it("raises at most a couple of structural notes, even read as a finished book", async () => {
@@ -66,7 +103,7 @@ describe("real extraction of the clean book", () => {
     expect(found.length).toBeLessThanOrEqual(2);
     expect(found.every((d) => d.severity === "note")).toBe(true);
     // Unfinished (no plan), only overdue promises count, and none are.
-    expect(checkSnapshot(snapshot, { rules: structure, chapters: clean.chapters, book: clean.book })).toEqual([]);
+    expect(checkSnapshot(snapshot, { rules: structure, chapters: clean.chapters, book: unfinished(clean) })).toEqual([]);
   });
 });
 
@@ -75,9 +112,12 @@ describe("mutators", () => {
     const mutants = allMutants();
     expect(new Set(mutants.map((m) => m.id)).size).toBe(mutants.length);
     for (const mutant of mutants) {
-      const changed = [...mutant.chapters].filter(([n, text]) => text !== clean.chapters.get(n)).map(([n]) => n);
+      const original = bookOf(corpusOf(allMutators.find((m) => m.ruleId === mutant.ruleId)!));
+      const changed = [...mutant.chapters].filter(([n, text]) => text !== original.chapters.get(n)).map(([n]) => n);
       expect(changed.length, mutant.id).toBeGreaterThan(0);
-      expect(Math.min(...changed), mutant.id).toBeLessThanOrEqual(mutant.chapter);
+      // A continuity slip is seen where it is made or later. A structural one may be
+      // reported at an earlier setup (a payoff dropped in ch5 leaves ch2's setup unpaid).
+      if (mutant.ruleId.startsWith("continuity/")) expect(Math.min(...changed), mutant.id).toBeLessThanOrEqual(mutant.chapter);
       for (const fact of mutant.facts) {
         if (fact.evidence) expect(mutant.chapters.get(fact.sourceChapter), `${mutant.id}: ${fact.subject} · ${fact.predicate}`).toContain(fact.evidence.quote);
       }
@@ -86,19 +126,48 @@ describe("mutators", () => {
   });
 
   it("seed at least ten mutants per rule", () => {
-    for (const mutator of allMutators) expect(mutator.mutants(clean).length, mutator.ruleId).toBeGreaterThanOrEqual(10);
+    for (const mutator of allMutators) expect(mutator.mutants(bookOf(corpusOf(mutator))).length, mutator.ruleId).toBeGreaterThanOrEqual(10);
   });
 
-  it("are caught by their rule: every registered continuity rule has a mutator and catches most of its mutants", () => {
-    // Structure rules read hooks or scene annotations, which the seeded mutants do not change;
-    // structure.test.ts and scene-structure.test.ts cover them.
-    const result = scoreRules(clean, allMutators);
-    for (const rule of builtinRules.filter((r) => r.layer === "continuity")) {
+  describe("scored on both books", () => {
+  let result: RuleEvalResult;
+  beforeAll(() => {
+    result = scoreBooks(books, allMutators);
+  }, 60_000);
+
+  it("are caught by their rule: every built-in rule, of every layer, has a mutator and catches most of its mutants", () => {
+    // The metric rules live in @plotlint/metrics, whose own tests score their mutators.
+    for (const rule of builtinRules) {
       const score = result.rules.find((r) => r.ruleId === rule.id)!;
       expect(score.mutants, rule.id).toBeGreaterThanOrEqual(10);
       expect(score.recall!, rule.id).toBeGreaterThanOrEqual(0.5);
       expect(score.cleanFindings, rule.id).toEqual([]);
     }
+    // Collateral stays rare: at most one other rule's finding per twenty mutants.
+    const collateral = result.rules.reduce((n, r) => n + r.collateral.length, 0);
+    expect(collateral / result.mutants.length).toBeLessThan(0.05);
+    expect(result.skipped.every((id) => id.startsWith("metrics/"))).toBe(true);
+  });
+
+  it("miss only the mutants marked as expected misses", () => {
+    const unexpected = result.rules.filter((r) => !r.ruleId.startsWith("continuity/")).flatMap((r) => r.outcomes)
+      .filter((o) => !o.caught && !o.description.startsWith("Expected miss"));
+    expect(unexpected.map((o) => `${o.id}: ${o.description}`)).toEqual([]);
+  });
+
+  it("score book-level rules by any new finding, since they report no chapter", () => {
+    const agency = result.rules.find((r) => r.ruleId === "structure/protagonist-agency")!;
+    expect(agency.caught).toBeGreaterThan(0);
+    expect(agency.outcomes.every((o) => o.echoes.length === 0)).toBe(true);
+  });
+
+  it("add up the books: clean findings per chapter of both, and findings tagged with their book", () => {
+    expect(result.chapters).toBe(books.reduce((n, book) => n + book.chapters.size, 0));
+    const fairPlay = result.rules.find((r) => r.ruleId === "structure/fair-play")!;
+    expect(fairPlay.mutants).toBeGreaterThanOrEqual(10);
+    expect(fairPlay.outcomes.every((o) => result.mutants.find((m) => m.id === o.id)!.ruleId === "structure/fair-play")).toBe(true);
+    for (const rule of result.rules) for (const f of rule.collateral) expect(CORPUS_BOOKS as ReadonlyArray<string>).toContain(f.book);
+  });
   });
 
   it("are skipped when their rule is not registered", () => {

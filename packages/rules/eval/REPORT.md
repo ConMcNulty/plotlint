@@ -1,8 +1,8 @@
 # Seeded-error evaluation
 
-Generated 2026-10-27T19:14:01.331Z by `pnpm --filter @plotlint/rules eval` (see "How to run" below). Book: `wenlow`, 5 clean chapters, 126 mutants.
+Generated 2026-10-28T08:52:54.771Z by `pnpm --filter @plotlint/rules eval` (see "How to run" below). Book: `wenlow + thornbury`, 9 clean chapters, 353 mutants.
 
-Phase 3 gate (PLAN.md): recall and false-alarm rate per rule, and each rule beats the LLM-only auditor on false positives.
+Phase 3 gate (PLAN.md): recall and false-alarm rate per rule, and each rule beats the LLM-only auditor on false positives. Phase 4 adds the structural (L4), genre-pack and prose-metric (L2) rules, scored the same way; the auditor was run on the continuity mutants only, so its columns are empty for the rest.
 
 ## Per rule
 
@@ -19,14 +19,37 @@ Phase 3 gate (PLAN.md): recall and false-alarm rate per rule, and each rule beat
 | `knowledge-leak` | 10 | 8/10 (80%) | 0 (0.00) | 0 (0.00) | 0/4 0% (0%) | 0.07 / 0.00 | yes |
 | `impossible-travel` | 10 | 10/10 (100%) | 0 (0.00) | 0 (0.00) | 1/4 25% (25%) | 0.07 / 0.00 | yes |
 | `timeline-order` | 10 | 8/10 (80%) | 0 (0.00) | 0 (0.00) | 3/4 75% (75%) | 0.07 / 0.00 | yes |
-| `invariant` | 10 | 10/10 (100%) | 0 (0.00) | 1 (0.01) | 0/4 0% (0%) | 0.07 / 0.00 | yes |
+| `invariant` | 10 | 10/10 (100%) | 0 (0.00) | 1 (0.00) | 0/4 0% (0%) | 0.07 / 0.00 | yes |
+| `structure/unpaid-setup` | 12 | 12/12 (100%) | 0 (0.00) | 1 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/unearned-payoff` | 10 | 8/10 (80%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/cut-candidate` | 10 | 8/10 (80%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/open-questions` | 10 | 9/10 (90%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/subplot-balance` | 10 | 8/10 (80%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/scene-turn` | 10 | 8/10 (80%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/goal-conflict-outcome` | 10 | 8/10 (80%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/protagonist-agency` | 10 | 9/10 (90%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/tension-curve` | 10 | 9/10 (90%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/pov-discipline` | 10 | 10/10 (100%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `structure/fair-play` | 10 | 9/10 (90%) | 0 (0.00) | 0 (0.00) | – | 0.07 / – | yes |
+| `structure/hopeful-ending` | 10 | 8/10 (80%) | 0 (0.00) | 0 (0.00) | – | 0.07 / – | yes |
+| `structure/central-relationship` | 10 | 9/10 (90%) | 0 (0.00) | 0 (0.00) | – | 0.07 / – | yes |
+| `structure/both-leads-pov` | 10 | 10/10 (100%) | 0 (0.00) | 0 (0.00) | – | 0.07 / – | yes |
+| `style/invented-term-spelling` | 11 | 9/11 (82%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `metrics/repeated-phrase` | 10 | 9/10 (90%) | 2 (0.22) | 0 (0.00) | – | 0.07 / 0.00 | no |
+| `metrics/predictability` | 12 | 10/12 (83%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `metrics/lexical-diversity` | 10 | 10/10 (100%) | 0 (0.00) | 4 (0.01) | – | 0.07 / 0.00 | yes |
+| `metrics/sentence-rhythm` | 10 | 9/10 (90%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `metrics/dialogue-ratio` | 11 | 10/11 (91%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `metrics/sensory-detail` | 11 | 9/11 (82%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
+| `metrics/wall-of-text` | 10 | 9/10 (90%) | 0 (0.00) | 0 (0.00) | – | 0.07 / 0.00 | yes |
 
-All rules: 114/126 mutants caught (90%), 0 findings on the clean book, 1 collateral findings over 126 mutants.
+All rules: 314/353 mutants caught (89%), 2 findings on the clean book, 6 collateral findings over 353 mutants.
 Auditor (`glm-4.5-flash`): 1 issues over 15 clean chapter audits (0.07 per chapter, 3 runs per chapter); recall 11/48 (23%), strict 11/48; 0 audits failed after retries and are left out.
 
 ## Findings on the clean book
 
-None.
+- `metrics/repeated-phrase` ch3: "the river went past" recurs in 3 chapters
+- `metrics/repeated-phrase` ch5: "the river went past" recurs in 3 chapters
 
 ## Misses
 
@@ -44,12 +67,44 @@ Mutants the seeded rule did not report in the mutant's chapter. Most are deliber
 - `knowledge-leak/10` (ch2): Jonas draws the abbey chapel floor and marks the third flagstone in ch2.
 - `timeline-order/7` (ch5): Ch5 is dated '3 Oct', with no year (the time parser reads no date without a year).
 - `timeline-order/9` (ch5): Ch5 is dated 'the third day of October' under the predicate 'day' (free-form, no year).
+- `unearned-payoff/9` (ch5): Expected miss: the strongbox question (opened ch2) is answered in ch5 with nothing in between; spotting the gap needs chapter summaries.
+- `unearned-payoff/10` (ch5): Expected miss: the break-in (ch4) is explained in ch5, one chapter on, which the rule allows.
+- `cut-candidate/9` (ch2): Expected miss: the appended scene's object, a lantern, happens to be named again in ch4, so it reads as depended on.
+- `cut-candidate/10` (ch3): Expected miss: the appended scene's fact has no evidence quote, so it cannot be placed in the scene and counts for the whole chapter.
+- `open-questions/10` (ch3): Expected miss: everything is answered in ch3, but the settler leaves the hooks 'progressing', so the ledger still reads them as open.
+- `subplot-balance/9` (ch2): Expected miss: GLM-style rows 'hook-12' and 'hook-13' name no character and are not linked, so they form no subplot.
+- `subplot-balance/10` (ch1): Expected miss: a Thorne thread (two hooks naming her) is dropped after ch1, but Thorne herself is on the page in every chapter, so it reads as alive.
+- `scene-turn/9` (ch1): Expected miss: ch1–3 flat, but the annotator names the end on another axis ('truth' to 'trust'), so the scenes read as turning.
+- `scene-turn/10` (ch1): Expected miss: ch1–4 flat, but the annotator leaves ch3's end value blank, which breaks the run into two short ones.
+- `goal-conflict-outcome/9` (ch1): Expected miss: ch1–2 have no goal, but the annotator writes 'none' instead of leaving the field empty.
+- `goal-conflict-outcome/10` (ch2): Expected miss: nothing in the way in ch2–3, which the annotator words as an opposition ('nothing stands in her way').
+- `protagonist-agency/10` (ch4): Expected miss: Thorne decides ch4, but the annotator records no turning point for ch3, leaving four (fewer than the five the rule needs).
+- `tension-curve/10` (ch3): Expected miss: the peak is Crane's deathbed in ch3, three-fifths of the way, just at the rule's cut-off.
+- `fair-play/10` (ch4): Expected miss: no clues before the reveal, which GLM words 'was responsible for the death of', outside the reveal vocabulary.
+- `hopeful-ending/9` (ch4): Expected miss: GLM records Nell as 'single again', naming no one, so the fact is not about the couple.
+- `hopeful-ending/10` (ch4): Expected miss: 'feelings for Tom Hale · cooled' reads as neither together nor ended.
+- `central-relationship/10` (ch1): Expected miss: Tom's part in ch1 goes to Will Pryce, but Tom is named in passing ('Tom Hale's bicycle'), which counts as on the page.
+- `invented-term-spelling/10` (ch2): Expected miss: 'Rooke' for Rook; names under five letters are too short to judge.
+- `invented-term-spelling/11` (ch1): Expected miss: 'Throne' only at the start of a sentence, where any word is capitalised.
+- `repeated-phrase/10` (ch3): Expected miss: "like a door swinging shut" in only two chapters (ch1, ch3).
+- `predictability/11` (ch2): Expected miss: the stock block once, in ch2 alone; the model is trained on this book, so phrasing it has never seen is not predictable to it.
+- `predictability/12` (ch3): Expected miss: one short paragraph (Thorne's three sentences on Crane) reused in ch3, too little to pull a five-sentence window under the floor.
+- `sentence-rhythm/10` (ch4): Expected miss: only six nine-word sentences in a row, under the eight the rule looks for.
+- `dialogue-ratio/11` (ch5): Expected miss: ch5 recast as speech; at 455 words it is under the 500 the rule needs to judge a chapter.
+- `sensory-detail/10` (ch3): Expected miss: ch3 with all but three of its sensory words replaced, 5.6 per 1000 words, still above the 4.4 floor.
+- `sensory-detail/11` (ch5): Expected miss: ch5 with every sensory word replaced; at 455 words it is under the 500 the rule needs to judge a chapter.
+- `wall-of-text/10` (ch4): Expected miss: a 400-word paragraph of history, just under the 427-word ceiling.
 
 ## Collateral
 
 New findings of other rules on a mutant. Some are true positives (one slip can break two rules, e.g. a death and an alive status at once); they are listed so each can be judged.
 
 - `invariant` on `knowledge-leak/6` ch2: Invariant "Alderman Pask is not named before chapter 5." fails in chapter 2: the text says "Pask".
+- `structure/unpaid-setup` on `subplot-balance/6` ch3: "Which member of the parish council paid to sink the Margery", opened in ch3, is never resolved by the last chapter (ch5).
+- `metrics/lexical-diversity` on `dead-entity-acts/6` ch3: Lexical diversity is low for this genre: MTLD 67
+- `metrics/lexical-diversity` on `open-questions/2` ch3: Lexical diversity is low for this genre: MTLD 66
+- `metrics/lexical-diversity` on `open-questions/7` ch3: Lexical diversity is low for this genre: MTLD 69
+- `metrics/lexical-diversity` on `open-questions/10` ch3: Lexical diversity is low for this genre: MTLD 66
 
 ## Auditor issues on the clean book
 
@@ -57,16 +112,18 @@ New findings of other rules on a mutant. Some are true positives (one slip can b
 
 ## Method
 
-- **Corpus.** `eval/corpus/wenlow`: a five-chapter story written for the eval with no continuity errors, and `facts.json`, hand-written oracle facts in the shape InkOS's settler writes (free-form subject, predicate and object; validity; `kind`; an evidence quote that is verbatim in the chapter). `story/plotlint/` holds its travel graph and four approved author invariants, all true of the clean book.
-- **Mutants.** Each mutator (`src/eval/mutators/`) seeds one plausible slip per mutant into the prose (an inserted or rewritten sentence, so the auditor can see it) and into the facts as a settler would record it, and names the chapter it should be reported in. A mutator only runs when its rule id is registered.
-- **Rule scores.** Rules run over the oracle facts with `checkSnapshot`, chapter text and book data. Recall: the seeded rule reports the mutant's chapter. False alarms: findings on the clean book, and collateral (other rules' new findings on a mutant). A seeded rule's findings in other chapters are echoes and not counted as false alarms.
+- **Corpus.** `eval/corpus/wenlow`: a five-chapter story written for the eval with no continuity errors, and `facts.json`, hand-written oracle facts in the shape InkOS's settler writes (free-form subject, predicate and object; validity; `kind`; an evidence quote that is verbatim in the chapter). `story/plotlint/` holds its travel graph and four approved author invariants, all true of the clean book. For the structural rules it also has `hooks.json`, the oracle hook ledger in InkOS's shape (the story's real setups and payoffs; the break-in left open on purpose and advanced in the last chapter), `story/plotlint/scenes.json`, the author's own scene annotations (`annotator: "author"`), `book.json` marking it finished at five chapters, and `story/plotlint/rules.json`, which sizes three rules for a five-chapter book (tension-curve `minChapters` 5 and `flatRun` 3, subplot-balance `gap` 2, goal-conflict-outcome `window` 3 and `minScenes` 2). Wenlow has no culprit the state unmasks and no couple, so `eval/corpus/thornbury`, a four-chapter village mystery with a romance written the same way, hosts fair play and the romance checks. Every rule's clean findings and collateral are measured on both books.
+- **Clean findings.** The only ones are `metrics/repeated-phrase` on "the river went past", wenlow's refrain (ch2, ch3, ch5), which is deliberate: a writer would suppress them. At its first floor of z -2.5, `metrics/predictability` also flagged five ordinary stretches of wenlow (and 12 to 26 in each of three public-domain novels); verbatim or lightly reworded reuse scores -7 or lower, so its floor is now -6.
+- **Metric collateral.** Wenlow's ch3 has an MTLD of 77, close to the measured floor of 71, so mutants of other rules that insert a few lines of dialogue there can tip `metrics/lexical-diversity`.
+- **Mutants.** Each mutator (`src/eval/mutators/`) seeds one plausible slip per mutant into the prose (an inserted or rewritten sentence, so the auditor can see it) and into the facts as a settler would record it, and names the chapter it should be reported in. A mutator only runs when its rule id is registered. Structural mutants change the hook ledger or the scene annotations as a settler or annotator reading the mutated prose would; metric mutants change only the prose (a 600-word wall, twelve equal-length sentences, a chapter recast as speech, its sensory words replaced). Several mutants of each rule are written as a GLM-style settler or annotator would record them (bare hook ids, `none` for an empty field, free-form predicates), and some are expected misses, marked so in the list below.
+- **Rule scores.** Rules run over the oracle facts with `checkSnapshot`, chapter text and book data. Recall: the seeded rule reports the mutant's chapter. False alarms: findings on the clean book, and collateral (other rules' new findings on a mutant). A seeded rule's findings in other chapters are echoes and not counted as false alarms. Rules that judge the whole book (protagonist agency, central relationship, both leads' POV) report no chapter, so any new finding of theirs catches their mutant. The L2 metric rules come from `@plotlint/metrics` (which depends on this package) and run on every chapter beside the state rules.
 - **Auditor.** InkOS's `ContinuityAuditor` on each clean chapter (repeated, temperature 0.3) and on each mutant's chapter, with all earlier chapters as context. Free `glm-4.5-flash` manages about one audit a minute, so it audits an evenly spaced sample of each mutator's mutants (`--sample`, 4 by default; the recall column gives the count). Clean issues are its false positives; "on topic" counts only those matching a rule's topic words, a fairer per-rule comparison. A mutant is caught when an issue's summary or evidence has a word from each of the mutant's keyword groups (a name and a topic); strict recall leaves out mutants whose keywords also match the clean audit of that chapter.
-- **Limits.** One book, written by the same hand as the mutants; oracle facts, not a real settler's (extracted mode is not built yet), so rule recall here is an upper bound for the facts a settler gets right and a lower bound where it phrases them unusually. Keyword matching can over- or under-credit the auditor; its issues are listed in `report.json`.
+- **Limits.** Two short books, written by the same hand as the mutants; structural recall on a five-chapter book says the mechanism works, not that its thresholds suit a novel (three rules are configured for the length); oracle facts, not a real settler's (extracted mode is not built yet), so rule recall here is an upper bound for the facts a settler gets right and a lower bound where it phrases them unusually. Keyword matching can over- or under-credit the auditor; its issues are listed in `report.json`.
 
 ## How to run
 
 ```
-pnpm --filter @actalk/inkos-core --filter @plotlint/diagnostics --filter @plotlint/rules build
+pnpm --filter @plotlint/metrics... build   # the rules and their dependencies, and the metric rules
 cd packages/rules
 node eval/run.mjs                      # rules only; reuses eval/auditor-results.json if present
 node eval/run.mjs --auditor            # also run the auditor (needs INKOS_LLM_API_KEY; cached in eval/.cache/)
