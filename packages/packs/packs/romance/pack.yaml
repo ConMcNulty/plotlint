@@ -23,3 +23,13 @@ checks:
 # No metric bands of its own: on the romance reference books (@plotlint/metrics
 # baselines/romance.json) dialogue and paragraph length sit in the general bands,
 # and the old 15% dialogue floor flagged about one reference chapter in ten.
+# The closed loop: the central relationship comes first, and the panel reads for the leads.
+loop:
+  priority: [structure/central-relationship, structure/both-leads-pov, structure/hopeful-ending]
+  readers:
+    - name: romance-reader
+      brief: You read romance for the relationship. You notice when the leads are apart for too long, when their attraction is told rather than shown, and when a conflict could be solved by one honest conversation.
+    - name: skeptic
+      brief: You are a skeptical reader. You notice when characters act without a reason, when coincidences do the plot's work, and when the prose tells you what to feel.
+    - name: newcomer
+      brief: You rarely read romance. You lose interest when nothing is at stake beyond the relationship, and you get lost when a cast arrives without enough context.

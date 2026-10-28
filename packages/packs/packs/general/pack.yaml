@@ -38,3 +38,17 @@ metrics:
   # trained on the other chapters) against all stretches of the book. Plain prose
   # stays above -4.6 in the reference novels; reused passages fall to -7 or lower.
   metrics/predictability: { min: -6, window: 5 }
+# The closed loop (@plotlint/loop, `inkos lint loop`). Priority ranks findings and settles
+# editors pulling in opposite directions: what code proves from state beats craft opinion,
+# and judged reader notes come last. A loop stops clean with no errors and at most this many
+# warnings. The reader panel follows the plan's beta readers: a genre fan, a skeptic, a newcomer.
+loop:
+  priority: [continuity/*, structure/fair-play, mechanics/*, structure/*, style/*, metrics/*, judgment/*]
+  warnings: 2
+  readers:
+    - name: genre-fan
+      brief: You read dozens of books a year in this genre. You know its conventions and notice when a scene skips the beats you came for or repeats ones you have seen too often.
+    - name: skeptic
+      brief: You are a skeptical reader. You notice when characters act without a reason, when coincidences do the plot's work, and when the prose tells you what to feel.
+    - name: newcomer
+      brief: You rarely read this genre. You get lost when names, places or rules arrive without enough context, and you lose interest when nothing is at stake.

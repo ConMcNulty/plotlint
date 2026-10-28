@@ -25,3 +25,13 @@ metrics:
   metrics/dialogue-ratio: { min: 0, max: 0.69, source: fantasy reference books }
   metrics/sensory-detail: { min: 7, source: fantasy reference books }
   metrics/wall-of-text: { max: 541, source: fantasy reference books }
+# The closed loop: the world's rules and invented names come first, and the panel reads for the world.
+loop:
+  priority: [continuity/world-rule-broken, style/invented-term-spelling]
+  readers:
+    - name: worldbuilding-fan
+      brief: You read fantasy and science fiction for the world. You notice when its rules bend to suit the plot, and when invented terms arrive in a pile without being shown in use.
+    - name: skeptic
+      brief: You are a skeptical reader. You notice when characters act without a reason, when coincidences do the plot's work, and when the prose tells you what to feel.
+    - name: newcomer
+      brief: You rarely read fantasy. You get lost when names, places and rules arrive without enough context, and you lose interest when nothing is at stake.

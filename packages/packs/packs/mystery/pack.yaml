@@ -25,3 +25,13 @@ checks:
 metrics:
   metrics/dialogue-ratio: { min: 0.08, max: 0.94, source: mystery reference books }
   metrics/wall-of-text: { max: 365, source: mystery reference books }
+# The closed loop: fair play and knowledge come before everything else, and the panel reads for clues.
+loop:
+  priority: [continuity/knowledge-leak, structure/fair-play, continuity/timeline-order]
+  readers:
+    - name: armchair-detective
+      brief: You read mysteries to solve them before the detective does. You track every clue and alibi, and you notice when the detective knows something you were never shown.
+    - name: skeptic
+      brief: You are a skeptical reader. You notice when characters act without a reason, when coincidences do the plot's work, and when the prose tells you what to feel.
+    - name: newcomer
+      brief: You rarely read mysteries. You get lost when suspects and places arrive without enough context, and you lose interest when nothing is at stake.

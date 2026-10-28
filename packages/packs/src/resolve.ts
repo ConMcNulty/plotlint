@@ -1,6 +1,6 @@
 import type { DiagnosticSeverity } from "@plotlint/diagnostics";
 import type { RuleConfigFile, RuleSetting, TextRule } from "@plotlint/rules";
-import { GENERAL_PACK, type LoadedPack, type MetricBand, type MetricBands, type PackCatalog } from "./schema.js";
+import { GENERAL_PACK, type LoadedPack, type MetricBand, type MetricBands, type PackCatalog, type PackReaderPersona } from "./schema.js";
 
 /*
  * Stacking check packs. A book runs `general` plus the genre packs it selected.
@@ -110,6 +110,18 @@ export interface ResolvedPacks {
   readonly knownRuleIds: string[];
   /** Globs in the packs that matched no known rule. */
   readonly unmatchedGlobs: string[];
+  /** Closed-loop settings of the stacked packs (see `stackLoop`). */
+  readonly loop: ResolvedLoop;
+}
+
+export interface ResolvedLoop {
+  /** Priority globs: the selected genre packs' first, then what they build on, `general` last. */
+  readonly priority: string[];
+  /** The smallest warning threshold any pack sets, or undefined. */
+  readonly warnings?: number;
+  /** The reader panel of the most specific pack that names one; stacked genre packs pool theirs. */
+  readonly readers: PackReaderPersona[];
+  readonly heldOut: string[];
 }
 
 interface Flat {
@@ -202,6 +214,31 @@ export function resolvePacks(names: ReadonlyArray<string>, catalog: PackCatalog,
     }
   }
 
+  // Loop settings. Along a chain the more specific pack comes first; between stacked packs, all of them count;
+  // `general`, at the root of every chain, comes last.
+  const priority: string[] = [];
+  const heldOut = new Set<string>();
+  let warnings: number | undefined;
+  const readers: PackReaderPersona[] = [];
+  const takeLoop = (name: string) => {
+    const loop = get(name, []).manifest.loop;
+    for (const glob of loop?.priority ?? []) if (!priority.includes(glob)) priority.push(glob);
+    for (const glob of loop?.heldOut ?? []) heldOut.add(glob);
+    if (loop?.warnings !== undefined) warnings = Math.min(warnings ?? Infinity, loop.warnings);
+    return loop?.readers;
+  };
+  for (const order of chains) {
+    let panel: PackReaderPersona[] | undefined;
+    for (const name of [...order].reverse()) {
+      if (name === GENERAL_PACK) continue;
+      const named = takeLoop(name);
+      panel ??= named;
+    }
+    for (const reader of panel ?? []) if (!readers.some((other) => other.name === reader.name)) readers.push(reader);
+  }
+  const generalPanel = takeLoop(GENERAL_PACK);
+  if (readers.length === 0) readers.push(...(generalPanel ?? []));
+
   const provenance: Record<string, string[]> = {};
   for (const [id, { from }] of stacked.settings) provenance[id] = [...from];
   for (const [id, { from }] of stacked.bands) provenance[id] = [...new Set([...(provenance[id] ?? []), ...from])];
@@ -215,6 +252,7 @@ export function resolvePacks(names: ReadonlyArray<string>, catalog: PackCatalog,
     provenance,
     knownRuleIds,
     unmatchedGlobs: [...unmatchedGlobs],
+    loop: { priority, ...(warnings === undefined ? {} : { warnings }), readers, heldOut: [...heldOut] },
   };
 }
 
