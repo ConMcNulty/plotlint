@@ -51,10 +51,16 @@ function itemReturns(snapshot: RuntimeStateSnapshot, setup: ItemSetup, chapters:
 function trackedItems(snapshot: RuntimeStateSnapshot, characters: ReadonlySet<string>): ItemSetup[] {
   const facts = [...snapshot.currentState.facts].sort((a, b) => a.sourceChapter - b.sourceChapter);
   const setups: ItemSetup[] = [];
+  const callbacks: string[] = [];
   for (const fact of facts) {
     for (const item of factItems(fact, characters)) {
-      if (setups.some((setup) => sameTerm(setup.item, item))) continue;
+      if (setups.some((setup) => sameTerm(setup.item, item)) || callbacks.some((seen) => sameTerm(seen, item))) continue;
       const naming = facts.filter((other) => factTerms(other, characters).some((term) => sameTerm(term, item)));
+      // Named by an earlier fact, the item was set up before anyone held it; holding it is its return.
+      if (naming.some((other) => other.sourceChapter < fact.sourceChapter)) {
+        callbacks.push(item);
+        continue;
+      }
       const emphasised = naming.length >= 2 || facts.some((other) => sameTerm(cleanTerm(other.subject), item) && factItems(other, characters).length === 0);
       if (emphasised) setups.push({ item: cleanTerm(item), fact, chapter: fact.sourceChapter });
     }

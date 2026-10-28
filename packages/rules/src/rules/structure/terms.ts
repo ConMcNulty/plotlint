@@ -96,13 +96,15 @@ const CHARACTER_KINDS = ["age", "goal", "knowledge", "relationship"] as const;
 
 /**
  * Entities that act: subjects with an age, goal, knowledge, relationship or
- * action fact (objects have locations and states too, so those do not count),
- * and the names in chapter summaries' character lists.
+ * action fact, or an occupation or role (objects have locations and states too,
+ * so those do not count), and the names in chapter summaries' character lists.
  */
 export function characterNames(snapshot: RuntimeStateSnapshot): Set<string> {
   const names = new Set<string>();
   for (const fact of snapshot.currentState.facts) {
-    if (CHARACTER_KINDS.some((kind) => hasKind(fact, kind)) || /^(action|actions|did|does|行动|动作)$/u.test(normalize(fact.predicate))) {
+    if (CHARACTER_KINDS.some((kind) => hasKind(fact, kind)) || /^(action|actions|did|does|行动|动作)$/u.test(normalize(fact.predicate))
+      // A minor character may be recorded only by their trade ("Rook · occupation · innkeeper").
+      || (hasKind(fact, "identity") && /^(occupation|profession|job|trade|role|职业|身份)$/u.test(normalize(fact.predicate)))) {
       names.add(normalize(fact.subject));
     }
   }

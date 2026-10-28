@@ -1,17 +1,32 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { CurrentStateFact } from "@actalk/inkos-core";
+import { HooksStateSchema, type CurrentStateFact, type HookRecord } from "@actalk/inkos-core";
 import { loadBookRuleData } from "../node.js";
 import type { CleanBook } from "./mutant.js";
 
 // A corpus book on disk, beside the package:
 //   eval/corpus/<book>/chapters/NNNN_Title.md   the clean chapters
 //   eval/corpus/<book>/facts.json               oracle facts: { version: 1, facts: [...] }
-//   eval/corpus/<book>/story/plotlint/*.json    book data (travel graph, invariants), read like a real book's
+//   eval/corpus/<book>/hooks.json               oracle hooks, as InkOS's hooks.json: { hooks: [...] } (optional)
+//   eval/corpus/<book>/book.json                the length plan (target chapters, status), as InkOS's (optional)
+//   eval/corpus/<book>/story/plotlint/*.json    book data (travel graph, invariants, scenes, rule options), read like a real book's
 
 /** `packages/rules/eval/corpus`, from `src/eval` or `dist/eval` alike. */
 export const corpusRoot = fileURLToPath(new URL("../../eval/corpus/", import.meta.url));
+
+/** The corpus books: wenlow, the main one, and small fixtures for the genre rules it cannot host. */
+export const CORPUS_BOOKS = ["wenlow", "thornbury"] as const;
+
+async function readHooks(dir: string): Promise<HookRecord[]> {
+  let raw: string;
+  try {
+    raw = await readFile(join(dir, "hooks.json"), "utf-8");
+  } catch {
+    return [];
+  }
+  return HooksStateSchema.parse(JSON.parse(raw)).hooks;
+}
 
 export async function loadCorpusBook(name: string, root = corpusRoot): Promise<CleanBook> {
   const dir = join(root, name);
@@ -21,5 +36,5 @@ export async function loadCorpusBook(name: string, root = corpusRoot): Promise<C
     chapters.set(Number(file.slice(0, 4)), (await readFile(join(dir, "chapters", file), "utf-8")).replace(/\r\n/gu, "\n"));
   }
   const { facts } = JSON.parse(await readFile(join(dir, "facts.json"), "utf-8")) as { facts: CurrentStateFact[] };
-  return { name, chapters, facts, book: await loadBookRuleData(dir) };
+  return { name, chapters, facts, hooks: await readHooks(dir), book: await loadBookRuleData(dir) };
 }
