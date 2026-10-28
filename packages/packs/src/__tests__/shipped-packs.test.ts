@@ -64,7 +64,7 @@ describe("shipped packs", () => {
     expect(resolved.metrics["metrics/dialogue-ratio"]).toEqual({ min: 0, max: 0.69, source: "fantasy reference books" });
     expect(resolved.styleRules.map((rule) => rule.id)).toEqual(expect.arrayContaining(["style/general.Cliches", "style/romance.Cliches", "style/fantasy.Cliches"]));
     const mystery = resolvePacks(["mystery"], packs, { knownRuleIds: known });
-    expect(mystery.config.rules).toMatchObject({ "continuity/knowledge-leak": "error", "structure/unpaid-setup": "error" });
+    expect(mystery.config.rules).toMatchObject({ "continuity/knowledge-leak": "error", "structure/unpaid-setup": "warning" });
   });
 
   it("take their metric bands from their genre's measured baseline", () => {

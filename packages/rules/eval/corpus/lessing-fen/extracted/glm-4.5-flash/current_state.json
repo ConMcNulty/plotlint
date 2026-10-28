@@ -1,0 +1,2101 @@
+{
+  "chapter": 13,
+  "facts": [
+    {
+      "subject": "sluice gate",
+      "predicate": "access",
+      "object": "requires key",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "world_rule",
+      "evidence": {
+        "quote": "That’s the lock. It has to be opened with a key.",
+        "start": 8434,
+        "end": 8482
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "accepted formal courtship with Kit Merrow",
+      "validFromChapter": 13,
+      "validUntilChapter": 12,
+      "sourceChapter": 13,
+      "kind": "other",
+      "evidence": {
+        "quote": "Yes, Kit,” she said. “I would like that very much",
+        "start": 4361,
+        "end": 4410
+      },
+      "endEvidence": {
+        "quote": "Yes, Mr. Pell,” she said, her voice clear and strong. “I accept",
+        "start": 7336,
+        "end": 7399
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "accepted position as articled clerk to Mr. Pell",
+      "validFromChapter": 13,
+      "validUntilChapter": null,
+      "sourceChapter": 13,
+      "kind": "other",
+      "evidence": {
+        "quote": "Yes, Mr. Pell,” she said, her voice clear and strong. “I accept",
+        "start": 7336,
+        "end": 7399
+      }
+    },
+    {
+      "subject": "Bea Ashby",
+      "predicate": "action",
+      "object": "announcing marriage to Leonard Fawley",
+      "validFromChapter": 2,
+      "validUntilChapter": 3,
+      "sourceChapter": 2,
+      "kind": "other",
+      "evidence": {
+        "quote": "It's all arranged,\" Bea announced, her voice a little too loud. She pushed her plate away. \"Leonard has found a position in Halifax, with an importing firm. We sail from Liverpool in a month. Just a month",
+        "start": 6080,
+        "end": 6284
+      },
+      "endEvidence": {
+        "quote": "You can't stop me, Nell. My ticket is bought. My passage is paid for. I'm leaving in a month.",
+        "start": 5459,
+        "end": 5552
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "argued with Kit about going to police with financial evidence",
+      "validFromChapter": 10,
+      "validUntilChapter": 9,
+      "sourceChapter": 10,
+      "kind": "other",
+      "evidence": {
+        "quote": "And what will he do, Kit? Send a constable down? They'll look at this, they'll talk to Vane, and Vane will talk circles around them.",
+        "start": 3708,
+        "end": 3840
+      },
+      "endEvidence": {
+        "quote": "The window was slightly ajar. She had left it firmly shut that morning.",
+        "start": 6776,
+        "end": 6847
+      }
+    },
+    {
+      "subject": "Bea Ashby",
+      "predicate": "action",
+      "object": "argued with Nell about Leonard Fawley marriage",
+      "validFromChapter": 4,
+      "validUntilChapter": 4,
+      "sourceChapter": 4,
+      "kind": "other",
+      "evidence": {
+        "quote": "You can't stop me, Nell. My ticket is bought. My passage is paid for. I'm leaving in a month.",
+        "start": 5459,
+        "end": 5552
+      },
+      "endEvidence": {
+        "quote": "The train hissed into the platform, steam billowing in the damp air. Bea turned and embraced Nell briefly, her body stiff. \"I'll write from the ship,\" she said, pulling away. \"Don't worry.\"\n\nThe whistle blew. Bea picked up her valise and climbed the steps without a backward glance.",
+        "start": 5171,
+        "end": 5453
+      }
+    },
+    {
+      "subject": "Constable Arthur Dorrit",
+      "predicate": "action",
+      "object": "arrested Kit Merrow on suspicion of murder",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "other",
+      "evidence": {
+        "quote": "to give the gossips what they want, and to stop you from causing a panic, I've taken Merrow into custody. For his own protection, you understand.",
+        "start": 3418,
+        "end": 3563
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "attended church fete",
+      "validFromChapter": 8,
+      "validUntilChapter": 7,
+      "sourceChapter": 8,
+      "kind": "other",
+      "evidence": {
+        "quote": "The church fete was in full swing on the green. A bunting of faded red, white, and blue fluttered from the branches of the old oak tree, and the air was filled with the noise of children's laughter, the shouts of the tug-of-war team, and the tinny music from a hurdy-gurdy. Nell walked slowly through the throng, a small wicker basket in her hand, her eyes scanning the familiar faces of the townspeople.",
+        "start": 4191,
+        "end": 4595
+      },
+      "endEvidence": {
+        "quote": "Nell my dear! Just the person. I was hoping you'd come and judge the jam competition. We have a new entry this year, from young Mr. Merrow over at the lock. He's made a damson.",
+        "start": 4899,
+        "end": 5075
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "burned last ledger containing incriminating figures",
+      "validFromChapter": 12,
+      "validUntilChapter": 11,
+      "sourceChapter": 12,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "And the last ledger... I burned it. It had the incriminating figures.",
+        "start": 3280,
+        "end": 3349
+      },
+      "endEvidence": {
+        "quote": "And your notes, my dear. I was most sorry to take them, but a girl can't be too careful with loose papers.\"",
+        "start": 3411,
+        "end": 3518
+      }
+    },
+    {
+      "subject": "Silas Rudd",
+      "predicate": "action",
+      "object": "burned papers with dock worker at Plough Inn",
+      "validFromChapter": 7,
+      "validUntilChapter": 6,
+      "sourceChapter": 7,
+      "kind": "other",
+      "evidence": {
+        "quote": "As Nell watched, Silas pulled a thick sheaf of papers from his inside pocket and thrust them into the other man's hands. The man nodded, then produced a small oil lamp from his own coat. He struck a match, and the flame illuminated the papers for a moment before Silas grabbed them back and tossed them onto a small, iron brazier that was already glowing with embers.",
+        "start": 7126,
+        "end": 7493
+      },
+      "endEvidence": {
+        "quote": "Silas Rudd whirled around, his face a mask of shock and fury, quickly replaced by a belligerent scowl. \"Get lost, Ashby. This is none of your affair",
+        "start": 7670,
+        "end": 7818
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "checked the safe in mill office",
+      "validFromChapter": 11,
+      "validUntilChapter": 10,
+      "sourceChapter": 11,
+      "kind": "other",
+      "evidence": {
+        "quote": "He pointed to the safe door. \"Look.\"\n\nNell leaned closer. There was a faint scratch on the metal, just below the keyhole. It was fresh.",
+        "start": 8486,
+        "end": 8621
+      },
+      "endEvidence": {
+        "quote": "Kit tried the key from the hook on the board. It turned smoothly in the lock.",
+        "start": 8622,
+        "end": 8699
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "compiled notes about murder case facts",
+      "validFromChapter": 8,
+      "validUntilChapter": 9,
+      "sourceChapter": 8,
+      "kind": "other",
+      "evidence": {
+        "quote": "That evening, Nell sat at her desk in the front parlour, the oil lamp casting a warm pool of light on the wood. The rest of the house was quiet; Aunt Maud had gone to bed early, worn out by the excitement of the day. On the desk lay her notebook, its pages filled with her careful, looping script. She picked up her fountain pen and uncapped it, the scent of ink sharp in the still air.",
+        "start": 7219,
+        "end": 7605
+      },
+      "endEvidence": {
+        "quote": "And what will he do, Kit? Send a constable down? They'll look at this, they'll talk to Vane, and Vane will talk circles around them.",
+        "start": 3708,
+        "end": 3840
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "confronted Ambrose Vane with evidence of his crimes",
+      "validFromChapter": 12,
+      "validUntilChapter": 11,
+      "sourceChapter": 12,
+      "kind": "other",
+      "evidence": {
+        "quote": "Nell pushed the door wider and stepped out onto the walkway, the ledger held tight to her chest.",
+        "start": 1755,
+        "end": 1851
+      },
+      "endEvidence": {
+        "quote": "He leaned down and kissed her, not the awkward, hesitant kiss of the bridge, but a deep, sure kiss that held all the fear and relief of the night.",
+        "start": 7556,
+        "end": 7702
+      }
+    },
+    {
+      "subject": "Bea Ashby",
+      "predicate": "action",
+      "object": "departed for Canada on early train",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "other",
+      "evidence": {
+        "quote": "The train hissed into the platform, steam billowing in the damp air. Bea turned and embraced Nell briefly, her body stiff. \"I'll write from the ship,\" she said, pulling away. \"Don't worry.\"\n\nThe whistle blew. Bea picked up her valise and climbed the steps without a backward glance.",
+        "start": 5171,
+        "end": 5453
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "discovered window ajar in her bedroom",
+      "validFromChapter": 10,
+      "validUntilChapter": 9,
+      "sourceChapter": 10,
+      "kind": "other",
+      "evidence": {
+        "quote": "The window was slightly ajar. She had left it firmly shut that morning.",
+        "start": 6776,
+        "end": 6847
+      },
+      "endEvidence": {
+        "quote": "She turned from the window and her eyes went straight to her desk, where she had left her case notes, the neat sheets of paper detailing every clue, every suspicion.\n\nThey were gone.",
+        "start": 7153,
+        "end": 7335
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "discussed murder investigation with Aunt Maud",
+      "validFromChapter": 8,
+      "validUntilChapter": 7,
+      "sourceChapter": 8,
+      "kind": "other",
+      "evidence": {
+        "quote": "Nell sighed. \"I'm sorry, Aunt. It's hard not to. Everyone's talking about it",
+        "start": 1186,
+        "end": 1262
+      },
+      "endEvidence": {
+        "quote": "The church fete was in full swing on the green. A bunting of faded red, white, and blue fluttered from the branches of the old oak tree, and the air was filled with the noise of children's laughter, the shouts of the tug-of-war team, and the tinny music from a hurdy-gurdy. Nell walked slowly through the throng, a small wicker basket in her hand, her eyes scanning the familiar faces of the townspeople.",
+        "start": 4191,
+        "end": 4595
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "entered mill office with lantern",
+      "validFromChapter": 11,
+      "validUntilChapter": 10,
+      "sourceChapter": 11,
+      "kind": "other",
+      "evidence": {
+        "quote": "A figure stood there for a moment, silhouetted against the weak moonlight. Then, a key turned in the lock. The door opened, the figure slipped inside, and the door closed, plunging the path back into darkness.",
+        "start": 7404,
+        "end": 7613
+      },
+      "endEvidence": {
+        "quote": "He pointed to the safe door. \"Look.\"\n\nNell leaned closer. There was a faint scratch on the metal, just below the keyhole. It was fresh.",
+        "start": 8486,
+        "end": 8621
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "action",
+      "object": "found brass lantern with 'TARRANT MILL OFFICE' stamp in reeds below sluice gate",
+      "validFromChapter": 7,
+      "validUntilChapter": 6,
+      "sourceChapter": 7,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "He let the gate settle, the water stilling, and made his way down the slippery bank.\n\nThe mud sucked at his boots as he approached. He crouched, his fingers plunging into the cold slime, and pulled free a heavy, brass-bound object. It was a storm lantern, its glass chimney thick with grime, its brass casing stamped with a single, clear word: 'TARRANT MILL OFFICE'.",
+        "start": 1744,
+        "end": 2110
+      },
+      "endEvidence": {
+        "quote": "the walk to the town.\n\n* * *\n\nThe bell above the door of Mr. Pell’s office gave a tired jingle as Kit pushed it open. The room smelled of old paper, dust, and the faint, sweet scent of Mr. Pell’s pipe tobacco. Nell was sitting at a large, cluttered desk, her",
+        "start": 3221,
+        "end": 3479
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "found case notes about murder investigation missing",
+      "validFromChapter": 10,
+      "validUntilChapter": 10,
+      "sourceChapter": 10,
+      "kind": "other",
+      "evidence": {
+        "quote": "She turned from the window and her eyes went straight to her desk, where she had left her case notes, the neat sheets of paper detailing every clue, every suspicion.\n\nThey were gone.",
+        "start": 7153,
+        "end": 7335
+      },
+      "endEvidence": {
+        "quote": "The last-quarter ledger,\" Nell said, keeping her tone as casual as if she were discussing the weather.",
+        "start": 1735,
+        "end": 1837
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "found Owen Tarrant's body",
+      "validFromChapter": 3,
+      "validUntilChapter": 8,
+      "sourceChapter": 3,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "I am, sir. I came to the mill early to prepare the books for the bank. I found the body, raised the alarm, and waited with the constable until help arrived.",
+        "start": 1628,
+        "end": 1784
+      },
+      "endEvidence": {
+        "quote": "The river can be treacherous, especially at night. And the sluice bank… well, it's not a place for a young woman to be wandering about after dark.",
+        "start": 9780,
+        "end": 9926
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "action",
+      "object": "gave Nell his personal sluice key",
+      "validFromChapter": 11,
+      "validUntilChapter": null,
+      "sourceChapter": 11,
+      "kind": "possession",
+      "evidence": {
+        "quote": "He reached into his pocket and pulled out a small, heavy brass key. It was old and worn, its teeth smooth from use. He took her hand and pressed it into her palm.\n\n\"My key,\" he said, his voice thick.",
+        "start": 5453,
+        "end": 5652
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "inventorying Tarrant's estate",
+      "validFromChapter": 2,
+      "validUntilChapter": 3,
+      "sourceChapter": 2,
+      "kind": "goal",
+      "evidence": {
+        "quote": "She was to list everything, from the Persian rug in the parlour to the teaspoons in the silver drawer.",
+        "start": 316,
+        "end": 418
+      },
+      "endEvidence": {
+        "quote": "Nell walked into the Fen & County Bank, the bell above the door giving a cheerful little tinkle that seemed at odds with the grim thoughts in her head.",
+        "start": 22,
+        "end": 173
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "judged jam competition at church fete",
+      "validFromChapter": 8,
+      "validUntilChapter": 7,
+      "sourceChapter": 8,
+      "kind": "other",
+      "evidence": {
+        "quote": "Nell my dear! Just the person. I was hoping you'd come and judge the jam competition. We have a new entry this year, from young Mr. Merrow over at the lock. He's made a damson.",
+        "start": 4899,
+        "end": 5075
+      },
+      "endEvidence": {
+        "quote": "That evening, Nell sat at her desk in the front parlour, the oil lamp casting a warm pool of light on the wood. The rest of the house was quiet; Aunt Maud had gone to bed early, worn out by the excitement of the day. On the desk lay her notebook, its pages filled with her careful, looping script. She picked up her fountain pen and uncapped it, the scent of ink sharp in the still air.",
+        "start": 7219,
+        "end": 7605
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "action",
+      "object": "made damson jam for competition",
+      "validFromChapter": 8,
+      "validUntilChapter": 9,
+      "sourceChapter": 8,
+      "kind": "other",
+      "evidence": {
+        "quote": "He made jam?\"\n\n\"He did,\" Mrs. Tibbs said proudly, holding up a jar. \"Look at the colour. A proper deep purple. It's a handsome thing, isn't it",
+        "start": 5169,
+        "end": 5311
+      },
+      "endEvidence": {
+        "quote": "the muddy path ahead.\n\n'The county police,' he said, his voice rough. 'That's what we do. We take this to them. To Inspector Croft in Ely. He'll listen. He's not Dorrit",
+        "start": 3451,
+        "end": 3619
+      }
+    },
+    {
+      "subject": "Silas Rudd",
+      "predicate": "action",
+      "object": "reacted defensively when confronted about burning papers",
+      "validFromChapter": 7,
+      "validUntilChapter": 6,
+      "sourceChapter": 7,
+      "kind": "other",
+      "evidence": {
+        "quote": "Silas Rudd whirled around, his face a mask of shock and fury, quickly replaced by a belligerent scowl. \"Get lost, Ashby. This is none of your affair",
+        "start": 7670,
+        "end": 7818
+      },
+      "endEvidence": {
+        "quote": "He took a threatening step towards her, the smell of drink and sweat rolling off him in waves. Nell held her ground, but a prickle of fear ran down her spine. This was not the grieving, weak brother-in-law Ivy had described. This was a man with something to hide, and a temper to match.",
+        "start": 8215,
+        "end": 8501
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "saw Silas Rudd burning papers at Plough Inn",
+      "validFromChapter": 7,
+      "validUntilChapter": 7,
+      "sourceChapter": 7,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "As dusk began to settle, painting the sky in shades of bruised purple and orange, Nell decided to walk past the Plough Inn. Silas was staying there, a fact Aunt Maud had gleefully reported over a rather cold cup of tea. Nell hoped for a word, a chance to gauge his reaction to his brother-in-law’s death.\n\nThe inn was busy, its low roar of conversation and laughter spilling out into the yard. Nell kept to the shadows of the wall, her eyes scanning the dim corners by the stables. And there he was. Silas Rudd, leaning against a pile of sacks, a half-empty bottle in his hand. He wasn't alone. Another man, one of the rougher types from the docks, stood with him, their heads close together as they spoke in low, urgent tones.\n\nAs Nell watched, Silas pulled a thick sheaf of papers from his inside pocket and thrust them into the other man's hands. The man nodded, then produced a small oil lamp from his own coat. He struck a match, and the flame illuminated the papers for a moment before Silas grabbed them back and tossed them onto a small, iron brazier that was already glowing with embers.",
+        "start": 6397,
+        "end": 7493
+      },
+      "endEvidence": {
+        "quote": "Nell sighed. \"I'm sorry, Aunt. It's hard not to. Everyone's talking about it",
+        "start": 1186,
+        "end": 1262
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "shared deep romantic kiss with Kit Merrow",
+      "validFromChapter": 12,
+      "validUntilChapter": 12,
+      "sourceChapter": 12,
+      "kind": "other",
+      "evidence": {
+        "quote": "He leaned down and kissed her, not the awkward, hesitant kiss of the bridge, but a deep, sure kiss that held all the fear and relief of the night.",
+        "start": 7556,
+        "end": 7702
+      },
+      "endEvidence": {
+        "quote": "Yes, Kit,” she said. “I would like that very much",
+        "start": 4361,
+        "end": 4410
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "shared romantic kiss with Kit Merrow",
+      "validFromChapter": 11,
+      "validUntilChapter": 11,
+      "sourceChapter": 11,
+      "kind": "other",
+      "evidence": {
+        "quote": "He leaned down, and she met him halfway. It was not the awkward, fumbling kiss of the bridge. It was a kiss of shared purpose and fear and a growing, undeniable affection. It was a promise.",
+        "start": 5949,
+        "end": 6138
+      },
+      "endEvidence": {
+        "quote": "Nell pushed the door wider and stepped out onto the walkway, the ledger held tight to her chest.",
+        "start": 1755,
+        "end": 1851
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "action",
+      "object": "showed Nell the sluice key on the wall in his hut",
+      "validFromChapter": 4,
+      "validUntilChapter": 6,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "The key board,\" Kit said, following her gaze. He pointed to the middle hook. \"That's mine. The sluice key. It hasn't left that nail since I took the job.",
+        "start": 7436,
+        "end": 7589
+      },
+      "endEvidence": {
+        "quote": "He let the gate settle, the water stilling, and made his way down the slippery bank.\n\nThe mud sucked at his boots as he approached. He crouched, his fingers plunging into the cold slime, and pulled free a heavy, brass-bound object. It was a storm lantern, its glass chimney thick with grime, its brass casing stamped with a single, clear word: 'TARRANT MILL OFFICE'.",
+        "start": 1744,
+        "end": 2110
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "skimming money from Fen Drainage Board fund for years",
+      "validFromChapter": 10,
+      "validUntilChapter": 10,
+      "sourceChapter": 10,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "It's all in Vane's hand. He's been skimming it, bit by bit. For years.",
+        "start": 2541,
+        "end": 2611
+      },
+      "endEvidence": {
+        "quote": "A figure stood there for a moment, silhouetted against the weak moonlight. Then, a key turned in the lock. The door opened, the figure slipped inside, and the door closed, plunging the path back into darkness.",
+        "start": 7404,
+        "end": 7613
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "skimming money from Fen Drainage Board funds for years",
+      "validFromChapter": 13,
+      "validUntilChapter": null,
+      "sourceChapter": 13,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Seems a paltry reason for a man’s life.”\n\n“Money does paltry things to people",
+        "start": 2782,
+        "end": 2859
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "tested the key on safe lock",
+      "validFromChapter": 11,
+      "validUntilChapter": 11,
+      "sourceChapter": 11,
+      "kind": "other",
+      "evidence": {
+        "quote": "Kit tried the key from the hook on the board. It turned smoothly in the lock.",
+        "start": 8622,
+        "end": 8699
+      },
+      "endEvidence": {
+        "quote": "And the last ledger... I burned it. It had the incriminating figures.",
+        "start": 3280,
+        "end": 3349
+      }
+    },
+    {
+      "subject": "Silas Rudd",
+      "predicate": "action",
+      "object": "threatened Nell when asked about papers",
+      "validFromChapter": 7,
+      "validUntilChapter": null,
+      "sourceChapter": 7,
+      "kind": "other",
+      "evidence": {
+        "quote": "He took a threatening step towards her, the smell of drink and sweat rolling off him in waves. Nell held her ground, but a prickle of fear ran down her spine. This was not the grieving, weak brother-in-law Ivy had described. This was a man with something to hide, and a temper to match.",
+        "start": 8215,
+        "end": 8501
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "told Ambrose Vane she found the missing ledger",
+      "validFromChapter": 11,
+      "validUntilChapter": 10,
+      "sourceChapter": 11,
+      "kind": "other",
+      "evidence": {
+        "quote": "The last-quarter ledger,\" Nell said, keeping her tone as casual as if she were discussing the weather.",
+        "start": 1735,
+        "end": 1837
+      },
+      "endEvidence": {
+        "quote": "He leaned down, and she met him halfway. It was not the awkward, fumbling kiss of the bridge. It was a kiss of shared purpose and fear and a growing, undeniable affection. It was a promise.",
+        "start": 5949,
+        "end": 6138
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "took Fen Drainage Board ledgers",
+      "validFromChapter": 2,
+      "validUntilChapter": 2,
+      "sourceChapter": 2,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Before she could answer, he had lifted the entire stack of heavy, leather-bound books and was carrying them towards the door.",
+        "start": 1731,
+        "end": 1856
+      },
+      "endEvidence": {
+        "quote": "I am, sir. I came to the mill early to prepare the books for the bank. I found the body, raised the alarm, and waited with the constable until help arrived.",
+        "start": 1628,
+        "end": 1784
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "action",
+      "object": "took lantern to Nell at Mr. Pell's office",
+      "validFromChapter": 7,
+      "validUntilChapter": 7,
+      "sourceChapter": 7,
+      "kind": "other",
+      "evidence": {
+        "quote": "the walk to the town.\n\n* * *\n\nThe bell above the door of Mr. Pell’s office gave a tired jingle as Kit pushed it open. The room smelled of old paper, dust, and the faint, sweet scent of Mr. Pell’s pipe tobacco. Nell was sitting at a large, cluttered desk, her",
+        "start": 3221,
+        "end": 3479
+      },
+      "endEvidence": {
+        "quote": "He made jam?\"\n\n\"He did,\" Mrs. Tibbs said proudly, holding up a jar. \"Look at the colour. A proper deep purple. It's a handsome thing, isn't it",
+        "start": 5169,
+        "end": 5311
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "took Nell's case notes from her room",
+      "validFromChapter": 12,
+      "validUntilChapter": 12,
+      "sourceChapter": 12,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "And your notes, my dear. I was most sorry to take them, but a girl can't be too careful with loose papers.\"",
+        "start": 3411,
+        "end": 3518
+      },
+      "endEvidence": {
+        "quote": "Seems a paltry reason for a man’s life.”\n\n“Money does paltry things to people",
+        "start": 2782,
+        "end": 2859
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "visited Fen & County Bank to discuss Tarrant's accounts",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Nell walked into the Fen & County Bank, the bell above the door giving a cheerful little tinkle that seemed at odds with the grim thoughts in her head.",
+        "start": 22,
+        "end": 173
+      },
+      "endEvidence": {
+        "quote": "The wind off the fens was sharp, carrying the damp, earthy smell of the water. Nell walked along the towpath towards the lock, her hands thrust deep into her coat pockets. She needed to see Kit.",
+        "start": 6447,
+        "end": 6641
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "visited Kit Merrow at his hut",
+      "validFromChapter": 4,
+      "validUntilChapter": 4,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "The wind off the fens was sharp, carrying the damp, earthy smell of the water. Nell walked along the towpath towards the lock, her hands thrust deep into her coat pockets. She needed to see Kit.",
+        "start": 6447,
+        "end": 6641
+      },
+      "endEvidence": {
+        "quote": "Nell approached the heavy iron bars. He didn't look like a prisoner; he looked like a man who had simply retreated into himself.",
+        "start": 6071,
+        "end": 6199
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "action",
+      "object": "visited Kit Merrow in police cell",
+      "validFromChapter": 5,
+      "validUntilChapter": 6,
+      "sourceChapter": 5,
+      "kind": "other",
+      "evidence": {
+        "quote": "Nell approached the heavy iron bars. He didn't look like a prisoner; he looked like a man who had simply retreated into himself.",
+        "start": 6071,
+        "end": 6199
+      },
+      "endEvidence": {
+        "quote": "As dusk began to settle, painting the sky in shades of bruised purple and orange, Nell decided to walk past the Plough Inn. Silas was staying there, a fact Aunt Maud had gleefully reported over a rather cold cup of tea. Nell hoped for a word, a chance to gauge his reaction to his brother-in-law’s death.\n\nThe inn was busy, its low roar of conversation and laughter spilling out into the yard. Nell kept to the shadows of the wall, her eyes scanning the dim corners by the stables. And there he was. Silas Rudd, leaning against a pile of sacks, a half-empty bottle in his hand. He wasn't alone. Another man, one of the rougher types from the docks, stood with him, their heads close together as they spoke in low, urgent tones.\n\nAs Nell watched, Silas pulled a thick sheaf of papers from his inside pocket and thrust them into the other man's hands. The man nodded, then produced a small oil lamp from his own coat. He struck a match, and the flame illuminated the papers for a moment before Silas grabbed them back and tossed them onto a small, iron brazier that was already glowing with embers.",
+        "start": 6397,
+        "end": 7493
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "action",
+      "object": "wanted to take financial evidence to county police",
+      "validFromChapter": 10,
+      "validUntilChapter": 10,
+      "sourceChapter": 10,
+      "kind": "other",
+      "evidence": {
+        "quote": "the muddy path ahead.\n\n'The county police,' he said, his voice rough. 'That's what we do. We take this to them. To Inspector Croft in Ely. He'll listen. He's not Dorrit",
+        "start": 3451,
+        "end": 3619
+      },
+      "endEvidence": {
+        "quote": "He reached into his pocket and pulled out a small, heavy brass key. It was old and worn, its teeth smooth from use. He took her hand and pressed it into her palm.\n\n\"My key,\" he said, his voice thick.",
+        "start": 5453,
+        "end": 5652
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "action",
+      "object": "warned Nell about dangers of sluice bank at night",
+      "validFromChapter": 9,
+      "validUntilChapter": 9,
+      "sourceChapter": 9,
+      "kind": "other",
+      "evidence": {
+        "quote": "The river can be treacherous, especially at night. And the sluice bank… well, it's not a place for a young woman to be wandering about after dark.",
+        "start": 9780,
+        "end": 9926
+      },
+      "endEvidence": {
+        "quote": "It's all in Vane's hand. He's been skimming it, bit by bit. For years.",
+        "start": 2541,
+        "end": 2611
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "changed will dissolving partnership with Ambrose Vane",
+      "validFromChapter": 4,
+      "validUntilChapter": 8,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "The very next day, he changed his will, dissolving the partnership with his junior man.",
+        "start": 2354,
+        "end": 2441
+      },
+      "endEvidence": {
+        "quote": "I, Owen Tarrant, being of sound mind and body, do hereby revoke all previous bequests to my junior partner, Ambrose Vane.",
+        "start": 5402,
+        "end": 5523
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "created codicil revoking partnership with Ambrose Vane",
+      "validFromChapter": 9,
+      "validUntilChapter": 8,
+      "sourceChapter": 9,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "I, Owen Tarrant, being of sound mind and body, do hereby revoke all previous bequests to my junior partner, Ambrose Vane.",
+        "start": 5402,
+        "end": 5523
+      },
+      "endEvidence": {
+        "quote": "Upon my death, the partnership between myself and Ambrose Vane is hereby dissolved",
+        "start": 5524,
+        "end": 5606
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "dissolved partnership with Ambrose Vane in will",
+      "validFromChapter": 9,
+      "validUntilChapter": 8,
+      "sourceChapter": 9,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Upon my death, the partnership between myself and Ambrose Vane is hereby dissolved",
+        "start": 5524,
+        "end": 5606
+      },
+      "endEvidence": {
+        "quote": "all books and documents pertaining to the Fen Drainage Board fund, currently held in trust by the mill, are to be surrendered directly to the manager of the Fen & County Bank for immediate audit",
+        "start": 5687,
+        "end": 5881
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "found discrepancies in old ledgers that exposed Vane's skimming",
+      "validFromChapter": 13,
+      "validUntilChapter": null,
+      "sourceChapter": 13,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Tarrant must have found the discrepancies in the old ledgers, the ones Vane thought he’d burned. The audit was the start of it all.",
+        "start": 2622,
+        "end": 2753
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "inspecting mill race after hearing noise",
+      "validFromChapter": 1,
+      "validUntilChapter": 3,
+      "sourceChapter": 1,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Tarrant was inspecting the race after he heard a noise. He went down there alone.",
+        "start": 9005,
+        "end": 9086
+      },
+      "endEvidence": {
+        "quote": "A week ago last Tuesday,\" Hollis said, leading her down a short corridor. \"Mr. Tarrant came in to see me. He asked for a full audit of the mill's accounts. Specifically, he mentioned the Fen Drainage Board fund.",
+        "start": 1409,
+        "end": 1620
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "mentioned discrepancy in Fen Drainage Board fund accounts",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "He said he'd noticed a discrepancy, a small one, but he wanted it looked into thoroughly.",
+        "start": 1821,
+        "end": 1910
+      },
+      "endEvidence": {
+        "quote": "He seemed… well, he seemed rather agitated about it.",
+        "start": 1708,
+        "end": 1760
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "requested audit of mill accounts, specifically Fen Drainage Board fund",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "A week ago last Tuesday,\" Hollis said, leading her down a short corridor. \"Mr. Tarrant came in to see me. He asked for a full audit of the mill's accounts. Specifically, he mentioned the Fen Drainage Board fund.",
+        "start": 1409,
+        "end": 1620
+      },
+      "endEvidence": {
+        "quote": "He said he'd noticed a discrepancy, a small one, but he wanted it looked into thoroughly.",
+        "start": 1821,
+        "end": 1910
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "required audit of Fen Drainage Board fund documents",
+      "validFromChapter": 9,
+      "validUntilChapter": 12,
+      "sourceChapter": 9,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "all books and documents pertaining to the Fen Drainage Board fund, currently held in trust by the mill, are to be surrendered directly to the manager of the Fen & County Bank for immediate audit",
+        "start": 5687,
+        "end": 5881
+      },
+      "endEvidence": {
+        "quote": "Tarrant must have found the discrepancies in the old ledgers, the ones Vane thought he’d burned. The audit was the start of it all.",
+        "start": 2622,
+        "end": 2753
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "action_before_death",
+      "object": "seemed agitated about the audit request",
+      "validFromChapter": 4,
+      "validUntilChapter": 3,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "He seemed… well, he seemed rather agitated about it.",
+        "start": 1708,
+        "end": 1760
+      },
+      "endEvidence": {
+        "quote": "The very next day, he changed his will, dissolving the partnership with his junior man.",
+        "start": 2354,
+        "end": 2441
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "alibi",
+      "object": "at home in bed between midnight and discovery",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "At home, sir. In bed. I can't imagine what use that is, but it is the truth.",
+        "start": 1875,
+        "end": 1951
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "alibi",
+      "object": "at lock tending water levels, confirmed by Mr. Pell",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "I was at the lock, tending to the water levels, as I do every night. Mr. Pell can confirm it. He wrote a letter for me after ten. I was in my hut.",
+        "start": 6979,
+        "end": 7125
+      }
+    },
+    {
+      "subject": "Silas Rudd",
+      "predicate": "argument",
+      "object": "with Owen Tarrant about lost gambling money",
+      "validFromChapter": 6,
+      "validUntilChapter": null,
+      "sourceChapter": 6,
+      "kind": "relationship",
+      "evidence": {
+        "quote": "There was my brother,\" she said. \"Silas. He came here on the Tuesday. The shouting could be heard in the street. Owen was furious. Silas... Silas has always been a fool with money. He's in debt up to his neck. He'd borrowed a considerable sum from Owen, and it seems he'd lost it all at cards.",
+        "start": 6680,
+        "end": 6973
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "belief",
+      "object": "Owen Tarrant was murdered",
+      "validFromChapter": 1,
+      "validUntilChapter": 3,
+      "sourceChapter": 1,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "This was no accident. Owen Tarrant had been pushed into that water, and someone in Lessing Fen was a murderer.",
+        "start": 9892,
+        "end": 10002
+      },
+      "endEvidence": {
+        "quote": "Tarrant hadn't slipped. He had been silenced before he could expose the theft.",
+        "start": 3482,
+        "end": 3560
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "belief",
+      "object": "Owen Tarrant was silenced before exposing theft",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Tarrant hadn't slipped. He had been silenced before he could expose the theft.",
+        "start": 3482,
+        "end": 3560
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "cause_of_death",
+      "object": "drowned in mill race",
+      "validFromChapter": 1,
+      "validUntilChapter": 11,
+      "sourceChapter": 1,
+      "kind": "status",
+      "evidence": {
+        "quote": "Constable Arthur Dorrit was directing two men with a long pole. At the end of the pole, trailing in the current, was a body.",
+        "start": 1130,
+        "end": 1254
+      },
+      "endEvidence": {
+        "quote": "I just... gave him a push. He didn't even scream.\"",
+        "start": 2974,
+        "end": 3024
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "cause_of_death",
+      "object": "murdered by Ambrose Vane",
+      "validFromChapter": 13,
+      "validUntilChapter": null,
+      "sourceChapter": 13,
+      "kind": "status",
+      "evidence": {
+        "quote": "The verdict was delivered without fuss: unlawful killing. Ambrose Vane. The name hung in the air, stripped of the geniality he had once worn like a second skin.",
+        "start": 747,
+        "end": 907
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "cause_of_death",
+      "object": "murdered by Ambrose Vane pushing him into mill race",
+      "validFromChapter": 12,
+      "validUntilChapter": 12,
+      "sourceChapter": 12,
+      "kind": "status",
+      "evidence": {
+        "quote": "I just... gave him a push. He didn't even scream.\"",
+        "start": 2974,
+        "end": 3024
+      },
+      "endEvidence": {
+        "quote": "The verdict was delivered without fuss: unlawful killing. Ambrose Vane. The name hung in the air, stripped of the geniality he had once worn like a second skin.",
+        "start": 747,
+        "end": 907
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "confession",
+      "object": "pushed Owen Tarrant into the mill race",
+      "validFromChapter": 12,
+      "validUntilChapter": null,
+      "sourceChapter": 12,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "I pushed him in,"
+      }
+    },
+    {
+      "subject": "Silas Rudd",
+      "predicate": "debt_status",
+      "object": "forgiven by Owen Tarrant",
+      "validFromChapter": 9,
+      "validUntilChapter": null,
+      "sourceChapter": 9,
+      "kind": "possession",
+      "evidence": {
+        "quote": "I found it on his desk yesterday,\" Silas said, his voice trembling slightly. \"After he was… after they found him. I went to his house, to see if Ivy was alright, and I saw it there. I owed him that money for years, and he just… wrote it off.",
+        "start": 2981,
+        "end": 3222
+      }
+    },
+    {
+      "subject": "Fen Drainage Board fund",
+      "predicate": "discrepancy",
+      "object": "missing at least £100 due to Ambrose Vane's skimming",
+      "validFromChapter": 10,
+      "validUntilChapter": null,
+      "sourceChapter": 10,
+      "kind": "other",
+      "evidence": {
+        "quote": "There's no entry for three hundred pounds from Tarrant's Mill. There's an entry for two hundred. The missing hundred pounds was a ghost, a sum that had been written out of the mill's books as if it had never existed."
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "emotion",
+      "object": "fearful that Vane will harm her now that she has proof",
+      "validFromChapter": 10,
+      "validUntilChapter": 9,
+      "sourceChapter": 10,
+      "kind": "other",
+      "evidence": {
+        "quote": "While we're waiting for the county to get off their backsides, what happens? Vane knows we have this. He saw the look on my face when I left his rooms. He knows I'm not just some clerk doing an inventory. He knows I'm asking questions. He warned me.",
+        "start": 4237,
+        "end": 4486
+      },
+      "endEvidence": {
+        "quote": "She sat in the gathering dusk, the room growing darker around her, and for the first time since she had begun her inventory, she felt truly, utterly alone. The murderer wasn't just a face in a crowd or a name in a ledger anymore. He had been here. In her room. He knew what she knew. And he was not a man who would hesitate to silence her for good.",
+        "start": 7941,
+        "end": 8289
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "emotion",
+      "object": "feeling lonely after interrupted moment with Kit",
+      "validFromChapter": 6,
+      "validUntilChapter": 7,
+      "sourceChapter": 6,
+      "kind": "other",
+      "evidence": {
+        "quote": "Nell stood for a moment on her own doorstep, the echo of his name unsaid on her lips, the cold night air suddenly feeling very lonely.",
+        "start": 11724,
+        "end": 11858
+      },
+      "endEvidence": {
+        "quote": "She closed the notebook with a soft snap. The oil lamp hissed softly. Outside, the town was settling down for the night. Nell felt no closer to an answer than she had when she had first walked to Mr. Pell's office and found the crowd at the mill race. The sluice gate was still open. The key was still missing. The murderer was still out there. She was no further on, and no different.",
+        "start": 9615,
+        "end": 10000
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "emotion",
+      "object": "feeling no closer to solving mystery",
+      "validFromChapter": 8,
+      "validUntilChapter": 9,
+      "sourceChapter": 8,
+      "kind": "other",
+      "evidence": {
+        "quote": "She closed the notebook with a soft snap. The oil lamp hissed softly. Outside, the town was settling down for the night. Nell felt no closer to an answer than she had when she had first walked to Mr. Pell's office and found the crowd at the mill race. The sluice gate was still open. The key was still missing. The murderer was still out there. She was no further on, and no different.",
+        "start": 9615,
+        "end": 10000
+      },
+      "endEvidence": {
+        "quote": "While we're waiting for the county to get off their backsides, what happens? Vane knows we have this. He saw the look on my face when I left his rooms. He knows I'm not just some clerk doing an inventory. He knows I'm asking questions. He warned me.",
+        "start": 4237,
+        "end": 4486
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "emotion",
+      "object": "feeling truly alone and in danger",
+      "validFromChapter": 10,
+      "validUntilChapter": 11,
+      "sourceChapter": 10,
+      "kind": "other",
+      "evidence": {
+        "quote": "She sat in the gathering dusk, the room growing darker around her, and for the first time since she had begun her inventory, she felt truly, utterly alone. The murderer wasn't just a face in a crowd or a name in a ledger anymore. He had been here. In her room. He knew what she knew. And he was not a man who would hesitate to silence her for good.",
+        "start": 7941,
+        "end": 8289
+      },
+      "endEvidence": {
+        "quote": "Nell now has concrete proof of Ambrose's financial crimes after witnessing him check the safe"
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "emotion",
+      "object": "guilty about Kit's arrest but determined to continue investigation",
+      "validFromChapter": 5,
+      "validUntilChapter": 5,
+      "sourceChapter": 5,
+      "kind": "other",
+      "evidence": {
+        "quote": "The injustice of it settled in her stomach like a stone. She had led them straight to Kit.",
+        "start": 4034,
+        "end": 4124
+      },
+      "endEvidence": {
+        "quote": "He didn't finish. He took a small step forward, closing the distance between them. Nell felt the pull of it, an instinct to meet him halfway, to bridge the space that had suddenly become too wide.",
+        "start": 10884,
+        "end": 11080
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "emotion",
+      "object": "relieved after Ambrose's arrest",
+      "validFromChapter": 12,
+      "validUntilChapter": 12,
+      "sourceChapter": 12,
+      "kind": "other",
+      "evidence": {
+        "quote": "She leaned into him, the adrenaline draining away, leaving her trembling and weak.",
+        "start": 7123,
+        "end": 7205
+      },
+      "endEvidence": {
+        "quote": "The town could begin to heal now, with the truth laid bare.",
+        "start": 1846,
+        "end": 1905
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "emotion",
+      "object": "relieved after Ambrose's arrest and the truth being revealed",
+      "validFromChapter": 13,
+      "validUntilChapter": null,
+      "sourceChapter": 13,
+      "kind": "other",
+      "evidence": {
+        "quote": "The town could begin to heal now, with the truth laid bare.",
+        "start": 1846,
+        "end": 1905
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "emotion",
+      "object": "romantic tension with Kit",
+      "validFromChapter": 6,
+      "validUntilChapter": 5,
+      "sourceChapter": 6,
+      "kind": "other",
+      "evidence": {
+        "quote": "He didn't finish. He took a small step forward, closing the distance between them. Nell felt the pull of it, an instinct to meet him halfway, to bridge the space that had suddenly become too wide.",
+        "start": 10884,
+        "end": 11080
+      },
+      "endEvidence": {
+        "quote": "Nell stood for a moment on her own doorstep, the echo of his name unsaid on her lips, the cold night air suddenly feeling very lonely.",
+        "start": 11724,
+        "end": 11858
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "explanation",
+      "object": "sluice key missing for months",
+      "validFromChapter": 6,
+      "validUntilChapter": null,
+      "sourceChapter": 6,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Ah, yes. That old thing. We haven't seen it for months, have we? Owen was always meaning to get a new one cut, but it was never at the top of his list.",
+        "start": 2655,
+        "end": 2806
+      }
+    },
+    {
+      "subject": "mill office",
+      "predicate": "has_empty_hook",
+      "object": "brass hook where sluice key should be",
+      "validFromChapter": 6,
+      "validUntilChapter": null,
+      "sourceChapter": 6,
+      "kind": "location",
+      "evidence": {
+        "quote": "Her eyes kept returning to the wall by the door, to a small, empty brass hook screwed into the wood, just above a small wooden bench.",
+        "start": 2212,
+        "end": 2345
+      }
+    },
+    {
+      "subject": "Constable Arthur Dorrit",
+      "predicate": "investigated",
+      "object": "Owen Tarrant's death",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Constable Arthur Dorrit was directing two men with a long pole. At the end of the pole, trailing in the current, was a body.",
+        "start": 1130,
+        "end": 1254
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "knowledge",
+      "object": "concluded light from lantern came from mill office, not Tarrant's house",
+      "validFromChapter": 7,
+      "validUntilChapter": 6,
+      "sourceChapter": 7,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Because it wasn't a flood that opened the gate,\" Kit said, his voice low. \"Someone used a key. And someone used this lantern to see what they were doing. The light I saw… it came from this",
+        "start": 4088,
+        "end": 4276
+      },
+      "endEvidence": {
+        "quote": "It was real.\n\n\"It changes everything,\" she agreed, her voice firm. \"It means whoever did it had access to the office, knew the key was there, and knew exactly when Tarrant would be inspecting the race. It wasn't a slip. It was an ambush",
+        "start": 5224,
+        "end": 5460
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "knowledge",
+      "object": "determined person who used lantern had access to mill office and knew about key",
+      "validFromChapter": 7,
+      "validUntilChapter": 7,
+      "sourceChapter": 7,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "It was real.\n\n\"It changes everything,\" she agreed, her voice firm. \"It means whoever did it had access to the office, knew the key was there, and knew exactly when Tarrant would be inspecting the race. It wasn't a slip. It was an ambush",
+        "start": 5224,
+        "end": 5460
+      },
+      "endEvidence": {
+        "quote": "She saw Ambrose Vane circulating, his genial face a picture of sorrow, offering tea to the vicar's wife and pointing out the prize-winning marrow. He looked like a man who belonged, a pillar of the community, not a man with a secret that could send him to the gallows.",
+        "start": 6102,
+        "end": 6370
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "knowledge",
+      "object": "killer must have had access to mill office to take the key",
+      "validFromChapter": 4,
+      "validUntilChapter": 4,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "So,\" Nell said, turning to face him, \"the killer had access to the mill office after hours. They took the key, opened the sluice, and put it back before anyone was the wiser",
+        "start": 7986,
+        "end": 8159
+      },
+      "endEvidence": {
+        "quote": "I saw a light. Moving along the sluice bank, heading for the mill office. It was late. Past midnight. I assumed it was Mr. Tarrant, going to check on the water levels.",
+        "start": 7183,
+        "end": 7350
+      }
+    },
+    {
+      "subject": "Ivy Tarrant",
+      "predicate": "knowledge",
+      "object": "Nell found proof that Owen's death was not an accident",
+      "validFromChapter": 13,
+      "validUntilChapter": null,
+      "sourceChapter": 13,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "They said you found the proof. I don’t know how, but I know you did. And for that… thank you.",
+        "start": 1557,
+        "end": 1650
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "knowledge",
+      "object": "observed Ambrose Vane's behavior at fete",
+      "validFromChapter": 8,
+      "validUntilChapter": null,
+      "sourceChapter": 8,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "She saw Ambrose Vane circulating, his genial face a picture of sorrow, offering tea to the vicar's wife and pointing out the prize-winning marrow. He looked like a man who belonged, a pillar of the community, not a man with a secret that could send him to the gallows.",
+        "start": 6102,
+        "end": 6370
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "knowledge",
+      "object": "recognizes lantern as the one Ambrose Vane kept in mill office",
+      "validFromChapter": 7,
+      "validUntilChapter": null,
+      "sourceChapter": 7,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "He wiped the mud from the side with his thumb, the metal cold and smooth under his touch. He knew this lantern. He’d seen it on the hook in the mill office, next to the ledger books. It was the one Ambrose Vane was always polishing, always offering to light for visitors.",
+        "start": 2365,
+        "end": 2636
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "knowledge",
+      "object": "saw lantern moving along sluice bank heading for mill office night of murder",
+      "validFromChapter": 5,
+      "validUntilChapter": 5,
+      "sourceChapter": 5,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "I saw a light. Moving along the sluice bank, heading for the mill office. It was late. Past midnight. I assumed it was Mr. Tarrant, going to check on the water levels.",
+        "start": 7183,
+        "end": 7350
+      },
+      "endEvidence": {
+        "quote": "I saw something that night. I told you in the cell. A lantern. Moving along the bank towards the mill. I thought it was Tarrant. But what if it wasn't? What if it was the person who had the key? The person who opened that gate.",
+        "start": 9760,
+        "end": 9987
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "knowledge",
+      "object": "saw lantern moving along sluice bank toward mill office night of murder",
+      "validFromChapter": 6,
+      "validUntilChapter": 6,
+      "sourceChapter": 6,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "I saw something that night. I told you in the cell. A lantern. Moving along the bank towards the mill. I thought it was Tarrant. But what if it wasn't? What if it was the person who had the key? The person who opened that gate.",
+        "start": 9760,
+        "end": 9987
+      },
+      "endEvidence": {
+        "quote": "He wiped the mud from the side with his thumb, the metal cold and smooth under his touch. He knew this lantern. He’d seen it on the hook in the mill office, next to the ledger books. It was the one Ambrose Vane was always polishing, always offering to light for visitors.",
+        "start": 2365,
+        "end": 2636
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "knowledge",
+      "object": "sluice gate opened with key",
+      "validFromChapter": 3,
+      "validUntilChapter": 3,
+      "sourceChapter": 3,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Because it was,",
+        "start": 7287,
+        "end": 7302
+      },
+      "endEvidence": {
+        "quote": "So,\" Nell said, turning to face him, \"the killer had access to the mill office after hours. They took the key, opened the sluice, and put it back before anyone was the wiser",
+        "start": 7986,
+        "end": 8159
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "location",
+      "object": "home at Number 12 Wick Street",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "location",
+      "evidence": {
+        "quote": "Supper at Number 12 Wick Street was a tense affair.",
+        "start": 5559,
+        "end": 5610
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "location",
+      "object": "Owen Tarrant's house",
+      "validFromChapter": 2,
+      "validUntilChapter": 1,
+      "sourceChapter": 2,
+      "kind": "location",
+      "evidence": {
+        "quote": "Nell stood in the hall, her notebook open, the list of assets from Mr. Pell a stark, practical thing in her hand.",
+        "start": 202,
+        "end": 315
+      },
+      "endEvidence": {
+        "quote": "Supper at Number 12 Wick Street was a tense affair.",
+        "start": 5559,
+        "end": 5610
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "location",
+      "object": "Owen Tarrant's house",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "location",
+      "evidence": {
+        "quote": "He had met her at the door with his usual warmth, his hand on her arm as if they were old friends.",
+        "start": 467,
+        "end": 565
+      }
+    },
+    {
+      "subject": "Fen Drainage Board fund",
+      "predicate": "managed_by",
+      "object": "Tarrant's mill",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "world_rule",
+      "evidence": {
+        "quote": "He had mentioned the Fen Drainage Board fund several times, explaining how Tarrant’s mill managed it on their behalf.",
+        "start": 6872,
+        "end": 6989
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "motive",
+      "object": "feared exposure of skimming money from Fen Drainage Board fund",
+      "validFromChapter": 12,
+      "validUntilChapter": null,
+      "sourceChapter": 12,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "He found out, you see,\" Vane said. \"About the Drainage Board money. He was a fool, trusting me with it. I went to the bank, asked for an audit. I saw the letter he'd written. It was all over for me.\""
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "motive",
+      "object": "losing partnership and potential exposure of theft",
+      "validFromChapter": 9,
+      "validUntilChapter": 11,
+      "sourceChapter": 9,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Tarrant had discovered the theft, confronted Vane, and in this new will, he had cut him out completely and ensured the theft would be exposed",
+        "start": 6028,
+        "end": 6169
+      },
+      "endEvidence": {
+        "quote": "He found out, you see,\" Vane said. \"About the Drainage Board money. He was a fool, trusting me with it. I went to the bank, asked for an audit. I saw the letter he'd written. It was all over for me.\""
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "occupation",
+      "object": "clerk to Mr. Pell",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "identity",
+      "evidence": {
+        "quote": "Nell was on her way to Mr. Pell’s office, a task she had performed every weekday for the past five years",
+        "start": 557,
+        "end": 661
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "occupation",
+      "object": "keeper of the Lessing lock and the sluice",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "identity",
+      "evidence": {
+        "quote": "He introduced himself as Kit Merrow, the keeper of the Lessing lock and the sluice.",
+        "start": 7998,
+        "end": 8081
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "occupation",
+      "object": "Tarrant's bookkeeper and junior partner",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "identity",
+      "evidence": {
+        "quote": "This was Ambrose Vane, Tarrant’s bookkeeper and junior partner.",
+        "start": 4647,
+        "end": 4710
+      }
+    },
+    {
+      "subject": "sluice gate",
+      "predicate": "opened_when",
+      "object": "midnight on quiet night when river wasn't high",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "world_rule",
+      "evidence": {
+        "quote": "But you don’t open it at midnight on a quiet night unless you mean to do harm. The river wasn’t high enough to warrant it.",
+        "start": 8882,
+        "end": 9004
+      }
+    },
+    {
+      "subject": "silver whistle",
+      "predicate": "origin",
+      "object": "H.M.S. Cormorant 1916",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "other",
+      "evidence": {
+        "quote": "It was old, its surface engraved with a name and a date: 'H.M.S. Cormorant 1916'.",
+        "start": 4383,
+        "end": 4464
+      }
+    },
+    {
+      "subject": "sluice key holders",
+      "predicate": "people_with_access",
+      "object": "Kit Merrow, Owen Tarrant, and mill foreman/emergency key",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "world_rule",
+      "evidence": {
+        "quote": "Three people. Me. Tarrant. And the third one hangs on a hook in the mill office. It’s for the foreman, or in case of emergency.",
+        "start": 8677,
+        "end": 8804
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "physical_evidence",
+      "object": "dried fen bank mud on boots",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "other",
+      "evidence": {
+        "quote": "In the deep welts where the leather met the sole, there was a caking of dried, greyish-brown clay. It was the specific, heavy, peaty mud of the fen bank, the very soil one would find after walking along the sluice path in the damp night air.",
+        "start": 2942,
+        "end": 3183
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "plan",
+      "object": "investigate mill office and examine ledgers Vane took",
+      "validFromChapter": 4,
+      "validUntilChapter": 11,
+      "sourceChapter": 4,
+      "kind": "goal",
+      "evidence": {
+        "quote": "We start with the ledgers,\" she said. \"He took them from the house for 'safekeeping'. The bank said Tarrant asked for an audit of the Drainage Board fund. I need to see that ledger, Mr. Merrow. I need to see what Vane was so desperate to hide.",
+        "start": 9837,
+        "end": 10080
+      },
+      "endEvidence": {
+        "quote": "Nell now has concrete proof of Ambrose's financial crimes after witnessing him check the safe"
+      }
+    },
+    {
+      "subject": "Bea Ashby",
+      "predicate": "plan",
+      "object": "marry Leonard Fawley and move to Halifax in one month",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "goal",
+      "evidence": {
+        "quote": "My ticket is bought. My passage is paid for. I'm leaving in a month.",
+        "start": 5484,
+        "end": 5552
+      }
+    },
+    {
+      "subject": "Bea Ashby",
+      "predicate": "plan",
+      "object": "move to Halifax in one month",
+      "validFromChapter": 2,
+      "validUntilChapter": 3,
+      "sourceChapter": 2,
+      "kind": "goal",
+      "evidence": {
+        "quote": "We sail from Liverpool in a month. Just a month!",
+        "start": 6237,
+        "end": 6285
+      },
+      "endEvidence": {
+        "quote": "My ticket is bought. My passage is paid for. I'm leaving in a month.",
+        "start": 5484,
+        "end": 5552
+      }
+    },
+    {
+      "subject": "silver whistle",
+      "predicate": "possession",
+      "object": "found in Owen Tarrant's coat pocket",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "possession",
+      "evidence": {
+        "quote": "In the left, her fingers brushed against something small, hard, and cold. She pulled it out. It was a small silver whistle, attached to a thin, tarnished chain.",
+        "start": 4222,
+        "end": 4382
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "possession",
+      "object": "last-quarter ledger from mill office safe",
+      "validFromChapter": 11,
+      "validUntilChapter": null,
+      "sourceChapter": 11,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Nell reached out and took the ledger from the safe. It was heavy, solid proof of Vane's guilt.",
+        "start": 9044,
+        "end": 9138
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "possession",
+      "object": "silver whistle",
+      "validFromChapter": 2,
+      "validUntilChapter": 10,
+      "sourceChapter": 2,
+      "kind": "possession",
+      "evidence": {
+        "quote": "Nell closed her hand around the whistle, the silver pressing into her palm. She slipped it into her own coat pocket, the action deliberate and quiet.",
+        "start": 5366,
+        "end": 5515
+      },
+      "endEvidence": {
+        "quote": "Nell reached out and took the ledger from the safe. It was heavy, solid proof of Vane's guilt.",
+        "start": 9044,
+        "end": 9138
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "realization",
+      "object": "murder investigation and family problems connected",
+      "validFromChapter": 2,
+      "validUntilChapter": 2,
+      "sourceChapter": 2,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "The two problems, she realised with a jolt of cold clarity, were one and the same.",
+        "start": 8482,
+        "end": 8564
+      },
+      "endEvidence": {
+        "quote": "She looked from the mill, where the murderer worked in plain sight, to the town, where her sister was planning to ruin her life with a charming gambler. The two problems, the murder and Bea's folly, were no longer separate. They were a tangle, a single, dangerous knot, and she was the only one who seemed to see it.",
+        "start": 8132,
+        "end": 8448
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "realization",
+      "object": "murder investigation connected to family problems",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "She looked from the mill, where the murderer worked in plain sight, to the town, where her sister was planning to ruin her life with a charming gambler. The two problems, the murder and Bea's folly, were no longer separate. They were a tangle, a single, dangerous knot, and she was the only one who seemed to see it.",
+        "start": 8132,
+        "end": 8448
+      }
+    },
+    {
+      "subject": "Ivy Tarrant",
+      "predicate": "relationship_to",
+      "object": "Owen Tarrant's widow",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "relationship",
+      "evidence": {
+        "quote": "A woman Ivy, Nell recalled, Tarrant’s widow, was nearby, being held upright by a neighbour",
+        "start": 1544,
+        "end": 1634
+      }
+    },
+    {
+      "subject": "Ivy Tarrant",
+      "predicate": "revelation",
+      "object": "Owen was agitated about Drainage Board money",
+      "validFromChapter": 6,
+      "validUntilChapter": null,
+      "sourceChapter": 6,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "There was the Drainage money,\" she said, the words clipped and sharp. \"That was the big one. Owen was always fussing over it.",
+        "start": 6040,
+        "end": 6165
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "ruling",
+      "object": "accident",
+      "validFromChapter": 1,
+      "validUntilChapter": 2,
+      "sourceChapter": 1,
+      "kind": "world_rule",
+      "evidence": {
+        "quote": "the coroner was yet to be called, and it was not her place to contradict the town’s law.",
+        "start": 2634,
+        "end": 2722
+      },
+      "endEvidence": {
+        "quote": "Mr. Withers seemed satisfied. He thanked the witnesses and pronounced the death of Owen Tarrant to be accidental, caused by misadventure",
+        "start": 2058,
+        "end": 2194
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "ruling",
+      "object": "accidental",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "world_rule",
+      "evidence": {
+        "quote": "Mr. Withers seemed satisfied. He thanked the witnesses and pronounced the death of Owen Tarrant to be accidental, caused by misadventure",
+        "start": 2058,
+        "end": 2194
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "signs_of_struggle",
+      "object": "none",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "No signs of a struggle, Constable?",
+        "start": 857,
+        "end": 891
+      }
+    },
+    {
+      "subject": "townspeople",
+      "predicate": "speculation",
+      "object": "Kit Merrow has something to hide",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Keeps to himself, that one. Navy man, they say. Quiet as a mouse. Why would a man like that want to stay in a place like Lessing Fen? Got something to hide, mark my words.",
+        "start": 4435,
+        "end": 4606
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "status",
+      "object": "arrested and in custody",
+      "validFromChapter": 5,
+      "validUntilChapter": null,
+      "sourceChapter": 5,
+      "kind": "status",
+      "evidence": {
+        "quote": "I've taken Merrow into custody. For his own protection, you understand.",
+        "start": 3492,
+        "end": 3563
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "status",
+      "object": "arrested for murder of Owen Tarrant",
+      "validFromChapter": 12,
+      "validUntilChapter": 12,
+      "sourceChapter": 12,
+      "kind": "status",
+      "evidence": {
+        "quote": "\"Vane!\" Dorrit bellowed, his voice shaking with a mixture of outrage and self-importance. \"You are under arrest for the murder of Owen Tarrant!\"",
+        "start": 6201,
+        "end": 6345
+      },
+      "endEvidence": {
+        "quote": "Heard from Dorrit. He said Vane won't be getting out of Pentonville for a very long time."
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "status",
+      "object": "articled clerk to Mr. Pell",
+      "validFromChapter": 13,
+      "validUntilChapter": null,
+      "sourceChapter": 13,
+      "kind": "identity",
+      "evidence": {
+        "quote": "I would like to offer you a position, Nell. As my articled clerk.",
+        "start": 6055,
+        "end": 6120
+      }
+    },
+    {
+      "subject": "Owen Tarrant's desk",
+      "predicate": "status",
+      "object": "clear, no missing ledger",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "other",
+      "evidence": {
+        "quote": "She walked over to the desk and looked, but it was clear, the surface wiped clean. The missing ledger was not there.",
+        "start": 3615,
+        "end": 3731
+      }
+    },
+    {
+      "subject": "sluice gate",
+      "predicate": "status",
+      "object": "closed by Nell and Kit to trap Ambrose Vane",
+      "validFromChapter": 12,
+      "validUntilChapter": null,
+      "sourceChapter": 12,
+      "kind": "other",
+      "evidence": {
+        "quote": "She put her shoulder into it, grunting with the effort, turning the heavy wheel. It resisted, grinding against its housing, but it moved. A low groan echoed from the gate below as it began to close.",
+        "start": 5364,
+        "end": 5562
+      }
+    },
+    {
+      "subject": "Ambrose Vane",
+      "predicate": "status",
+      "object": "convicted of murder and imprisoned in Pentonville",
+      "validFromChapter": 13,
+      "validUntilChapter": null,
+      "sourceChapter": 13,
+      "kind": "status",
+      "evidence": {
+        "quote": "Heard from Dorrit. He said Vane won't be getting out of Pentonville for a very long time."
+      }
+    },
+    {
+      "subject": "Owen Tarrant",
+      "predicate": "status",
+      "object": "dead",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "status",
+      "evidence": {
+        "quote": "There, at the water’s edge, Constable Arthur Dorrit was directing two men with a long pole. At the end of the pole, trailing in the current, was a body.",
+        "start": 1102,
+        "end": 1254
+      }
+    },
+    {
+      "subject": "sluice gate",
+      "predicate": "status",
+      "object": "deliberately opened",
+      "validFromChapter": 1,
+      "validUntilChapter": 11,
+      "sourceChapter": 1,
+      "kind": "world_rule",
+      "evidence": {
+        "quote": "Because it wasn’t opened by the flood board,",
+        "start": 8227,
+        "end": 8271
+      },
+      "endEvidence": {
+        "quote": "She put her shoulder into it, grunting with the effort, turning the heavy wheel. It resisted, grinding against its housing, but it moved. A low groan echoed from the gate below as it began to close.",
+        "start": 5364,
+        "end": 5562
+      }
+    },
+    {
+      "subject": "mill office",
+      "predicate": "status",
+      "object": "empty brass hook where sluice key should be",
+      "validFromChapter": 11,
+      "validUntilChapter": null,
+      "sourceChapter": 11,
+      "kind": "location",
+      "evidence": {
+        "quote": "Nell's gaze flickered to it, noting the empty space where a third key should have been.",
+        "start": 2732,
+        "end": 2819
+      }
+    },
+    {
+      "subject": "Owen Tarrant's financial records",
+      "predicate": "status",
+      "object": "missing last quarter 1923 ledger",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "other",
+      "evidence": {
+        "quote": "But the last quarter, the one covering the past three months, was missing. It should have been there, nestled between the others.",
+        "start": 2294,
+        "end": 2423
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "suspicion",
+      "object": "Ambrose lying about missing key",
+      "validFromChapter": 6,
+      "validUntilChapter": 8,
+      "sourceChapter": 6,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "But it was of consequence. The hook was empty. The key was missing. And Ambrose Vane, the genial bookkeeper, was telling her it had been lost for months, a simple oversight.",
+        "start": 3499,
+        "end": 3672
+      },
+      "endEvidence": {
+        "quote": "The genial mask was still in place, but she was no longer fooled by what it hid.",
+        "start": 10420,
+        "end": 10500
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "suspicion",
+      "object": "Ambrose Vane could have made copy of sluice key",
+      "validFromChapter": 4,
+      "validUntilChapter": null,
+      "sourceChapter": 4,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Vane. He's the bookkeeper. He's in and out of that office all day long. He knows where everything is. He could have made a copy of the key any time he liked.",
+        "start": 8353,
+        "end": 8510
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "suspicion",
+      "object": "Ambrose Vane is the murderer",
+      "validFromChapter": 9,
+      "validUntilChapter": 11,
+      "sourceChapter": 9,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "The genial mask was still in place, but she was no longer fooled by what it hid.",
+        "start": 10420,
+        "end": 10500
+      },
+      "endEvidence": {
+        "quote": "Nell now has concrete proof of Ambrose's financial crimes after witnessing him check the safe"
+      }
+    },
+    {
+      "subject": "townspeople",
+      "predicate": "suspicion",
+      "object": "Kit Merrow due to access to sluice key",
+      "validFromChapter": 3,
+      "validUntilChapter": null,
+      "sourceChapter": 3,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "Who else has a key, then?",
+        "start": 4260,
+        "end": 4285
+      }
+    },
+    {
+      "subject": "Nell Ashby",
+      "predicate": "task",
+      "object": "inventory Tarrant's estate for probate",
+      "validFromChapter": 1,
+      "validUntilChapter": null,
+      "sourceChapter": 1,
+      "kind": "goal",
+      "evidence": {
+        "quote": "Nell, I need you to go to Tarrant’s house this afternoon. The Fen & County Bank will be requiring an inventory of the estate for probate.",
+        "start": 3943,
+        "end": 4080
+      }
+    },
+    {
+      "subject": "Kit Merrow",
+      "predicate": "theory",
+      "object": "Tarrant found out about theft and was going to expose killer",
+      "validFromChapter": 6,
+      "validUntilChapter": null,
+      "sourceChapter": 6,
+      "kind": "knowledge",
+      "evidence": {
+        "quote": "And who had a reason. The Drainage money. That's what this is about, isn't it? Tarrant found out he was stealing, and he was going to expose him.",
+        "start": 10122,
+        "end": 10267
+      }
+    },
+    {
+      "subject": "silver whistle",
+      "predicate": "type",
+      "object": "bosun's whistle",
+      "validFromChapter": 2,
+      "validUntilChapter": null,
+      "sourceChapter": 2,
+      "kind": "other",
+      "evidence": {
+        "quote": "It was a bosun's whistle, the kind used for giving sharp, piercing commands on a ship.",
+        "start": 4560,
+        "end": 4646
+      }
+    }
+  ]
+}

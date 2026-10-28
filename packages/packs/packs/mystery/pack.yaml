@@ -11,9 +11,11 @@ checks:
   continuity/knowledge-leak: error
   # Alibis rest on when things happened.
   continuity/timeline-order: error
-  # Every clue shown should matter; every solution should rest on clues shown.
-  structure/unpaid-setup: error
-  structure/unearned-payoff: error
+  # Every clue shown should matter; every solution should rest on clues shown. Warnings, not
+  # errors: both read the settler's hook ledger, which on the lessing-fen eval book left most
+  # questions the prose answers open (packages/rules/eval/corpus/lessing-fen/SCORE.md).
+  structure/unpaid-setup: warning
+  structure/unearned-payoff: warning
   structure/open-questions: warning
   # Knox and Van Dine: the culprit on stage early, the solution resting on clues shown before the reveal.
   structure/fair-play: warning

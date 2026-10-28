@@ -1,0 +1,1184 @@
+{
+  "version": 1,
+  "scenes": [
+    {
+      "id": "ch1.s1",
+      "chapter": 1,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "go to work",
+      "opposition": "discovery of Owen Tarrant's body",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Nell realizes something might be wrong with the constable's explanation",
+        "causedBy": "circumstance",
+        "by": "Constable Arthur Dorrit and the crowd",
+        "evidence": "Dorrit’s explanation felt thin, a plaster on a wound that looked suspiciously deep."
+      },
+      "stakes": 4,
+      "evidence": {
+        "goal": "was on her way to Mr. Pell’s office, a task she had performed every weekday for the past five years, and she expected nothing out of the ordinary to interrupt the familiar routine",
+        "opposition": "There, at the water’s edge, Constable Arthur Dorrit was directing two men with a long pole. At the end of the pole, trailing in the current, was a body.",
+        "outcome": "She murmured a word of condolence to Ivy Tarrant, who did not seem to hear, and then turned away, her earlier sense of purpose now tinged with a cold, sharp curiosity."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "05530a29b832d6"
+    },
+    {
+      "id": "ch1.s2",
+      "chapter": 1,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "perform work duties",
+      "opposition": "unexpected death and estate inventory task",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "Ambrose Vane arrives and offers assistance with the estate inventory",
+        "causedBy": "other",
+        "by": "Ambrose Vane",
+        "evidence": "He reached into his pocket and produced a large, old-fashioned iron key on a brass ring."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "Ah, Nell,” he said, without looking up. “Good morning. I trust your walk was uneventful",
+        "opposition": "Nell hesitated, placing her hat on the hook. “Actually, Mr. Pell. There’s been… an accident at the mill. Mr. Tarrant has been found drowned in the mill race",
+        "outcome": "Nell looked at the key on the desk. It was not the key to the front door, which she already possessed. It was heavier, more functional. A mill key, perhaps. She picked it up. It felt cold in her hand."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "16ca9b734ec314"
+    },
+    {
+      "id": "ch1.s3",
+      "chapter": 1,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "complete estate inventory",
+      "opposition": "suspicious death circumstances",
+      "outcome": "success",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "Kit Merrow reveals the sluice gate was deliberately opened",
+        "causedBy": "other",
+        "by": "Kit Merrow",
+        "evidence": "Because it wasn’t opened by the flood board,” Kit said, pushing himself off the post. He walked towards the sluice gate, a massive structure of oak and iron. He pointed to a keyhole set into the stonework. “That’s the lock. It has to be opened with a key. The water doesn’t just push it open. Not like this. This was done deliberately"
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "Her work done, Nell decided to walk back along the river path, the longer route home.",
+        "opposition": "The roar of the mill race grew louder as she approached the stone bridge. She stopped, leaning on the parapet, and watched the water thunder through the open sluice gate. The sight was unnerving. It was an unnecessary, violent release of water.",
+        "outcome": "She straightened up, her decision made. This was no accident. Owen Tarrant had been pushed into that water, and someone in Lessing Fen was a murderer. And she, Nell Ashby, intended to find out who."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1e05f27689b4de"
+    },
+    {
+      "id": "ch2.s1",
+      "chapter": 2,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "List Owen Tarrant's assets",
+      "opposition": "Ambrose Vane interfering with her work",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": -1
+      },
+      "turningPoint": {
+        "description": "Nell discovers the missing ledger and Vane provides suspicious explanation",
+        "causedBy": "other",
+        "by": "Ambrose Vane",
+        "evidence": "Vane’s genial expression didn’t flicker."
+      },
+      "stakes": 6,
+      "evidence": {
+        "goal": "She was to list everything, from the Persian rug in the parlour to the teaspoons in the silver drawer.",
+        "opposition": "Before she could answer, he had lifted the entire stack of heavy, leather-bound books and was carrying them towards the door.",
+        "outcome": "The missing ledger was not there."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1f49ef62bab13a"
+    },
+    {
+      "id": "ch2.s2",
+      "chapter": 2,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "Check Tarrant's coat for papers",
+      "opposition": null,
+      "outcome": "success",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "turningPoint": {
+        "description": "Nell discovers the silver whistle",
+        "causedBy": "circumstance",
+        "by": "finding the whistle in Tarrant's coat",
+        "evidence": "It was an anomaly, a piece that did not belong."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "She needed to check the pockets for any loose papers or personal effects.",
+        "outcome": "She pulled it out. It was a small silver whistle, attached to a thin, tarnished chain."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1018d3574cb24e"
+    },
+    {
+      "id": "ch2.s3",
+      "chapter": 2,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "Prevent Bea from marrying Leonard",
+      "opposition": "Bea's determination to marry and move away",
+      "outcome": "failure",
+      "valueStart": {
+        "axis": "family",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "family",
+        "value": -1
+      },
+      "turningPoint": {
+        "description": "Nell directly challenges Bea's decision",
+        "causedBy": "protagonist",
+        "by": "Nell Ashby",
+        "evidence": "Because Leonard Fawley is in debt to half the shopkeepers in the county! Because he talks a fine game but has no substance to him!"
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "It's not an adventure, Maud, it's a folly. And I won't stand by and watch her walk into it.",
+        "opposition": "You're just like everyone else. You see a man with a bit of spirit and you want to clip his wings.",
+        "outcome": "She stormed from the room, the door slamming shut a moment later."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "00ae670735915f"
+    },
+    {
+      "id": "ch3.s1",
+      "chapter": 3,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "speak up about inconsistencies in Tarrant's death",
+      "opposition": "legal process and her position as clerk",
+      "outcome": "failure",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": -1
+      },
+      "turningPoint": {
+        "description": "coroner declares death accidental",
+        "causedBy": "circumstance",
+        "by": "coroner",
+        "evidence": "Mr. Withers seemed satisfied. He thanked the witnesses and pronounced the death of Owen Tarrant to be accidental, caused by misadventure."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "She wanted to stand up and shout. She wanted to ask why the sluice gate had been opened with a key, not by the usual mechanism.",
+        "opposition": "But she was just a clerk, and the law was a formal, closed shop. She was not permitted to speak.",
+        "outcome": "Mr. Withers seemed satisfied. He thanked the witnesses and pronounced the death of Owen Tarrant to be accidental, caused by misadventure."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1f225c6991f1ef"
+    },
+    {
+      "id": "ch3.s2",
+      "chapter": 3,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "gather evidence about Vane's involvement",
+      "opposition": "Vane's deception",
+      "outcome": "success",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "notices mud on Vane's boots",
+        "causedBy": "circumstance",
+        "by": "Nell",
+        "evidence": "In the deep welts where the leather met the sole, there was a caking of dried, greyish-brown clay. It was the specific, heavy, peaty mud of the fen bank, the very soil one would find after walking along the sluice path in the damp night air."
+      },
+      "stakes": 6,
+      "evidence": {
+        "goal": "Her eyes snapped up to his face. He saw her look.",
+        "opposition": "He gave a slight, dismissive shrug and walked out of the inn, leaving Nell alone on the stairs.",
+        "outcome": "It was a mistake, a careless slip in his carefully constructed performance. And it was her first real piece of evidence."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1b0407680b1f8a"
+    },
+    {
+      "id": "ch3.s3",
+      "chapter": 3,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "understand Tarrant's death and clear Merrow",
+      "opposition": "townspeople's suspicion",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "turningPoint": {
+        "description": "Merrow reveals gate was opened manually",
+        "causedBy": "other",
+        "by": "Kit Merrow",
+        "evidence": "Because it was,\" he said, his gaze fixed on the mill. \"It wasn't set for the morning flush. It was opened manually. With a key. Someone wanted that water flowing fast last night"
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "she knew he was no murderer. She stepped forward, her voice sharper than she intended. \"That's not fair. Mr. Merrow was on duty all night. He has an alibi",
+        "opposition": "The men exchanged uneasy looks and mumbled amongst themselves, the conversation dying away.",
+        "outcome": "The two problems, the murder and Bea's folly, were no longer separate. They were a tangle, a single, dangerous knot, and she was the only one who seemed to see it."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "012be9c83a0e57"
+    },
+    {
+      "id": "ch4.s1",
+      "chapter": 4,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "investigate Tarrant's financial accounts",
+      "opposition": "discrepancy in Drainage Board fund",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Nell realizes Tarrant was silenced before exposing theft",
+        "causedBy": "circumstance",
+        "by": "information gathered",
+        "evidence": "Tarrant hadn't slipped. He had been silenced before he could expose the theft."
+      },
+      "stakes": 7,
+      "evidence": {
+        "opposition": "He said he'd noticed a discrepancy, a small one, but he wanted it looked into thoroughly.",
+        "outcome": "The pieces clicked into place with a sound as sharp and final as the slam of a cell door."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0cab1710688d27"
+    },
+    {
+      "id": "ch4.s2",
+      "chapter": 4,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "stop Bea from going to Liverpool",
+      "opposition": "Bea's determination to leave with Leonard",
+      "outcome": "failure",
+      "valueStart": {
+        "axis": "family",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "family",
+        "value": -1
+      },
+      "turningPoint": {
+        "description": "Bea declares she's leaving and Nell can't stop her",
+        "causedBy": "other",
+        "by": "Bea",
+        "evidence": "You can't stop me, Nell. My ticket is bought. My passage is paid for. I'm leaving in a month."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "Bea, please. Listen to me. We need to talk about this.",
+        "opposition": "You're just jealous because you're stuck here in Lessing Fen, with your ledgers and your solicitor's ink.",
+        "outcome": "She closed her mouth, the fight draining out of her. \"Just… be careful, Bea,\" she said, her voice soft"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1f81a442dc6884"
+    },
+    {
+      "id": "ch4.s3",
+      "chapter": 4,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "investigate sluice key access",
+      "opposition": "identifying who made copy of key",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "justice",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "justice",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Kit suggests Vane could have made a copy of the key",
+        "causedBy": "other",
+        "by": "Kit",
+        "evidence": "Vane. He's the bookkeeper. He's in and out of that office all day long."
+      },
+      "stakes": 8,
+      "evidence": {
+        "goal": "I just… I need to ask you something. About the keys.",
+        "opposition": "And how do you propose we get proof, Miss Ashby? Vane's a clever man.",
+        "outcome": "We start with the ledgers,\" she said. \"He took them from the house for 'safekeeping'. The bank said Tarrant asked for an audit of the Drainage Board fund. I need to see that ledger, Mr. Merrow. I need to see what Vane was so desperate to hide."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0a0fe749da9c01"
+    },
+    {
+      "id": "ch5.s1",
+      "chapter": 5,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "convince Dorrit that Tarrant was murdered by Vane",
+      "opposition": "Constable Dorrit",
+      "outcome": "failure",
+      "valueStart": {
+        "axis": "justice",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "justice",
+        "value": -1
+      },
+      "turningPoint": {
+        "description": "Dorrit arrests Kit Merrow instead of investigating Vane",
+        "causedBy": "circumstance",
+        "by": "Constable Dorrit",
+        "evidence": "I've taken Merrow into custody. For his own protection, you understand."
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "I believe it was murder, and I think I know who did it.",
+        "opposition": "The coroner has spoken. It was an accident. Slippery bank, dark night, tragic end.",
+        "outcome": "I've taken Merrow into custody. For his own protection, you understand."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1f77daa836dd63"
+    },
+    {
+      "id": "ch5.s2",
+      "chapter": 5,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "convince Bea not to go to Canada",
+      "opposition": "Bea",
+      "outcome": "failure",
+      "valueStart": {
+        "axis": "family",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "family",
+        "value": -1
+      },
+      "turningPoint": {
+        "description": "Bea boards the train without looking back",
+        "causedBy": "other",
+        "by": "Bea",
+        "evidence": "Bea picked up her valise and climbed the steps without a backward glance."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "Are you sure about this, Bea? Leonard's story doesn't add up. The debts, the urgency... it's all too convenient.",
+        "opposition": "You don't know him. You're just jealous because I'm leaving this dull town and you're not.",
+        "outcome": "Bea picked up her valise and climbed the steps without a backward glance."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "05737a1b88d872"
+    },
+    {
+      "id": "ch5.s3",
+      "chapter": 5,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "apologize to Kit and get information about Tarrant's death",
+      "opposition": "Kit Merrow",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "justice",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "justice",
+        "value": 0
+      },
+      "turningPoint": {
+        "description": "Kit warns Nell to stop investigating",
+        "causedBy": "other",
+        "by": "Kit Merrow",
+        "evidence": "Then you're a fool,\" he said, his voice low and urgent. \"A stubborn, interfering fool. Leave it alone, Miss Ashby. Go back to your ledgers and your sister's Canadian adventure. Let Dorrit have his easy answer. It's safer for everyone. Especially for you."
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "I came to apologise. I told Constable Dorbit about my suspicions. I didn't realise... I never imagined he would arrest you.",
+        "opposition": "Then you're a fool,\" he said, his voice low and urgent. \"A stubborn, interfering fool. Leave it alone, Miss Ashby. Go back to your ledgers and your sister's Canadian adventure. Let Dorrit have his easy answer. It's safer for everyone. Especially for you.",
+        "outcome": "She had a partner, but he was telling her to walk away."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1d2242b276e780"
+    },
+    {
+      "id": "ch6.s1",
+      "chapter": 6,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "investigate mill office and sluice key",
+      "opposition": "Ambrose Vane",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Nell asks about the sluice key and Ambrose provides suspicious explanation",
+        "causedBy": "other",
+        "by": "Ambrose Vane",
+        "evidence": "Oh, I shouldn't think it was *gone*,\" Ambrose said, picking up a pencil and tapping it thoughtfully against his teeth. \"More likely misplaced. You know Owen. He had a dozen projects on the go at once. Probably took it down to use it somewhere else and simply forgot to put it back."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "I just wanted to get the measure of the place for the inventory. It's all part of the process.",
+        "opposition": "Oh, I shouldn't think it was *gone*,\" Ambrose said, picking up a pencil and tapping it thoughtfully against his teeth. \"More likely misplaced. You know Owen. He had a dozen projects on the go at once. Probably took it down to use it somewhere else and simply forgot to put it back.",
+        "outcome": "She nodded slowly, not letting her own thoughts show on her face. \"I see. Well, thank you for clarifying, Mr. Vane. I'll just make a note of it for the inventory"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "01001733b81255"
+    },
+    {
+      "id": "ch6.s2",
+      "chapter": 6,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "investigate Tarrant's death through his wife",
+      "opposition": "Ivy Tarrant",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "Ivy reveals argument with brother Silas Rudd about Drainage money",
+        "causedBy": "other",
+        "by": "Ivy Tarrant",
+        "evidence": "There was my brother,\" she said. \"Silas. He came here on the Tuesday. The shouting could be heard in the street. Owen was furious. Silas... Silas has always been a fool with money. He's in debt up to his neck. He'd borrowed a considerable sum from Owen, and it seems he'd lost it all at cards. He wanted more. Owen refused. It was a dreadful scene. He left here white with rage."
+      },
+      "stakes": 6,
+      "evidence": {
+        "goal": "I'm very sorry for your loss, Mrs. Tarrant,\" she began gently. \"It must be a terrible thing to lose a husband so suddenly. It must make you wonder about... well, about what was on his mind in his final days.",
+        "opposition": "Disagreements,\" she said, her voice flat. \"Owen had a temper. He was a good man, but he was stubborn. He argued with the baker about the price of flour. He argued with the blacksmith over a bill for new scythes. Men argue. It's what men do",
+        "outcome": "Nell hesitated, then gave a small, non-committal nod. \"I'll do my best"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0a4b604782a647"
+    },
+    {
+      "id": "ch6.s3",
+      "chapter": 6,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "continue investigation with Kit Merrow",
+      "opposition": "external threats and emotional complications",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "Kit reveals seeing a lantern moving toward the mill the night of Tarrant's death",
+        "causedBy": "other",
+        "by": "Kit Merrow",
+        "evidence": "I saw something that night. I told you in the cell. A lantern. Moving along the bank towards the mill. I thought it was Tarrant. But what if it wasn't? What if it was the person who had the key? The person who opened that gate."
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "Visiting Mrs. Tarrant,\" Nell said. \"And the mill office before that.",
+        "opposition": "You shouldn't be talking to me,\" he said suddenly, his voice rough. \"It's not good for you. Dorrit will be watching. Vane will be watching",
+        "outcome": "Nell stood for a moment on her own doorstep, the echo of his name unsaid on her lips, the cold night air suddenly feeling very lonely."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "06ae5ca5da67f8"
+    },
+    {
+      "id": "ch7.s1",
+      "chapter": 7,
+      "scene": 1,
+      "pov": "Kit Merrow",
+      "goal": "maintain composure while doing his job",
+      "opposition": "internal distraction from feelings for Nell",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Kit discovers the lantern in the reeds",
+        "causedBy": "circumstance",
+        "evidence": "Something was tucked into the reedy fringe, half-submerged in the mud at the water’s edge."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "He had to focus. He had to be the quiet, reliable lock-keeper the town thought he was.",
+        "opposition": "the shadow of Tarrant’s death hanging over him, however unjustly.",
+        "outcome": "He tucked the lantern under his arm, its weight a solid, promising thing"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "000f1ae01cf63f"
+    },
+    {
+      "id": "ch7.s2",
+      "chapter": 7,
+      "scene": 2,
+      "pov": "Kit Merrow",
+      "goal": "share discovery with Nell",
+      "opposition": null,
+      "outcome": "success",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "They realize the light came from the office, not the house",
+        "causedBy": "protagonist",
+        "by": "both",
+        "evidence": "The light came from the office, Nell. Not the house. It changes things."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "I found this,\" he said, holding the lantern out towards her.",
+        "outcome": "It was real.\n\n\"It changes everything,\" she agreed, her voice firm. \"It means whoever did it had access to the office, knew the key was there, and knew exactly when Tarrant would be inspecting the race"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "105937a254eb38"
+    },
+    {
+      "id": "ch7.s3",
+      "chapter": 7,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "investigate Silas Rudd",
+      "opposition": "Silas Rudd's hostility",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Nell confronts Silas about burning papers",
+        "causedBy": "protagonist",
+        "by": "Nell Ashby",
+        "evidence": "What are you doing?\" she called out, her voice sharper than she intended."
+      },
+      "stakes": 6,
+      "evidence": {
+        "goal": "She needed to know what Silas Rudd knew, if anything.",
+        "opposition": "Silas Rudd whirled around, his face a mask of shock and fury, quickly replaced by a belligerent scowl.",
+        "outcome": "She had seen nothing conclusive, no names, no figures. Just the frantic, guilty act of a man destroying evidence."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0b49e3eaa3f9bb"
+    },
+    {
+      "id": "ch8.s1",
+      "chapter": 8,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "investigate Tarrant's death",
+      "opposition": "complexity of the case",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "pieces of a puzzle don't quite fit together",
+        "causedBy": "protagonist",
+        "by": "Nell",
+        "evidence": "That's the trouble, Aunt. They don't fit. Not yet."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "I don't. And you know why. The sluice gate was opened with a key. Mr. Tarrant didn't just slip; someone pushed him in.",
+        "opposition": "It's all such a muddle. The open gate, the missing ledger, the clay, the empty hook, the burning papers… it feels like pieces of a puzzle that don't quite fit together.",
+        "outcome": "That's the trouble, Aunt. They don't fit. Not yet."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "055f0a2e2b26d0"
+    },
+    {
+      "id": "ch8.s2",
+      "chapter": 8,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "observe suspects at fete",
+      "opposition": "lack of suspicious behavior",
+      "outcome": "failure",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "turningPoint": {
+        "description": "mystery remained unchanged",
+        "causedBy": "circumstance",
+        "by": "the fete",
+        "evidence": "the mystery of Owen Tarrant's death remained exactly where it had been that morning: a collection of cold, hard facts that refused to form a coherent picture."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "She was here to help, but her mind was elsewhere, turning over the same facts again and again.",
+        "opposition": "She saw nobody connected with the case who said or did anything out of the ordinary.",
+        "outcome": "the mystery of Owen Tarrant's death remained exactly where it had been that morning: a collection of cold, hard facts that refused to form a coherent picture."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1d2216d162db8b"
+    },
+    {
+      "id": "ch8.s3",
+      "chapter": 8,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "organize notes for clarity",
+      "opposition": "case complexity",
+      "outcome": "failure",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": -1
+      },
+      "turningPoint": {
+        "description": "no progress in investigation",
+        "causedBy": "circumstance",
+        "by": "the case",
+        "evidence": "She was no further on, and no different."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "She began to copy out her notes, writing in a fair, steady hand, as if the act of transcribing the facts might somehow clarify them.",
+        "opposition": "The facts were unchanged. They were the same facts she had started with that morning, the same facts she had carried with her all day through the noisy, cheerful chaos of the fete. They were facts that pointed in different directions, facts that contradicted each other, facts that formed a wall around the truth.",
+        "outcome": "felt no closer to an answer than she had when she had first walked to Mr. Pell's office and found the crowd at the mill race"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0d30bc629bbbf3"
+    },
+    {
+      "id": "ch9.s1",
+      "chapter": 9,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "investigate Silas Rudd",
+      "opposition": "Silas Rudd's initial resistance",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Silas shows Nell the letter forgiving his debt",
+        "causedBy": "other",
+        "by": "Silas Rudd",
+        "evidence": "Here. See for yourself."
+      },
+      "stakes": 4,
+      "evidence": {
+        "goal": "I came to understand",
+        "opposition": "What of it? It's my own business.",
+        "outcome": "The red herring, she thought, was finally accounted for. Silas Rudd was not the killer."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "00e898d0049b63"
+    },
+    {
+      "id": "ch9.s2",
+      "chapter": 9,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "examine Tarrant's will",
+      "opposition": null,
+      "outcome": "success",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 1
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "Nell reads the codicil revealing Vane's motive",
+        "causedBy": "circumstance",
+        "by": "the document",
+        "evidence": "I, Owen Tarrant, being of sound mind and body, do hereby revoke all previous bequests to my junior partner, Ambrose Vane."
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "I was hoping to look at Mr. Tarrant’s will. The final one.",
+        "outcome": "The motive was no longer a possibility; it was a certainty."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1ffea9b00c95c9"
+    },
+    {
+      "id": "ch9.s3",
+      "chapter": 9,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "finish loose ends in mill office",
+      "opposition": "Ambrose Vane's threatening behavior",
+      "outcome": "none",
+      "valueStart": {
+        "axis": "safety",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "safety",
+        "value": -1
+      },
+      "turningPoint": {
+        "description": "Vane warns Nell about the dangers of the fenland at night",
+        "causedBy": "other",
+        "by": "Ambrose Vane",
+        "evidence": "The river can be treacherous, especially at night. And the sluice bank… well, it's not a place for a young woman to be wandering about after dark."
+      },
+      "stakes": 8,
+      "evidence": {
+        "goal": "I just thought I'd finish up the last of the loose ends in here.",
+        "opposition": "We wouldn't want any more… accidents."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "01ada4965af33b"
+    },
+    {
+      "id": "ch10.s1",
+      "chapter": 10,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "Find financial discrepancies",
+      "opposition": "Ambrose Vane",
+      "outcome": "success",
+      "valueStart": {
+        "axis": "knowledge",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "knowledge",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "There's no entry for three hundred pounds from Tarrant's Mill. There's an entry for two hundred.",
+        "causedBy": "circumstance",
+        "by": "Nell and Kit",
+        "evidence": "There's no entry for three hundred pounds from Tarrant's Mill. There's an entry for two hundred."
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "'There it is,' he said, tapping a finger on a line. 'October, last year. \"Payment received from Tarrant's Mill for drainage repairs to the North Bank, sum of two hundred and fifty pounds.\"'",
+        "opposition": "And that, Nell thought, was why he was dead. The motive was no longer a whisper in a will; it was a cold, hard, documented fact.",
+        "outcome": "The missing hundred pounds was a ghost, a sum that had been written out of the mill's books as if it had never existed."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1f6f1e22190c8e"
+    },
+    {
+      "id": "ch10.s2",
+      "chapter": 10,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "Get Kit's help against Vane",
+      "opposition": "Kit Merrow",
+      "outcome": "failure",
+      "valueStart": {
+        "axis": "safety",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "safety",
+        "value": -2
+      },
+      "turningPoint": {
+        "description": "She turned away from him, her back stiff.",
+        "causedBy": "protagonist",
+        "by": "Nell",
+        "evidence": "She turned away from him, her back stiff. 'I suggest you go back to your lock. It's safer there.'"
+      },
+      "stakes": 8,
+      "evidence": {
+        "goal": "I will not do nothing. I will not wait for him to make me the next accident.",
+        "opposition": "And I'm telling you this is too big for you to handle on your own,' he said, his voice low and urgent. 'You're not a copper, Nell. You're a clerk. Let the professionals deal with it. For God's sake, just be safe.'",
+        "outcome": "For a long moment, neither of them moved. Then she heard him let out a harsh breath, a sound of pure frustration. He didn't touch her, didn't say another word. He just turned and strode away, back towards the river and the lock, his shoulders set in a rigid line."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1e773909fae054"
+    },
+    {
+      "id": "ch10.s3",
+      "chapter": 10,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "Understand the intruder",
+      "opposition": "Unknown intruder",
+      "outcome": "none",
+      "valueStart": {
+        "axis": "safety",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "safety",
+        "value": -2
+      },
+      "turningPoint": {
+        "description": "She turned from the window and her eyes went straight to her desk, where she had left her case notes, the neat sheets of paper detailing every clue, every suspicion. They were gone.",
+        "causedBy": "other",
+        "by": "Unknown person",
+        "evidence": "The desk was clear, except for a faint outline in the dust where the papers had been. Someone had been in her room. Someone had taken them."
+      },
+      "stakes": 9,
+      "evidence": {
+        "opposition": "Someone had been in her room. Someone had taken them.",
+        "outcome": "She sank into the chair by the desk, her legs suddenly weak. She didn't dare turn on the lamp, afraid that the sudden burst of light would announce her presence to whoever might be outside, watching"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0eda61e1945139"
+    },
+    {
+      "id": "ch11.s1",
+      "chapter": 11,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "set a trap for Vane",
+      "opposition": "Ambrose Vane",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "safety",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "safety",
+        "value": 0
+      },
+      "turningPoint": {
+        "description": "Nell tells Vane she found the missing ledger",
+        "causedBy": "protagonist",
+        "by": "Nell Ashby",
+        "evidence": "The last-quarter ledger,\" Nell said, keeping her tone as casual as if she were discussing the weather"
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "She would set a trap.",
+        "opposition": "the man who had taken her notes knew it.",
+        "outcome": "It was a gamble, a desperate one, but it was the only move she had left."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1d3d4d8c237974"
+    },
+    {
+      "id": "ch11.s2",
+      "chapter": 11,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "get Kit's help while keeping him at a distance",
+      "opposition": "Kit's desire to directly help",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "trust",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "trust",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Nell gives Kit the sluice key as a sign of trust",
+        "causedBy": "protagonist",
+        "by": "Nell Ashby",
+        "evidence": "He reached into his pocket and pulled out a small, heavy brass key. It was old and worn, its teeth smooth from use. He took her hand and pressed it into her palm."
+      },
+      "stakes": 7,
+      "evidence": {
+        "goal": "I need you to be my eyes and ears from a distance.",
+        "opposition": "Then I'm coming with you",
+        "outcome": "He gave a slow, reluctant nod. \"Alright"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1a35801c8a8c28"
+    },
+    {
+      "id": "ch11.s3",
+      "chapter": 11,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "catch Vane checking the safe",
+      "opposition": "Ambrose Vane",
+      "outcome": "success",
+      "valueStart": {
+        "axis": "safety",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "safety",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Vane approaches the mill with a lantern",
+        "causedBy": "circumstance",
+        "by": "Ambrose Vane",
+        "evidence": "Then, a pinprick of light appeared on the far end of the sluice bank. It bobbed and swayed, growing steadily larger. A lantern."
+      },
+      "stakes": 8,
+      "evidence": {
+        "goal": "They had him. They had the proof. The trap had sprung.",
+        "opposition": "A figure stood there for a moment, silhouetted against the weak moonlight.",
+        "outcome": "Nell clutched the ledger to her chest, the cold hard cover a shield against the danger that lurked outside."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "08fd02d6763ee5"
+    },
+    {
+      "id": "ch12.s1",
+      "chapter": 12,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "confront Vane with evidence",
+      "opposition": "Ambrose Vane",
+      "outcome": "mixed",
+      "valueStart": {
+        "axis": "safety",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "safety",
+        "value": 0
+      },
+      "turningPoint": null,
+      "stakes": 8,
+      "evidence": {
+        "goal": "We've found it. The missing ledger.",
+        "opposition": "Now, if you'll just give me that book, we can all forget this ever happened."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0913a676e8b2e1"
+    },
+    {
+      "id": "ch12.s2",
+      "chapter": 12,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "stop Vane from opening the other sluice gate",
+      "opposition": "Ambrose Vane",
+      "outcome": "success",
+      "valueStart": {
+        "axis": "safety",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "safety",
+        "value": 1
+      },
+      "turningPoint": {
+        "description": "Nell decides to run to the gate wheel and close it herself",
+        "causedBy": "protagonist",
+        "by": "Nell Ashby",
+        "evidence": "She ran, not towards the walkway, but along the top of the bank, her boots slipping on the wet grass, until she reached the gate wheel."
+      },
+      "stakes": 9,
+      "evidence": {
+        "goal": "Kit, the key!",
+        "opposition": "He's going for the other gate!",
+        "outcome": "She had stopped him. She had trapped him."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0614fd30f14c33"
+    },
+    {
+      "id": "ch12.s3",
+      "chapter": 12,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "ensure Vane is arrested",
+      "opposition": null,
+      "outcome": "success",
+      "valueStart": {
+        "axis": "safety",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "safety",
+        "value": 2
+      },
+      "turningPoint": null,
+      "stakes": 4,
+      "evidence": {
+        "outcome": "Vane didn't struggle. He stood there, his face pale in the moonlight, the genial mask finally and completely gone."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0129cfc1b67486"
+    },
+    {
+      "id": "ch13.s1",
+      "chapter": 13,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "witness justice for Ambrose",
+      "opposition": null,
+      "outcome": "success",
+      "valueStart": {
+        "axis": "justice",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "justice",
+        "value": 1
+      },
+      "turningPoint": null,
+      "stakes": 5,
+      "evidence": {
+        "goal": "The verdict was delivered without fuss: unlawful killing. Ambrose Vane.",
+        "outcome": "The town could begin to heal now, with the truth laid bare."
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1de6024effd6c7"
+    },
+    {
+      "id": "ch13.s2",
+      "chapter": 13,
+      "scene": 2,
+      "pov": "Nell Ashby",
+      "goal": "deepen relationship with Kit",
+      "opposition": null,
+      "outcome": "success",
+      "valueStart": {
+        "axis": "love",
+        "value": 0
+      },
+      "valueEnd": {
+        "axis": "love",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "Kit asks to court Nell properly",
+        "causedBy": "protagonist",
+        "by": "Kit Merrow",
+        "evidence": "I was wondering… if you would allow me to court you? Properly. Not in the middle of a murder inquiry."
+      },
+      "stakes": 3,
+      "evidence": {
+        "outcome": "Yes, Kit,” she said. “I would like that very much"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "1aeed24b272d45"
+    },
+    {
+      "id": "ch13.s3",
+      "chapter": 13,
+      "scene": 3,
+      "pov": "Nell Ashby",
+      "goal": "seek career advancement",
+      "opposition": null,
+      "outcome": "success",
+      "valueStart": {
+        "axis": "status",
+        "value": -1
+      },
+      "valueEnd": {
+        "axis": "status",
+        "value": 2
+      },
+      "turningPoint": {
+        "description": "Mr. Pell offers Nell position as articled clerk",
+        "causedBy": "other",
+        "by": "Mr. Pell",
+        "evidence": "I would like to offer you a position, Nell. As my articled clerk."
+      },
+      "stakes": 6,
+      "evidence": {
+        "outcome": "Yes, Mr. Pell,” she said, her voice clear and strong. “I accept"
+      },
+      "annotator": "llm@glm-4.5-flash",
+      "sceneHash": "0d3891b20fcc31"
+    }
+  ]
+}
