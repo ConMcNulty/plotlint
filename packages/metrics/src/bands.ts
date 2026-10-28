@@ -30,6 +30,12 @@ export interface SourceBook {
   author: string;
   /** Project Gutenberg ebook number. */
   gutenberg?: number;
+  /** Year of first publication. */
+  year?: number;
+  /** Where the measured text came from, e.g. "Standard Ebooks". */
+  source?: string;
+  /** The text's location at that source. */
+  url?: string;
 }
 
 /** `packages/metrics/baselines/<genre>.json`, written by `pnpm --filter @plotlint/metrics baselines`. */

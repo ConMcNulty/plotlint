@@ -6,208 +6,474 @@ export const BASELINES: Readonly<Record<string, Baseline>> = {
   "fantasy": {
     "version": 1,
     "genre": "fantasy",
-    "provisional": true,
-    "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+    "provisional": false,
+    "note": "Measured from 227 chapters of 5 public-domain novels (texts from Standard Ebooks). Floors and ceilings sit near the 5th and 95th percentiles of those chapters, every book weighing the same whatever its number of chapters.",
     "sourceBooks": [
       {
         "title": "Phantastes",
         "author": "George MacDonald",
-        "gutenberg": 325
-      },
-      {
-        "title": "Lilith",
-        "author": "George MacDonald",
-        "gutenberg": 1640
+        "year": 1858,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/george-macdonald_phantastes"
       },
       {
         "title": "The Well at the World's End",
         "author": "William Morris",
-        "gutenberg": 169
+        "year": 1896,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/william-morris_the-well-at-the-worlds-end"
       },
       {
-        "title": "The Wood Beyond the World",
-        "author": "William Morris",
-        "gutenberg": 3055
+        "title": "The King of Elfland's Daughter",
+        "author": "Lord Dunsany",
+        "year": 1924,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/lord-dunsany_the-king-of-elflands-daughter"
+      },
+      {
+        "title": "She",
+        "author": "H. Rider Haggard",
+        "year": 1887,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/h-rider-haggard_she"
+      },
+      {
+        "title": "The Wonderful Wizard of Oz",
+        "author": "L. Frank Baum",
+        "year": 1900,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/l-frank-baum_the-wonderful-wizard-of-oz"
       }
     ],
-    "metrics": {},
-    "bands": {
+    "chapters": 227,
+    "metrics": {
       "metrics/lexical-diversity": {
-        "min": 60,
-        "minWords": 300
+        "p5": 63.807,
+        "p10": 67.1112,
+        "p50": 79.4769,
+        "p90": 97.5419,
+        "p95": 105.3381,
+        "min": 56.8133,
+        "max": 119.4766
       },
       "metrics/sentence-rhythm": {
-        "min": 0.4,
-        "window": 8,
-        "windowCv": 0.15,
-        "minSentences": 20
+        "p5": 0.5066,
+        "p10": 0.5272,
+        "p50": 0.6435,
+        "p90": 0.7798,
+        "p95": 0.8422,
+        "min": 0.386,
+        "max": 1.2179
+      },
+      "metrics/sentence-rhythm#window": {
+        "p5": 0.1539,
+        "p10": 0.1698,
+        "p50": 0.269,
+        "p90": 0.3973,
+        "p95": 0.4614,
+        "min": 0.053,
+        "max": 0.951
       },
       "metrics/dialogue-ratio": {
-        "max": 0.7,
-        "minWords": 500
+        "p5": 0.0051,
+        "p10": 0.0115,
+        "p50": 0.1986,
+        "p90": 0.6011,
+        "p95": 0.6862,
+        "min": 0,
+        "max": 0.9984
       },
       "metrics/sensory-detail": {
-        "min": 10,
-        "minWords": 500
+        "p5": 7.0157,
+        "p10": 8.967,
+        "p50": 18.547,
+        "p90": 29.2292,
+        "p95": 31.8778,
+        "min": 0,
+        "max": 39.3812
       },
       "metrics/wall-of-text": {
-        "max": 450
+        "p5": 70,
+        "p10": 110.2146,
+        "p50": 265.4349,
+        "p90": 468.9236,
+        "p95": 541.1299,
+        "min": 2,
+        "max": 1043
+      }
+    },
+    "bands": {
+      "metrics/lexical-diversity": {
+        "minWords": 300,
+        "min": 64
+      },
+      "metrics/sentence-rhythm": {
+        "minSentences": 20,
+        "window": 8,
+        "min": 0.51,
+        "windowCv": 0.15
+      },
+      "metrics/dialogue-ratio": {
+        "minWords": 500,
+        "max": 0.69
+      },
+      "metrics/sensory-detail": {
+        "minWords": 500,
+        "min": 7
+      },
+      "metrics/wall-of-text": {
+        "max": 541
       }
     }
   },
   "general": {
     "version": 1,
     "genre": "general",
-    "provisional": true,
-    "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+    "provisional": false,
+    "note": "Measured from 177 chapters of 4 public-domain novels (texts from Standard Ebooks). Floors and ceilings sit near the 5th and 95th percentiles of those chapters, every book weighing the same whatever its number of chapters.",
     "sourceBooks": [
       {
         "title": "Emma",
         "author": "Jane Austen",
-        "gutenberg": 158
+        "year": 1815,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/jane-austen_emma"
       },
       {
         "title": "Great Expectations",
         "author": "Charles Dickens",
-        "gutenberg": 1400
+        "year": 1861,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/charles-dickens_great-expectations"
       },
       {
         "title": "The Age of Innocence",
         "author": "Edith Wharton",
-        "gutenberg": 541
+        "year": 1920,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/edith-wharton_the-age-of-innocence"
       },
       {
         "title": "The House of Mirth",
         "author": "Edith Wharton",
-        "gutenberg": 284
+        "year": 1905,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/edith-wharton_the-house-of-mirth"
       }
     ],
-    "metrics": {},
-    "bands": {
+    "chapters": 177,
+    "metrics": {
       "metrics/lexical-diversity": {
-        "min": 60,
-        "minWords": 300
+        "p5": 70.9679,
+        "p10": 75.8305,
+        "p50": 95.3728,
+        "p90": 118.6292,
+        "p95": 122.1385,
+        "min": 56.1687,
+        "max": 148.7959
       },
       "metrics/sentence-rhythm": {
-        "min": 0.4,
-        "window": 8,
-        "windowCv": 0.15,
-        "minSentences": 20
+        "p5": 0.5387,
+        "p10": 0.5884,
+        "p50": 0.7446,
+        "p90": 0.9247,
+        "p95": 0.9727,
+        "min": 0.3683,
+        "max": 1.22
+      },
+      "metrics/sentence-rhythm#window": {
+        "p5": 0.1398,
+        "p10": 0.1573,
+        "p50": 0.2709,
+        "p90": 0.4337,
+        "p95": 0.4936,
+        "min": 0.0891,
+        "max": 0.6746
       },
       "metrics/dialogue-ratio": {
-        "max": 0.75,
-        "minWords": 500
+        "p5": 0.0527,
+        "p10": 0.089,
+        "p50": 0.2892,
+        "p90": 0.5785,
+        "p95": 0.7119,
+        "min": 0,
+        "max": 0.948
       },
       "metrics/sensory-detail": {
-        "min": 10,
-        "minWords": 500
+        "p5": 4.3581,
+        "p10": 5.4091,
+        "p50": 11.1149,
+        "p90": 17.5374,
+        "p95": 19.2265,
+        "min": 1.6913,
+        "max": 32.4379
       },
       "metrics/wall-of-text": {
-        "max": 350
+        "p5": 111.4927,
+        "p10": 128.8917,
+        "p50": 216.3395,
+        "p90": 363.1167,
+        "p95": 427.1084,
+        "min": 46,
+        "max": 516
+      }
+    },
+    "bands": {
+      "metrics/lexical-diversity": {
+        "minWords": 300,
+        "min": 71
+      },
+      "metrics/sentence-rhythm": {
+        "minSentences": 20,
+        "window": 8,
+        "min": 0.54,
+        "windowCv": 0.14
+      },
+      "metrics/dialogue-ratio": {
+        "minWords": 500,
+        "min": 0.05,
+        "max": 0.71
+      },
+      "metrics/sensory-detail": {
+        "minWords": 500,
+        "min": 4.4
+      },
+      "metrics/wall-of-text": {
+        "max": 427
       }
     }
   },
   "mystery": {
     "version": 1,
     "genre": "mystery",
-    "provisional": true,
-    "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+    "provisional": false,
+    "note": "Measured from 91 chapters of 4 public-domain novels (texts from Standard Ebooks). Floors and ceilings sit near the 5th and 95th percentiles of those chapters, every book weighing the same whatever its number of chapters.",
     "sourceBooks": [
       {
         "title": "The Hound of the Baskervilles",
         "author": "Arthur Conan Doyle",
-        "gutenberg": 2852
+        "year": 1902,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/arthur-conan-doyle_the-hound-of-the-baskervilles"
       },
       {
         "title": "The Sign of the Four",
         "author": "Arthur Conan Doyle",
-        "gutenberg": 2097
+        "year": 1890,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/arthur-conan-doyle_the-sign-of-the-four"
       },
       {
         "title": "The Mysterious Affair at Styles",
         "author": "Agatha Christie",
-        "gutenberg": 863
+        "year": 1920,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/agatha-christie_the-mysterious-affair-at-styles"
       },
       {
-        "title": "The Secret Adversary",
-        "author": "Agatha Christie",
-        "gutenberg": 1155
+        "title": "The Moonstone",
+        "author": "Wilkie Collins",
+        "year": 1868,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/wilkie-collins_the-moonstone"
       }
     ],
-    "metrics": {},
-    "bands": {
+    "chapters": 91,
+    "metrics": {
       "metrics/lexical-diversity": {
-        "min": 60,
-        "minWords": 300
+        "p5": 77.2043,
+        "p10": 81.3364,
+        "p50": 95.5222,
+        "p90": 111.3025,
+        "p95": 117.1394,
+        "min": 51.1602,
+        "max": 134.8236
       },
       "metrics/sentence-rhythm": {
-        "min": 0.4,
-        "window": 8,
-        "windowCv": 0.15,
-        "minSentences": 20
+        "p5": 0.5555,
+        "p10": 0.5839,
+        "p50": 0.6782,
+        "p90": 0.7715,
+        "p95": 0.7803,
+        "min": 0.4729,
+        "max": 0.7926
+      },
+      "metrics/sentence-rhythm#window": {
+        "p5": 0.1594,
+        "p10": 0.1853,
+        "p50": 0.2614,
+        "p90": 0.4084,
+        "p95": 0.4857,
+        "min": 0.1058,
+        "max": 0.7623
       },
       "metrics/dialogue-ratio": {
-        "max": 0.8,
-        "minWords": 500
+        "p5": 0.082,
+        "p10": 0.2143,
+        "p50": 0.5594,
+        "p90": 0.8886,
+        "p95": 0.9358,
+        "min": 0,
+        "max": 0.9688
       },
       "metrics/sensory-detail": {
-        "min": 10,
-        "minWords": 500
+        "p5": 5.7152,
+        "p10": 7.0624,
+        "p50": 12.2768,
+        "p90": 21.7413,
+        "p95": 24.3828,
+        "min": 2.1436,
+        "max": 31.0541
       },
       "metrics/wall-of-text": {
-        "max": 350
+        "p5": 63.507,
+        "p10": 83.1102,
+        "p50": 173.2106,
+        "p90": 297.4886,
+        "p95": 365.0919,
+        "min": 10,
+        "max": 615
+      }
+    },
+    "bands": {
+      "metrics/lexical-diversity": {
+        "minWords": 300,
+        "min": 77
+      },
+      "metrics/sentence-rhythm": {
+        "minSentences": 20,
+        "window": 8,
+        "min": 0.56,
+        "windowCv": 0.16
+      },
+      "metrics/dialogue-ratio": {
+        "minWords": 500,
+        "min": 0.08,
+        "max": 0.94
+      },
+      "metrics/sensory-detail": {
+        "minWords": 500,
+        "min": 5.7
+      },
+      "metrics/wall-of-text": {
+        "max": 365
       }
     }
   },
   "romance": {
     "version": 1,
     "genre": "romance",
-    "provisional": true,
-    "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+    "provisional": false,
+    "note": "Measured from 175 chapters of 4 public-domain novels (texts from Standard Ebooks). Floors and ceilings sit near the 5th and 95th percentiles of those chapters, every book weighing the same whatever its number of chapters.",
     "sourceBooks": [
       {
         "title": "Pride and Prejudice",
         "author": "Jane Austen",
-        "gutenberg": 1342
+        "year": 1813,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/jane-austen_pride-and-prejudice"
       },
       {
         "title": "Persuasion",
         "author": "Jane Austen",
-        "gutenberg": 105
+        "year": 1817,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/jane-austen_persuasion"
       },
       {
-        "title": "Sense and Sensibility",
-        "author": "Jane Austen",
-        "gutenberg": 161
+        "title": "Jane Eyre",
+        "author": "Charlotte Brontë",
+        "year": 1847,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/charlotte-bronte_jane-eyre"
       },
       {
         "title": "North and South",
         "author": "Elizabeth Gaskell",
-        "gutenberg": 4276
+        "year": 1855,
+        "source": "Standard Ebooks",
+        "url": "https://github.com/standardebooks/elizabeth-gaskell_north-and-south"
       }
     ],
-    "metrics": {},
-    "bands": {
+    "chapters": 175,
+    "metrics": {
       "metrics/lexical-diversity": {
-        "min": 60,
-        "minWords": 300
+        "p5": 86.2372,
+        "p10": 88.3925,
+        "p50": 100.6175,
+        "p90": 111.0138,
+        "p95": 113.9447,
+        "min": 76.388,
+        "max": 127.354
       },
       "metrics/sentence-rhythm": {
-        "min": 0.4,
-        "window": 8,
-        "windowCv": 0.15,
-        "minSentences": 20
+        "p5": 0.6117,
+        "p10": 0.6621,
+        "p50": 0.81,
+        "p90": 0.9235,
+        "p95": 0.9576,
+        "min": 0.4779,
+        "max": 1.1223
+      },
+      "metrics/sentence-rhythm#window": {
+        "p5": 0.211,
+        "p10": 0.2451,
+        "p50": 0.3453,
+        "p90": 0.4465,
+        "p95": 0.477,
+        "min": 0.085,
+        "max": 0.6693
       },
       "metrics/dialogue-ratio": {
-        "max": 0.8,
-        "minWords": 500
+        "p5": 0.0486,
+        "p10": 0.1288,
+        "p50": 0.392,
+        "p90": 0.6643,
+        "p95": 0.7167,
+        "min": 0,
+        "max": 0.876
       },
       "metrics/sensory-detail": {
-        "min": 10,
-        "minWords": 500
+        "p5": 3.0607,
+        "p10": 4.551,
+        "p50": 8.9691,
+        "p90": 18.6588,
+        "p95": 22.0698,
+        "min": 0.8078,
+        "max": 27.2203
       },
       "metrics/wall-of-text": {
-        "max": 350
+        "p5": 126.9726,
+        "p10": 144.1259,
+        "p50": 238,
+        "p90": 402.6511,
+        "p95": 478.4726,
+        "min": 70,
+        "max": 881
+      }
+    },
+    "bands": {
+      "metrics/lexical-diversity": {
+        "minWords": 300,
+        "min": 86
+      },
+      "metrics/sentence-rhythm": {
+        "minSentences": 20,
+        "window": 8,
+        "min": 0.61,
+        "windowCv": 0.21
+      },
+      "metrics/dialogue-ratio": {
+        "minWords": 500,
+        "min": 0.05,
+        "max": 0.72
+      },
+      "metrics/sensory-detail": {
+        "minWords": 500,
+        "min": 3.1
+      },
+      "metrics/wall-of-text": {
+        "max": 478
       }
     }
   },

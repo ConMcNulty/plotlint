@@ -1,52 +1,117 @@
 {
   "version": 1,
   "genre": "general",
-  "provisional": true,
-  "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+  "provisional": false,
+  "note": "Measured from 177 chapters of 4 public-domain novels (texts from Standard Ebooks). Floors and ceilings sit near the 5th and 95th percentiles of those chapters, every book weighing the same whatever its number of chapters.",
   "sourceBooks": [
     {
       "title": "Emma",
       "author": "Jane Austen",
-      "gutenberg": 158
+      "year": 1815,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/jane-austen_emma"
     },
     {
       "title": "Great Expectations",
       "author": "Charles Dickens",
-      "gutenberg": 1400
+      "year": 1861,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/charles-dickens_great-expectations"
     },
     {
       "title": "The Age of Innocence",
       "author": "Edith Wharton",
-      "gutenberg": 541
+      "year": 1920,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/edith-wharton_the-age-of-innocence"
     },
     {
       "title": "The House of Mirth",
       "author": "Edith Wharton",
-      "gutenberg": 284
+      "year": 1905,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/edith-wharton_the-house-of-mirth"
     }
   ],
-  "metrics": {},
-  "bands": {
+  "chapters": 177,
+  "metrics": {
     "metrics/lexical-diversity": {
-      "min": 60,
-      "minWords": 300
+      "p5": 70.9679,
+      "p10": 75.8305,
+      "p50": 95.3728,
+      "p90": 118.6292,
+      "p95": 122.1385,
+      "min": 56.1687,
+      "max": 148.7959
     },
     "metrics/sentence-rhythm": {
-      "min": 0.4,
-      "window": 8,
-      "windowCv": 0.15,
-      "minSentences": 20
+      "p5": 0.5387,
+      "p10": 0.5884,
+      "p50": 0.7446,
+      "p90": 0.9247,
+      "p95": 0.9727,
+      "min": 0.3683,
+      "max": 1.22
+    },
+    "metrics/sentence-rhythm#window": {
+      "p5": 0.1398,
+      "p10": 0.1573,
+      "p50": 0.2709,
+      "p90": 0.4337,
+      "p95": 0.4936,
+      "min": 0.0891,
+      "max": 0.6746
     },
     "metrics/dialogue-ratio": {
-      "max": 0.75,
-      "minWords": 500
+      "p5": 0.0527,
+      "p10": 0.089,
+      "p50": 0.2892,
+      "p90": 0.5785,
+      "p95": 0.7119,
+      "min": 0,
+      "max": 0.948
     },
     "metrics/sensory-detail": {
-      "min": 10,
-      "minWords": 500
+      "p5": 4.3581,
+      "p10": 5.4091,
+      "p50": 11.1149,
+      "p90": 17.5374,
+      "p95": 19.2265,
+      "min": 1.6913,
+      "max": 32.4379
     },
     "metrics/wall-of-text": {
-      "max": 350
+      "p5": 111.4927,
+      "p10": 128.8917,
+      "p50": 216.3395,
+      "p90": 363.1167,
+      "p95": 427.1084,
+      "min": 46,
+      "max": 516
+    }
+  },
+  "bands": {
+    "metrics/lexical-diversity": {
+      "minWords": 300,
+      "min": 71
+    },
+    "metrics/sentence-rhythm": {
+      "minSentences": 20,
+      "window": 8,
+      "min": 0.54,
+      "windowCv": 0.14
+    },
+    "metrics/dialogue-ratio": {
+      "minWords": 500,
+      "min": 0.05,
+      "max": 0.71
+    },
+    "metrics/sensory-detail": {
+      "minWords": 500,
+      "min": 4.4
+    },
+    "metrics/wall-of-text": {
+      "max": 427
     }
   }
 }

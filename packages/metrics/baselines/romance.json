@@ -1,52 +1,117 @@
 {
   "version": 1,
   "genre": "romance",
-  "provisional": true,
-  "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+  "provisional": false,
+  "note": "Measured from 175 chapters of 4 public-domain novels (texts from Standard Ebooks). Floors and ceilings sit near the 5th and 95th percentiles of those chapters, every book weighing the same whatever its number of chapters.",
   "sourceBooks": [
     {
       "title": "Pride and Prejudice",
       "author": "Jane Austen",
-      "gutenberg": 1342
+      "year": 1813,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/jane-austen_pride-and-prejudice"
     },
     {
       "title": "Persuasion",
       "author": "Jane Austen",
-      "gutenberg": 105
+      "year": 1817,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/jane-austen_persuasion"
     },
     {
-      "title": "Sense and Sensibility",
-      "author": "Jane Austen",
-      "gutenberg": 161
+      "title": "Jane Eyre",
+      "author": "Charlotte Brontë",
+      "year": 1847,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/charlotte-bronte_jane-eyre"
     },
     {
       "title": "North and South",
       "author": "Elizabeth Gaskell",
-      "gutenberg": 4276
+      "year": 1855,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/elizabeth-gaskell_north-and-south"
     }
   ],
-  "metrics": {},
-  "bands": {
+  "chapters": 175,
+  "metrics": {
     "metrics/lexical-diversity": {
-      "min": 60,
-      "minWords": 300
+      "p5": 86.2372,
+      "p10": 88.3925,
+      "p50": 100.6175,
+      "p90": 111.0138,
+      "p95": 113.9447,
+      "min": 76.388,
+      "max": 127.354
     },
     "metrics/sentence-rhythm": {
-      "min": 0.4,
-      "window": 8,
-      "windowCv": 0.15,
-      "minSentences": 20
+      "p5": 0.6117,
+      "p10": 0.6621,
+      "p50": 0.81,
+      "p90": 0.9235,
+      "p95": 0.9576,
+      "min": 0.4779,
+      "max": 1.1223
+    },
+    "metrics/sentence-rhythm#window": {
+      "p5": 0.211,
+      "p10": 0.2451,
+      "p50": 0.3453,
+      "p90": 0.4465,
+      "p95": 0.477,
+      "min": 0.085,
+      "max": 0.6693
     },
     "metrics/dialogue-ratio": {
-      "max": 0.8,
-      "minWords": 500
+      "p5": 0.0486,
+      "p10": 0.1288,
+      "p50": 0.392,
+      "p90": 0.6643,
+      "p95": 0.7167,
+      "min": 0,
+      "max": 0.876
     },
     "metrics/sensory-detail": {
-      "min": 10,
-      "minWords": 500
+      "p5": 3.0607,
+      "p10": 4.551,
+      "p50": 8.9691,
+      "p90": 18.6588,
+      "p95": 22.0698,
+      "min": 0.8078,
+      "max": 27.2203
     },
     "metrics/wall-of-text": {
-      "max": 350
+      "p5": 126.9726,
+      "p10": 144.1259,
+      "p50": 238,
+      "p90": 402.6511,
+      "p95": 478.4726,
+      "min": 70,
+      "max": 881
+    }
+  },
+  "bands": {
+    "metrics/lexical-diversity": {
+      "minWords": 300,
+      "min": 86
+    },
+    "metrics/sentence-rhythm": {
+      "minSentences": 20,
+      "window": 8,
+      "min": 0.61,
+      "windowCv": 0.21
+    },
+    "metrics/dialogue-ratio": {
+      "minWords": 500,
+      "min": 0.05,
+      "max": 0.72
+    },
+    "metrics/sensory-detail": {
+      "minWords": 500,
+      "min": 3.1
+    },
+    "metrics/wall-of-text": {
+      "max": 478
     }
   }
 }

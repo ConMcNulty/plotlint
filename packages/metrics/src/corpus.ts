@@ -2,8 +2,9 @@ import { bandNumber, type Baseline, type MetricBands, type MetricStats, type Sou
 import { measureChapter, type ChapterMetrics } from "./measures.js";
 
 /**
- * Reading reference novels for the baselines: strip Project Gutenberg's
- * boilerplate, split chapters, and turn per-chapter measurements into bands.
+ * Reading reference novels for the baselines: chapters from Standard Ebooks'
+ * XHTML sources or Project Gutenberg plain text (boilerplate stripped), and
+ * per-chapter measurements turned into bands.
  */
 
 /** The book's own text between Gutenberg's `*** START OF ...` and `*** END OF ...` markers, LF line endings. */
@@ -41,18 +42,101 @@ export function splitChapters(book: string, minWords = 500): string[] {
     .filter((piece) => (piece.match(/[\p{L}\p{N}]+/gu)?.length ?? 0) >= minWords);
 }
 
-/** Linear-interpolated percentiles of the values (at least one). */
-export function percentiles(values: ReadonlyArray<number>): MetricStats {
-  const sorted = [...values].sort((a, b) => a - b);
+const ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: "\"", apos: "'", nbsp: " " };
+
+/**
+ * Plain text of an XHTML fragment: paragraphs and block elements become blocks
+ * separated by blank lines, `<hr/>` a `* * *` scene break, `<br/>` a line break.
+ * Headings, footnote references and markup are dropped, entities decoded, and
+ * the word joiners and soft hyphens of typeset ebooks removed.
+ */
+export function xhtmlToText(fragment: string): string {
+  return fragment
+    // Source line breaks and indentation are not text in XHTML; only the markup breaks lines.
+    .replace(/\s+/gu, " ")
+    .replace(/<(header|hgroup|h[1-6])\b[^>]*>[\s\S]*?<\/\1>/gu, "\n\n")
+    .replace(/<a\b[^>]*epub:type="[^"]*noteref[^"]*"[^>]*>[\s\S]*?<\/a>/gu, "")
+    .replace(/<hr\b[^>]*\/?>/gu, "\n\n* * *\n\n")
+    .replace(/<br\b[^>]*\/?>/gu, "\n")
+    .replace(/<\/?(?:p|div|blockquote|section|article|table|tr|li|ul|ol|footer|figure|aside)\b[^>]*>/gu, "\n\n")
+    .replace(/<[^>]*>/gu, "")
+    .replace(/&(?:#(\d+)|#x([0-9a-f]+)|([a-z]+));/giu, (whole, dec: string, hex: string, name: string) =>
+      dec ? String.fromCodePoint(Number(dec)) : hex ? String.fromCodePoint(parseInt(hex, 16)) : ENTITIES[name.toLowerCase()] ?? whole)
+    .replace(/[⁠­﻿]/gu, "")
+    .split("\n")
+    .map((line) => line.replace(/[ \t ]+/gu, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/gu, "\n\n")
+    .trim();
+}
+
+/**
+ * Chapters of one Standard Ebooks XHTML file (`src/epub/text/*.xhtml` in their
+ * source repositories): the text of each `<section epub:type="chapter">` that
+ * holds no chapter section of its own, or of the whole body when the file is
+ * body matter without chapter sections. Front and back matter (title page,
+ * imprint, colophon, endnotes) yields nothing.
+ */
+export function standardEbooksChapters(xhtml: string): string[] {
+  const body = xhtml.match(/<body\b([^>]*)>([\s\S]*)<\/body>/u);
+  if (!body || !/epub:type="[^"]*\bbodymatter\b/u.test(body[1]!)) return [];
+  const inner = body[2]!;
+  const stack: Array<{ start: number; chapter: boolean; nested: boolean }> = [];
+  const chapters: string[] = [];
+  for (const tag of inner.matchAll(/<(\/?)section\b([^>]*)>/gu)) {
+    if (!tag[1]) {
+      stack.push({ start: tag.index! + tag[0].length, chapter: /epub:type="[^"]*\bchapter\b/u.test(tag[2]!), nested: false });
+      continue;
+    }
+    const open = stack.pop();
+    if (!open?.chapter) continue;
+    if (!open.nested) chapters.push(xhtmlToText(inner.slice(open.start, tag.index)));
+    for (const outer of stack) outer.nested = true;
+  }
+  if (chapters.length > 0) return chapters;
+  const whole = xhtmlToText(inner);
+  return whole ? [whole] : [];
+}
+
+/** The XHTML files of a Standard Ebooks `content.opf`, in reading (spine) order, as paths under `src/epub/`. */
+export function standardEbooksSpine(opf: string): string[] {
+  const hrefs = new Map<string, string>();
+  for (const item of opf.matchAll(/<item\b[^>]*>/gu)) {
+    const id = item[0].match(/\bid="([^"]+)"/u)?.[1];
+    const href = item[0].match(/\bhref="([^"]+)"/u)?.[1];
+    if (id && href) hrefs.set(id, href);
+  }
+  return [...opf.matchAll(/<itemref\b[^>]*\bidref="([^"]+)"/gu)].flatMap((ref) => {
+    const href = hrefs.get(ref[1]!);
+    return href && /\.xhtml$/u.test(href) ? [href] : [];
+  });
+}
+
+/**
+ * Linear-interpolated percentiles of the values (at least one). With `weights`,
+ * each value counts by its weight: the values sit at the midpoints of their
+ * cumulative weight, so equal weights give the plain unweighted percentiles.
+ */
+export function percentiles(values: ReadonlyArray<number>, weights?: ReadonlyArray<number>): MetricStats {
+  const points = values.map((value, i) => ({ value, weight: weights?.[i] ?? 1 })).sort((a, b) => a.value - b.value);
+  const first = points[0]!.weight / 2;
+  const span = points.reduce((sum, point) => sum + point.weight, 0) - first - points.at(-1)!.weight / 2;
+  const positions: number[] = [];
+  let before = 0;
+  for (const point of points) {
+    positions.push(span > 0 ? (before + point.weight / 2 - first) / span : 0);
+    before += point.weight;
+  }
   const at = (p: number) => {
-    const index = (sorted.length - 1) * p;
-    const low = Math.floor(index);
-    const high = Math.ceil(index);
-    return sorted[low]! + (sorted[high]! - sorted[low]!) * (index - low);
+    const high = positions.findIndex((position) => position >= p);
+    if (high <= 0) return points[Math.max(high, 0)]!.value;
+    const low = high - 1;
+    const t = (p - positions[low]!) / (positions[high]! - positions[low]!);
+    return points[low]!.value + (points[high]!.value - points[low]!.value) * t;
   };
   const r = (value: number) => Math.round(value * 10000) / 10000;
   return {
-    p5: r(at(0.05)), p10: r(at(0.1)), p50: r(at(0.5)), p90: r(at(0.9)), p95: r(at(0.95)), min: r(sorted[0]!), max: r(sorted.at(-1)!),
+    p5: r(at(0.05)), p10: r(at(0.1)), p50: r(at(0.5)), p90: r(at(0.9)), p95: r(at(0.95)), min: r(points[0]!.value), max: r(points.at(-1)!.value),
   };
 }
 
@@ -95,23 +179,28 @@ export function bandsFromStats(stats: Record<string, MetricStats>, previous: Met
   return bands;
 }
 
-/** A baseline for one genre from the books' chapter texts. */
+/**
+ * A baseline for one genre from the books' chapter texts. Every book weighs the
+ * same, whatever its number of chapters, so one long book with short chapters
+ * does not set the genre's bands alone.
+ */
 export function buildBaseline(genre: string, books: ReadonlyArray<{ book: SourceBook; chapters: ReadonlyArray<string> }>, previous?: MetricBands): Baseline {
-  const values: Record<string, number[]> = Object.fromEntries(Object.keys(BASELINE_VALUES).map((id) => [id, []]));
+  const values: Record<string, Array<{ value: number; weight: number }>> = Object.fromEntries(Object.keys(BASELINE_VALUES).map((id) => [id, []]));
   let chapters = 0;
   for (const { chapters: texts } of books) {
-    for (const text of texts) {
-      const metrics = measureChapter(text, {
-        window: bandNumber(previous?.["metrics/sentence-rhythm"], "window", 8),
-      });
-      if (!metrics) continue;
-      chapters++;
+    const measured = texts.flatMap((text) => {
+      const metrics = measureChapter(text, { window: bandNumber(previous?.["metrics/sentence-rhythm"], "window", 8) });
+      return metrics ? [metrics] : [];
+    });
+    chapters += measured.length;
+    for (const metrics of measured) {
       for (const [id, read] of Object.entries(BASELINE_VALUES)) {
         const value = read(metrics);
-        if (typeof value === "number" && Number.isFinite(value)) values[id]!.push(value);
+        if (typeof value === "number" && Number.isFinite(value)) values[id]!.push({ value, weight: 1 / measured.length });
       }
     }
   }
-  const stats = Object.fromEntries(Object.entries(values).filter(([, list]) => list.length > 0).map(([id, list]) => [id, percentiles(list)]));
+  const stats = Object.fromEntries(Object.entries(values).filter(([, list]) => list.length > 0)
+    .map(([id, list]) => [id, percentiles(list.map((point) => point.value), list.map((point) => point.weight))]));
   return { version: 1, genre, sourceBooks: books.map(({ book }) => book), chapters, metrics: stats, bands: bandsFromStats(stats, previous) };
 }
