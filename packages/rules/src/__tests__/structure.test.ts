@@ -112,6 +112,9 @@ describe("structure/unearned-payoff", () => {
     const advanced = traced.map((r) => (r.chapter === 3 ? { ...r, hookActivity: "H01 deepens" } : r));
     expect(run(unearnedPayoff, book(5, { hooks, rows: advanced }))).toEqual([]);
     expect(run(unearnedPayoff, book(5, { hooks, rows: traced.map((r) => ({ ...r, hookActivity: "" })) }))).toEqual([]);
+    // As GLM summarised the lessing-fen book: other hooks by id, this one only in words.
+    const described = traced.map((r) => (r.chapter === 5 ? { ...r, hookActivity: "The missing ledger hook is resolved" } : r));
+    expect(run(unearnedPayoff, book(5, { hooks, rows: described }))).toEqual([]);
   });
 });
 
@@ -148,7 +151,7 @@ describe("structure/cut-candidate and dependencyGraph", () => {
     expect(run(cutCandidate, book(6, { facts, hooks: [hook("cards", 2, "progressing", 4)] }))).toEqual([]);
   });
 
-  it("flags a scene nothing later depends on, when the chapter text has scenes", () => {
+  it("flags a scene nothing later depends on, when asked and the chapter text has scenes", () => {
     const cited = (f: CurrentStateFact, quote: string): CurrentStateFact => ({ ...f, evidence: { quote } });
     const chapter2 = "# Chapter 2\n\nTomas reached the lighthouse at dusk.\n\n* * *\n\nMira hid the map in the chapel.\n";
     const scened = [
@@ -158,10 +161,11 @@ describe("structure/cut-candidate and dependencyGraph", () => {
       fact("Mira", "reads", "the map", 3), fact("Mira", "found", "the cellar", 3),
       fact("Mira", "location", "the cellar", 4), fact("Mira", "uses", "brass key", 4), fact("Mira", "location", "cliffs", 5),
     ];
-    const found = run(cutCandidate, book(6, { facts: scened }), {}, new Map([[2, chapter2]]));
+    const found = run(cutCandidate, book(6, { facts: scened }), withOptions({}, "structure/cut-candidate", { scenes: true }), new Map([[2, chapter2]]));
     expect(found.map((d) => d.summary)).toEqual([expect.stringMatching(/scene ch2\.s1/u)]);
     expect(found[0]!.range).toMatchObject({ sourceId: "chapter:2" });
-    expect(run(cutCandidate, book(6, { facts: scened }), withOptions({}, "structure/cut-candidate", { scenes: false }), new Map([[2, chapter2]]))).toEqual([]);
+    // Scene findings are opt-in.
+    expect(run(cutCandidate, book(6, { facts: scened }), {}, new Map([[2, chapter2]]))).toEqual([]);
   });
 });
 
@@ -211,6 +215,22 @@ describe("structure/subplot-balance", () => {
     // A thing with an identity fact of another kind is no character.
     const sword = [kinded("identity", "the sword", "true name", "Dawnbringer", 2)];
     expect(subplots(book(10, { facts: sword, hooks: [hook("sword-a", 2, "open", 2, { expectedPayoff: "Who forged the sword" }), hook("sword-b", 2, "open", 2, { expectedPayoff: "Where the sword goes" })] }))).toEqual([]);
+  });
+
+  it("counts a one-hook thread whose character has facts in several chapters, named by a short given name", () => {
+    // As GLM settled the lessing-fen corpus book: one hook for the sister's thread, then only facts.
+    const sister = [
+      kinded("goal", "Bea Ashby", "plan", "move to Halifax", 2), fact("Bea Ashby", "action", "argued with Nell", 4),
+      fact("Bea Ashby", "action", "departed for Canada", 5), fact("Nell Ashby", "location", "the mill", 12),
+    ];
+    const threads = [hook("hook-5", 2, "open", 2, { expectedPayoff: "Resolve conflict with sister Bea over her marriage" })];
+    expect(subplots(book(12, { facts: sister, hooks: threads })).map((s) => s.key)).toEqual(["Bea Ashby"]);
+    expect(run(subplotBalance, book(12, { facts: sister, hooks: threads }), finished)[0]).toMatchObject({
+      severity: "warning", chapter: 5, summary: "The Bea Ashby subplot vanishes after ch5 (7 chapters before the end) with 1 question unresolved.",
+    });
+    // Facts in only two chapters: one hook is not yet a subplot.
+    expect(run(subplotBalance, book(12, { facts: sister.slice(1), hooks: threads }), finished)).toEqual([]);
+    expect(run(subplotBalance, book(12, { facts: sister, hooks: threads }), withOptions(finished, "structure/subplot-balance", { minChapters: 4 }))).toEqual([]);
   });
 
   it("groups hooks linked by dependsOn into one thread", () => {

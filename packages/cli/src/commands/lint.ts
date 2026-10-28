@@ -685,7 +685,8 @@ lintCommand
   .action(async (bookIdArg: string | undefined, opts: { chapter?: string; force?: boolean; json?: boolean }, command: Command) => {
     try {
       opts = { ...opts, json: wantsJson(command) };
-      const only = parseChapter(opts.chapter);
+      // `lint` has its own --chapter, which takes the flag when it is given after the subcommand.
+      const only = parseChapter(opts.chapter ?? command.optsWithGlobals<{ chapter?: string }>().chapter);
       const root = findProjectRoot();
       const bookId = await resolveBookId(bookIdArg, root);
       const bookDir = new StateManager(root).bookDir(bookId);

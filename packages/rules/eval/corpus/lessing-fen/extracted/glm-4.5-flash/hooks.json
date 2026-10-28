@@ -1,0 +1,436 @@
+{
+  "hooks": [
+    {
+      "hookId": "ivy-involvement",
+      "startChapter": 0,
+      "type": "mid-arc",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Ivy Tarrant's knowledge of her husband's secrets and potential complicity",
+      "notes": "Complex relationship with widow"
+    },
+    {
+      "hookId": "kit-past",
+      "startChapter": 0,
+      "type": "mid-arc",
+      "status": "deferred",
+      "lastAdvancedChapter": 0,
+      "expectedPayoff": "Kit's troubled past and connection to Owen revealed",
+      "notes": "Personal history affecting his credibility"
+    },
+    {
+      "hookId": "ambrose-secret",
+      "startChapter": 0,
+      "type": "near-term",
+      "status": "resolved",
+      "lastAdvancedChapter": 12,
+      "expectedPayoff": "Ambrose's role in Owen's financial dealings and potential involvement in death",
+      "notes": "Ambrose confessed to both skimming money and murdering Owen"
+    },
+    {
+      "hookId": "sluice-knowledge",
+      "startChapter": 0,
+      "type": "immediate",
+      "status": "resolved",
+      "lastAdvancedChapter": 12,
+      "expectedPayoff": "Someone with technical knowledge of the sluice system manipulated it",
+      "notes": "Ambrose used his knowledge of the sluice to murder Owen"
+    },
+    {
+      "hookId": "true-identity",
+      "startChapter": 0,
+      "type": "endgame",
+      "status": "resolved",
+      "lastAdvancedChapter": 12,
+      "expectedPayoff": "Reveal of the actual murderer and their full motive",
+      "notes": "Ambrose Vane confessed to murdering Owen Tarrant to cover up his financial crimes"
+    },
+    {
+      "hookId": "financial-motive",
+      "startChapter": 0,
+      "type": "mid-arc",
+      "status": "resolved",
+      "lastAdvancedChapter": 13,
+      "expectedPayoff": "Reveal financial motives behind Owen's murder",
+      "notes": "Ambrose's motive for murdering Owen was to cover up his skimming operation from the Drainage Board funds"
+    },
+    {
+      "hookId": "murder-investigation",
+      "startChapter": 0,
+      "type": "immediate",
+      "status": "resolved",
+      "lastAdvancedChapter": 13,
+      "expectedPayoff": "Nell uncovers evidence proving Owen Tarrant was murdered",
+      "notes": "Case resolved with Ambrose Vane's conviction for unlawful killing"
+    },
+    {
+      "hookId": "personal-growth",
+      "startChapter": 0,
+      "type": "endgame",
+      "status": "progressing",
+      "lastAdvancedChapter": 13,
+      "expectedPayoff": "Nell's transformation from clerk to confident investigator",
+      "notes": "Nell has been offered and accepted a position as articled clerk, marking professional advancement"
+    },
+    {
+      "hookId": "romantic-tension",
+      "startChapter": 0,
+      "type": "near-term",
+      "status": "progressing",
+      "lastAdvancedChapter": 13,
+      "expectedPayoff": "Nell and Kit develop a romantic relationship despite his status as a suspect",
+      "notes": "Nell and Kit have agreed to formal courtship after the resolution of the murder case"
+    },
+    {
+      "hookId": "town-acceptance",
+      "startChapter": 0,
+      "type": "near-term",
+      "status": "progressing",
+      "lastAdvancedChapter": 13,
+      "expectedPayoff": "Town's resistance to Nell's murder theory forcing her to work alone",
+      "notes": "With the truth revealed, the town can now begin healing"
+    },
+    {
+      "hookId": "hook",
+      "startChapter": 1,
+      "type": "immediate",
+      "status": "open",
+      "lastAdvancedChapter": 2,
+      "expectedPayoff": "Nell begins investigating Owen Tarrant's murder against the town's acceptance of the accident verdict",
+      "notes": "Nell continues pursuing the murder theory despite the official accident ruling"
+    },
+    {
+      "hookId": "hook-2",
+      "startChapter": 1,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 2,
+      "expectedPayoff": "The three people with access to the sluice key become suspects in the murder investigation",
+      "notes": "Kit Merrow, Owen Tarrant (deceased), and the mill foreman/emergency key holder remain suspects"
+    },
+    {
+      "hookId": "hook-4",
+      "startChapter": 2,
+      "type": "immediate",
+      "status": "open",
+      "lastAdvancedChapter": 2,
+      "expectedPayoff": "Uncover the significance of the silver bosun's whistle from H.M.S. Cormorant 1916",
+      "notes": "The whistle suggests Owen had connections to naval service in 1916, which may be relevant to his murder"
+    },
+    {
+      "hookId": "hook-5",
+      "startChapter": 2,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 2,
+      "expectedPayoff": "Resolve conflict with sister Bea over her marriage to Leonard Fawley",
+      "notes": "Bea's decision to marry and move away creates family tension that may affect Nell's investigation"
+    },
+    {
+      "hookId": "hook-3",
+      "startChapter": 2,
+      "type": "immediate",
+      "status": "resolved",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Discover what happened to the missing financial ledger and why Ambrose took it",
+      "notes": "Nell and Kit discovered Ambrose has been skimming money from the Fen Drainage Board fund, providing concrete evidence of financial motive"
+    },
+    {
+      "hookId": "hook-8",
+      "startChapter": 3,
+      "type": "mid-arc",
+      "status": "open",
+      "lastAdvancedChapter": 3,
+      "expectedPayoff": "Discover why Ambrose lied about his whereabouts",
+      "notes": "The motive behind Ambrose's false alibi may reveal his connection to Owen's murder"
+    },
+    {
+      "hookId": "hook-6",
+      "startChapter": 3,
+      "type": "immediate",
+      "status": "progressing",
+      "lastAdvancedChapter": 6,
+      "expectedPayoff": "Ambrose Vane's mud evidence contradicts his alibi",
+      "notes": "Nell now has additional evidence about the missing key to confront Ambrose"
+    },
+    {
+      "hookId": "hook-7",
+      "startChapter": 3,
+      "type": "near-term",
+      "status": "progressing",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Nell confronts Ambrose with the mud evidence",
+      "notes": "Nell now has both mud evidence and financial evidence to confront Ambrose"
+    },
+    {
+      "hookId": "hook-9",
+      "startChapter": 3,
+      "type": "near-term",
+      "status": "progressing",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Nell investigates Ambrose's financial dealings more thoroughly",
+      "notes": "Nell has now thoroughly investigated Ambrose's financial dealings and discovered the skimming operation"
+    },
+    {
+      "hookId": "hook-11",
+      "startChapter": 4,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "Investigate the connection between Tarrant's will change and his murder",
+      "notes": "Tarrant changed his will the day after requesting the audit, suggesting he knew he was in danger"
+    },
+    {
+      "hookId": "hook-12",
+      "startChapter": 4,
+      "type": "immediate",
+      "status": "open",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "Examine the ledgers Vane took from Tarrant's office for evidence of the discrepancy",
+      "notes": "Nell and Kit plan to investigate the mill office and examine the ledgers Vane took, which likely contain evidence of the financial discrepancy"
+    },
+    {
+      "hookId": "hook-10",
+      "startChapter": 4,
+      "type": "immediate",
+      "status": "resolved",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Discover the specific discrepancy in the Fen Drainage Board fund that Tarrant discovered",
+      "notes": "Nell and Kit found the specific financial discrepancies totaling at least £100 that Tarrant had discovered"
+    },
+    {
+      "hookId": "hook-13",
+      "startChapter": 5,
+      "type": "immediate",
+      "status": "progressing",
+      "lastAdvancedChapter": 7,
+      "expectedPayoff": "Investigate the lantern sighting that could identify the killer",
+      "notes": "Kit's lantern sighting is now confirmed to be from the mill office lantern, providing concrete evidence that the killer had access to the mill office"
+    },
+    {
+      "hookId": "hook-14",
+      "startChapter": 5,
+      "type": "near-term",
+      "status": "progressing",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Nell continues investigation despite Kit's warning and arrest",
+      "notes": "Nell continues pursuing the investigation despite Kit's concerns and now has concrete evidence"
+    },
+    {
+      "hookId": "hook-15",
+      "startChapter": 5,
+      "type": "near-term",
+      "status": "progressing",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Discover who was carrying the lantern and heading for the mill office",
+      "notes": "The lantern sighting now connects to Ambrose's access to the mill office and financial motive"
+    },
+    {
+      "hookId": "hook-16",
+      "startChapter": 6,
+      "type": "immediate",
+      "status": "open",
+      "lastAdvancedChapter": 6,
+      "expectedPayoff": "Discover when the sluice key was actually taken and why Ambrose lied about it",
+      "notes": "The empty hook suggests the key was taken recently, not months ago as Ambrose claimed"
+    },
+    {
+      "hookId": "hook-17",
+      "startChapter": 6,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 6,
+      "expectedPayoff": "Investigate Silas Rudd's potential involvement in Owen's murder",
+      "notes": "Silas had a large gambling debt to Owen and was furious when refused more money"
+    },
+    {
+      "hookId": "hook-18",
+      "startChapter": 6,
+      "type": "immediate",
+      "status": "open",
+      "lastAdvancedChapter": 6,
+      "expectedPayoff": "Uncover the exact nature of the financial discrepancy in the Drainage Board fund",
+      "notes": "Ivy revealed Owen was agitated about the Drainage Board money, suggesting a significant discrepancy"
+    },
+    {
+      "hookId": "hook-19",
+      "startChapter": 7,
+      "type": "immediate",
+      "status": "open",
+      "lastAdvancedChapter": 7,
+      "expectedPayoff": "Discover why the lantern was hidden in the reeds after being used",
+      "notes": "The lantern was deliberately hidden in the reeds after being used, suggesting the killer didn't want it found"
+    },
+    {
+      "hookId": "hook-20",
+      "startChapter": 7,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 7,
+      "expectedPayoff": "Investigate what papers Silas Rudd was burning and their connection to Owen's murder",
+      "notes": "Silas was burning papers with a dock worker, suggesting he may be destroying evidence related to Owen's death"
+    },
+    {
+      "hookId": "hook-21",
+      "startChapter": 7,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 7,
+      "expectedPayoff": "Determine connection between lantern from mill office and access to sluice key",
+      "notes": "The lantern confirms the killer had access to the mill office where the key was kept"
+    },
+    {
+      "hookId": "hook-22",
+      "startChapter": 8,
+      "type": "immediate",
+      "status": "open",
+      "lastAdvancedChapter": 8,
+      "expectedPayoff": "Nell realizes she needs to focus on the connection between the missing ledger and the financial discrepancy",
+      "notes": "After compiling all facts, Nell may need to prioritize investigating the missing financial ledger that Ambrose took"
+    },
+    {
+      "hookId": "hook-23",
+      "startChapter": 8,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 8,
+      "expectedPayoff": "Nell decides to confront Ambrose directly with the evidence she's gathered",
+      "notes": "After observing Ambrose at the fete and compiling her notes, Nell may feel ready to directly confront him"
+    },
+    {
+      "hookId": "hook-24",
+      "startChapter": 9,
+      "type": "immediate",
+      "status": "resolved",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Nell plans to confront Ambrose with the evidence from the will codicil",
+      "notes": "Nell now has concrete financial evidence to confront Ambrose with"
+    },
+    {
+      "hookId": "hook-25",
+      "startChapter": 9,
+      "type": "near-term",
+      "status": "progressing",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Ambrose becomes more dangerous as Nell gets closer to the truth",
+      "notes": "Ambrose has now entered Nell's home and stolen her notes, showing he's becoming more dangerous"
+    },
+    {
+      "hookId": "hook-26",
+      "startChapter": 9,
+      "type": "immediate",
+      "status": "progressing",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Nell investigates the connection between the will codicil and the missing financial records",
+      "notes": "Nell now understands the connection between Owen's will codicil requiring audit of financial documents and the missing money"
+    },
+    {
+      "hookId": "hook-28",
+      "startChapter": 10,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 10,
+      "expectedPayoff": "Nell and Kit must reconcile their differences to face the growing threat from Ambrose",
+      "notes": "Their argument has created a rift that could be dangerous as they face a more determined Ambrose"
+    },
+    {
+      "hookId": "hook-27",
+      "startChapter": 10,
+      "type": "immediate",
+      "status": "resolved",
+      "lastAdvancedChapter": 11,
+      "expectedPayoff": "Nell must recover her stolen case notes before Ambrose can destroy the evidence",
+      "notes": "Nell has now recovered the ledger which contains the financial evidence"
+    },
+    {
+      "hookId": "hook-29",
+      "startChapter": 10,
+      "type": "immediate",
+      "status": "progressing",
+      "lastAdvancedChapter": 11,
+      "expectedPayoff": "Nell must find a way to present the financial evidence to authorities without Vane interfering",
+      "notes": "Nell now has concrete proof but needs to decide how to proceed safely"
+    },
+    {
+      "hookId": "hook-32",
+      "startChapter": 11,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 11,
+      "expectedPayoff": "Nell and Kit's relationship deepens as they work together to expose the truth",
+      "notes": "Their romantic connection has strengthened through shared danger and purpose"
+    },
+    {
+      "hookId": "hook-30",
+      "startChapter": 11,
+      "type": "immediate",
+      "status": "resolved",
+      "lastAdvancedChapter": 12,
+      "expectedPayoff": "Nell and Kit must decide how to proceed with the concrete evidence against Ambrose",
+      "notes": "They successfully used the evidence to trap Ambrose and obtain his confession"
+    },
+    {
+      "hookId": "hook-31",
+      "startChapter": 11,
+      "type": "near-term",
+      "status": "resolved",
+      "lastAdvancedChapter": 12,
+      "expectedPayoff": "Ambrose becomes aware Nell has trapped him and may retaliate",
+      "notes": "Ambrose was trapped and arrested after his attempt to escape"
+    },
+    {
+      "hookId": "hook-33",
+      "startChapter": 12,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 12,
+      "expectedPayoff": "Nell and Kit navigate their relationship after the resolution of the murder case",
+      "notes": "With the murder solved, their romantic relationship can develop without the complication of Kit being a suspect"
+    },
+    {
+      "hookId": "hook-34",
+      "startChapter": 12,
+      "type": "endgame",
+      "status": "open",
+      "lastAdvancedChapter": 12,
+      "expectedPayoff": "Nell's complete transformation from clerk to confident investigator",
+      "notes": "Having successfully solved the murder case, Nell has proven her capabilities as an investigator"
+    },
+    {
+      "hookId": "hook-35",
+      "startChapter": 12,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 12,
+      "expectedPayoff": "The town's reaction to Ambrose's confession and the truth about Owen's death",
+      "notes": "How will the townspeople react to learning the truth about the accident verdict being wrong?"
+    },
+    {
+      "hookId": "hook-36",
+      "startChapter": 13,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 13,
+      "expectedPayoff": "Nell's adjustment to her new role as articled clerk and the challenges ahead",
+      "notes": "Nell begins her legal training under Mr. Pell, marking a significant career advancement"
+    },
+    {
+      "hookId": "hook-37",
+      "startChapter": 13,
+      "type": "endgame",
+      "status": "open",
+      "lastAdvancedChapter": 13,
+      "expectedPayoff": "Nell and Kit's developing relationship as they navigate their new status as a courting couple",
+      "notes": "With the murder case resolved, Nell and Kit can focus on building their relationship without the complication of Kit being a suspect"
+    },
+    {
+      "hookId": "hook-38",
+      "startChapter": 13,
+      "type": "near-term",
+      "status": "open",
+      "lastAdvancedChapter": 13,
+      "expectedPayoff": "The town's reaction to and acceptance of the truth about Owen's murder",
+      "notes": "How will the townspeople process the revelation that the accident verdict was wrong and Ambrose Vane was the killer"
+    }
+  ]
+}

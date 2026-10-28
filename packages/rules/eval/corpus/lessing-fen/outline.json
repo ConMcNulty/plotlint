@@ -1,0 +1,86 @@
+{
+  "title": "The Sluice at Lessing Fen",
+  "premise": "Autumn 1923, the fenland market town of Lessing Fen, England. Owen Tarrant, owner of Tarrant's Mill, is found drowned in the mill race below the sluice gate. The coroner calls it an accident. Nell Ashby, 26, clerk to the town solicitor Mr. Josiah Pell, is sent to inventory Tarrant's estate and slowly proves it was murder. The murderer is Ambrose Vane, Tarrant's genial bookkeeper and junior partner, who had been stealing from the Fen Drainage Board fund the mill managed; Tarrant had found out, asked the bank for an audit and changed his will to dissolve the partnership. Vane took the mill office's sluice key, opened the gate at midnight while Tarrant inspected the race, and pushed him in.",
+  "style": "Third person past tense, close on Nell Ashby (except where an outline says the scene is from Kit Merrow's point of view). British English. Plain, concrete, quietly wry prose in the manner of a classic English village mystery, with dialogue. No melodrama, no purple prose, no lists, no headings inside the chapter other than the title line.",
+  "characters": [
+    "Nell Ashby, 26, protagonist, solicitor's clerk, sharp, stubborn, kind; lives with her Aunt Maud and her younger sister Bea on Wick Street.",
+    "Kit Merrow, 29, keeper of the Lessing lock and the sluice, quiet, ex-navy, love interest; gossip suspects him because he holds a sluice key.",
+    "Ambrose Vane, 40s, Tarrant's bookkeeper and junior partner, warm, helpful, neat, always offering tea and keys; the murderer (never revealed until chapter 12).",
+    "Owen Tarrant, 60, the drowned mill owner.",
+    "Ivy Tarrant, his widow, brittle and grieving.",
+    "Silas Rudd, Ivy's brother, a gambler who owed Owen money (red herring).",
+    "Mr. Josiah Pell, elderly solicitor, Nell's employer.",
+    "Constable Arthur Dorrit, the town's lazy policeman.",
+    "Mr. Hollis, manager of the Fen & County Bank.",
+    "Aunt Maud Ashby, Nell's aunt, bakes, gossips.",
+    "Bea Ashby, 20, Nell's sister (appears only in chapters 2 to 5).",
+    "Leonard Fawley, Bea's fiance, charming and in debt (mentioned only in chapters 2 to 5)."
+  ],
+  "chapters": [
+    {"n": 1, "title": "The Mill Race", "scenes": [
+      "Early morning. Nell, walking to Mr. Pell's office along the river, finds a crowd at the mill race. Owen Tarrant's body is being pulled from the water below the open sluice gate. Constable Dorrit says he must have slipped in the dark.",
+      "At the office, Mr. Pell tells Nell that Tarrant was his client and asks her to inventory Tarrant's house and papers for the estate. Ambrose Vane, Tarrant's bookkeeper and junior partner, arrives, genial and grieved, and offers Nell the house keys and his help; he mentions he will need the mill ledgers 'for the bank'.",
+      "Late afternoon at the lock, Nell meets Kit Merrow, the lock-keeper. He tells her the sluice gate was opened with a key in the night, not by any flood, and that only three keys exist: his own, Tarrant's, and the one kept on the hook in the mill office. He is guarded and tired. Nell decides the death was no accident."
+    ]},
+    {"n": 2, "title": "An Inventory", "scenes": [
+      "Nell inventories Tarrant's house. Ambrose Vane hovers, helpful, and carries off a box of ledgers 'for safekeeping'. Nell notices that the ledger for the last quarter is missing from the shelf where the others stand; Vane says Owen must have taken it to the mill.",
+      "In the pocket of Tarrant's good coat, hanging in the hall, Nell finds a small silver bosun's whistle on a chain, engraved 'H.M.S. Cormorant 1916'. Tarrant was never in the navy. She turns it over for a long time, feels certain it matters, and puts it in her own pocket without telling Vane. Describe the whistle vividly and make clear she believes it is important.",
+      "That evening on Wick Street, over supper with Aunt Maud, Bea announces she has bought a passage to Canada with her fiance Leonard Fawley, sailing from Liverpool in a month. Nell is dismayed: Leonard owes money all over the county. The sisters quarrel; Aunt Maud weeps."
+    ]},
+    {"n": 3, "title": "The Inquest", "scenes": [
+      "The inquest in the upstairs room of the Plough Inn. The coroner hears Constable Dorrit and records accidental death. Nell is not allowed to speak.",
+      "Afterwards, on the inn stairs, Nell notices that Ambrose Vane's polished boots have dried grey fen clay caked in the welts, the clay of the sluice bank, though Vane told the coroner he was at home in town all that night. He sees her look and smiles. Make this a clear clue.",
+      "In the inn yard Nell hears townsfolk muttering that Kit Merrow did it, since he has a key. She defends him aloud. Kit overhears, walks her to the bridge, and thanks her awkwardly. A first spark between them."
+    ]},
+    {"n": 4, "title": "Figures", "scenes": [
+      "Nell visits Mr. Hollis at the Fen & County Bank about the estate. Hollis lets slip that a week before his death Tarrant asked the bank to audit the mill's accounts, including the Fen Drainage Board fund the mill held in trust. Clue.",
+      "At home Bea packs a trunk for Canada. Nell tries again to talk her out of it, lays out Leonard's debts. Bea says Nell is jealous. Unresolved.",
+      "At the lock Kit shows Nell the key board in his hut: his own sluice key is on its nail. He tells her he looked, and the hook in the mill office was empty the morning after the death. Nell and Kit agree to find out who had that third key."
+    ]},
+    {"n": 5, "title": "The Cell", "scenes": [
+      "Nell takes her suspicions to Constable Dorrit. He waves them away and, pressed by gossip, arrests Kit Merrow on suspicion, because his key fits the gate.",
+      "At dawn Bea leaves for Liverpool on the train to meet Leonard. The sisters part stiffly on the platform. Bea promises to write from the ship. Nell watches the train go and feels she has failed her.",
+      "Nell visits Kit in the cell behind the police house. He tells her that on the night of the death he saw a lantern moving along the sluice bank toward the mill office around midnight, and assumed it was Tarrant. He asks her to leave it alone. She refuses."
+    ]},
+    {"n": 6, "title": "The Empty Hook", "scenes": [
+      "Nell asks Ambrose Vane to let her see the mill office for the inventory. He agrees warmly and stays at her elbow. The key hook by the door is empty. Vane says the key has been lost for months and Owen kept meaning to have another cut.",
+      "Nell calls on the widow, Ivy Tarrant. Ivy says Owen quarrelled with someone over 'the Drainage money' the week he died, and that her own brother Silas Rudd owed Owen a great deal and had been shouting at him. Ivy suspects Silas.",
+      "Kit is released for lack of evidence. He walks Nell home along the towpath in the dusk. They talk honestly about his navy years and her ambitions; they almost kiss at her gate, and do not."
+    ]},
+    {"n": 7, "title": "What the Reeds Kept", "scenes": [
+      "Point of view: Kit Merrow. Kit, alone at the lock at first light, thinks about Nell and what he feels for her. Clearing the reeds below the sluice he finds a storm lantern hidden there, its brass stamped 'TARRANT MILL OFFICE'. Show Kit's own thoughts and feelings.",
+      "Point of view: Kit Merrow. Kit brings the lantern to Nell at Mr. Pell's office. They realise the lantern he saw on the bank came from the mill office, not from Tarrant's house. Kit is moved by how she looks at him.",
+      "Back in Nell's point of view: that evening Nell sees Silas Rudd behind the Plough Inn burning papers in a brazier. He drives her off with an oath."
+    ]},
+    {"n": 8, "title": "The Fete", "scenes": [
+      "Nell and Aunt Maud bake for the church fete all morning: scones, a Victoria sponge, a lemon cake. They talk over the case, going back over what Nell already knows (the open gate, the missing ledger, the clay, the empty hook) and repeating it; nothing new is learned and nothing is decided. They talk about the weather and the vicar.",
+      "The church fete on the green. Nell walks the stalls, buys a jar of damson jam, watches the tug of war, chats with neighbours about the harvest and the vicar's roses. She sees nobody connected with the case. Nothing happens.",
+      "That night Nell copies out her notes on the case in a fair hand. They say exactly what they said before. She goes to bed no further on and no different. The chapter must end exactly where it began: no new facts, no decisions, no change in any relationship."
+    ]},
+    {"n": 9, "title": "Debts and Wills", "scenes": [
+      "Nell confronts Silas Rudd. He admits he was burning the IOUs he owed Owen, because Owen had forgiven the debt in writing the week before he died; he was ashamed. He shows her Owen's letter forgiving it. The red herring is explained: Silas had no motive.",
+      "Back at the office, in Mr. Pell's strongbox, Nell finds a new will Tarrant signed nine days before his death: on his death the partnership with Ambrose Vane is dissolved and Vane gets nothing; the Drainage fund books are to go straight to the bank. A clear motive for Vane.",
+      "Ambrose Vane invites Nell to tea in his rooms above the mill office. He is charming, asks too many questions about the inventory, and says pleasantly that the sluice bank is dangerous at night for a young woman. Nell leaves shaken."
+    ]},
+    {"n": 10, "title": "The Drainage Board", "scenes": [
+      "Nell and Kit read the Fen Drainage Board minute books in the vestry. The sums the mill reported paying to the Board do not match the sums the Board received: hundreds of pounds missing, all in entries in Vane's hand. Strong clue.",
+      "Walking back, Kit begs Nell to take it to the county police and stop; she says Dorrit will not listen and the county will not come. They quarrel bitterly and part angry. Romantic crisis.",
+      "Nell comes home to find her bedroom window forced and her case notes gone from her desk. She sits in the dark, frightened and alone."
+    ]},
+    {"n": 11, "title": "Bait", "scenes": [
+      "Nell decides to set a trap. She calls at the mill office and tells Ambrose Vane, casually, that the missing last-quarter ledger has turned up and that Mr. Hollis will collect it from the mill office safe in the morning.",
+      "Kit comes to Wick Street at dusk with his cap in his hands and apologises; he will not let her face it alone. He gives her his own sluice key to keep, as a sign of trust. They kiss.",
+      "Near midnight Nell and Kit hide in the mill office loft. A lantern comes along the sluice bank. Ambrose Vane lets himself in and opens the safe."
+    ]},
+    {"n": 12, "title": "The Gate", "scenes": [
+      "Nell confronts Vane in the office. Cornered, he confesses: Owen found the missing Drainage money, so Vane took the office sluice key, opened the gate at midnight while Owen was looking at the race, and pushed him in; he hid the lantern in the reeds and later burned the last ledger. He took Nell's notes.",
+      "Vane bolts across the narrow walkway over the sluice. Nell, with Kit's key, runs to the gate wheel and closes the sluice so the walkway does not flood and Vane cannot get across the far bank's gate; he is trapped mid-weir. Nell's own decision ends the chase.",
+      "Constable Dorrit, fetched by Kit, arrives with a lamp and, shamefaced, arrests Ambrose Vane. Nell stands shaking on the bank with Kit's arm around her."
+    ]},
+    {"n": 13, "title": "Still Water", "scenes": [
+      "A fortnight later the inquest is reopened at the Plough. The verdict is changed to unlawful killing by Ambrose Vane. Ivy Tarrant thanks Nell.",
+      "Nell and Kit walk the towpath on a clear cold evening. He asks if he may court her properly; she says yes. Hopeful and warm.",
+      "Mr. Pell offers to take Nell on as an articled clerk, so she can become a solicitor herself. She accepts, looking out at the still water by the lock."
+    ]}
+  ]
+}

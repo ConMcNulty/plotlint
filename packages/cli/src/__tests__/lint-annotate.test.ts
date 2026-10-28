@@ -73,4 +73,13 @@ describe("inkos lint annotate progress", () => {
     expect(json.stderr).toContain("ch1: annotating 1 scene…");
     expect(JSON.parse(json.stdout)).toMatchObject({ bookId: "annotated", failed: [{ chapter: 1 }] });
   }, 60_000);
+
+  it("annotates only the chapter --chapter names", async () => {
+    const bookDir = new StateManager(projectDir).bookDir("annotated");
+    await writeFile(join(bookDir, "chapters", "0002_two.md"), "# Chapter 2\n\nTomas rowed out past the breakwater.\n");
+    const json = await annotate("--chapter", "2", "--json");
+    expect(json.stderr).toContain("ch2: annotating 1 scene…");
+    expect(json.stderr).not.toContain("ch1:");
+    expect(JSON.parse(json.stdout)).toMatchObject({ failed: [{ chapter: 2 }] });
+  }, 60_000);
 });

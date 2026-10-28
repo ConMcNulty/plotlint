@@ -1,0 +1,134 @@
+{
+  "rows": [
+    {
+      "chapter": 1,
+      "title": "The Mill Race",
+      "characters": "Nell Ashby, Owen Tarrant (deceased), Ivy Tarrant, Constable Arthur Dorrit, Ambrose Vane, Kit Merrow, Mr. Josiah Pell",
+      "events": "Nell discovers Owen Tarrant's body in the mill race, ruled an accident; she's tasked with inventorying Tarrant's estate; meets Ambrose Vane who offers assistance; examines financial records; encounters Kit Merrow who reveals the sluice gate was deliberately opened; Nell concludes this was murder and decides to investigate.",
+      "stateChanges": "Nell transitions from clerk to investigator, believing Owen Tarrant was murdered; the sluice gate's deliberate opening becomes a key piece of evidence; three people identified with access to the sluice key.",
+      "hookActivity": "The murder investigation hook advances from deferred to progressing; sluice knowledge, romantic tension, financial motive, Ambrose's secrets, and town acceptance hooks are mentioned; new hooks created for Nell's investigation and the three key holders.",
+      "mood": "Atmospheric and tense with growing mystery, autumn setting in fenland, Nell's determination to uncover the truth contrasting with the town's acceptance of the accident verdict.",
+      "chapterType": "Introduction to mystery and character establishment"
+    },
+    {
+      "chapter": 2,
+      "title": "An Inventory",
+      "characters": "Nell Ashby (protagonist), Ambrose Vane (suspicious bookkeeper), Bea Ashby (Nell's sister), Aunt Maud",
+      "events": "Nell inventories Owen Tarrant's estate, discovers a missing financial ledger and a silver naval whistle in Owen's coat, argues with her sister Bea about her upcoming marriage and move to Halifax, and realizes her murder investigation and family problems are connected.",
+      "stateChanges": "Nell has taken possession of the silver whistle, discovered the missing financial ledger, and become more suspicious of Ambrose Vane. She has also become aware of the connection between her personal problems and the murder investigation.",
+      "hookActivity": "The murder investigation hook progresses as Nell uncovers more mysteries. The sluice knowledge hook advances as the missing ledger may contain crucial sluice information. The Ambrose secret hook progresses as Nell becomes suspicious of his handling of the ledger. New hooks are created for the missing ledger, the silver whistle, and the family conflict.",
+      "mood": "Tense and mysterious with underlying family tension",
+      "chapterType": "Investigation and character development"
+    },
+    {
+      "chapter": 3,
+      "title": "The Inquest",
+      "characters": "Nell Ashby, Ambrose Vane, Kit Merrow, Constable Dorrit, Mr. Withers (coroner), townspeople",
+      "events": "The coroner's inquest rules Owen Tarrant's death as accidental, but Nell discovers mud on Ambrose Vane's boots that contradicts his testimony. She defends Kit Merrow to suspicious townspeople and speaks with Kit who confirms the sluice gate was deliberately opened with a key.",
+      "stateChanges": "Nell now has concrete evidence suggesting Ambrose lied about his whereabouts; the official accident ruling is challenged; Nell connects the murder investigation with her sister Bea's upcoming marriage.",
+      "hookActivity": "The murder investigation hook advances with new evidence against Ambrose; the ambrose-secret hook progresses with the mud evidence; the sluice-knowledge hook advances with Kit's confirmation; the romantic-tension hook develops through Nell and Kit's conversation.",
+      "mood": "Tense with growing suspicion, mixed with moments of connection between Nell and Kit",
+      "chapterType": "Investigation/Revelation"
+    },
+    {
+      "chapter": 4,
+      "title": "Figures",
+      "characters": "Nell Ashby, Mr. Hollis (bank manager), Bea Ashby, Leonard Fawley, Kit Merrow",
+      "events": "Nell visits the bank and learns Tarrant requested an audit of the Fen Drainage Board fund a week before his death, mentioning a discrepancy. The next day, Tarrant changed his will, dissolving his partnership with Ambrose Vane. Nell argues with her sister Bea about her marriage to Leonard Fawley and plans to move to Halifax. Nell and Kit discuss how the killer accessed the mill office to take the sluice key, suspecting Ambrose could have made a copy. They decide to investigate the mill office and examine the ledgers Vane took.",
+      "stateChanges": "Nell now believes Tarrant was silenced before exposing theft. She has a concrete plan to investigate the mill office and examine the ledgers. The connection between Tarrant's audit request, his will change, and his murder becomes clearer.",
+      "hookActivity": "The murder investigation hook advances as Nell connects Tarrant's audit request with his murder. The Ambrose secret hook progresses as Nell learns about Tarrant's audit request and will change. The missing financial ledger hook advances as Nell now knows why the ledger is important. New hooks are created for the discrepancy in the Drainage Board fund and the connection between Tarrant's will change and his murder.",
+      "mood": "Tense and investigative, with moments of familial tension and growing determination",
+      "chapterType": "Investigative"
+    },
+    {
+      "chapter": 5,
+      "title": "The Cell",
+      "characters": "Nell Ashby, Kit Merrow, Constable Arthur Dorrit, Bea Ashby",
+      "events": "Nell reports her suspicions about Ambrose Vane to Constable Dorrit, who instead arrests Kit Merrow. Nell visits Kit in the cell where he reveals he saw a lantern moving along the sluice bank the night of the murder. Meanwhile, Bea departs for Canada on the early train, leaving Nell feeling guilty but more determined to continue her investigation.",
+      "stateChanges": "Kit Merrow goes from free to arrested; Nell's emotional state shifts from determined to guilty but more resolved; Bea Ashby departs Lessing Fen for Canada; Nell's relationship with Dorrit becomes adversarial.",
+      "hookActivity": "The murder investigation progresses as Nell continues despite Kit's arrest; romantic tension advances with Nell's prison visit; sluice knowledge hook advances with Kit's lantern sighting; town acceptance hook progresses as Dorrit makes an arrest to appease the town.",
+      "mood": "Tense with guilt but growing determination, marked by injustice and personal sacrifice",
+      "chapterType": "Investigation"
+    },
+    {
+      "chapter": 6,
+      "title": "The Empty Hook",
+      "characters": "Nell Ashby, Ambrose Vane, Ivy Tarrant, Silas Rudd, Kit Merrow, Aunt Maud",
+      "events": "Nell visits the mill office with Ambrose Vane and notices an empty brass hook where the sluice key should be. She visits Ivy Tarrant, who reveals Owen was agitated about the Drainage Board money and had argued with Silas Rudd about gambling money. Nell meets Kit after his release and they discuss the lantern sighting and develop romantic tension.",
+      "stateChanges": "Nell becomes more suspicious of Ambrose; learns about Silas Rudd's potential motive; gains more information about the Drainage Board money discrepancy; experiences romantic tension with Kit",
+      "hookActivity": "Multiple hooks progress as Nell gathers more evidence about the murder, including the empty hook mystery, Silas Rudd's motive, and the Drainage Board money discrepancy",
+      "mood": "Tense with moments of romantic tension and growing determination",
+      "chapterType": "Investigation"
+    },
+    {
+      "chapter": 7,
+      "title": "What the Reeds Kept",
+      "characters": "Kit Merrow, Nell Ashby, Silas Rudd",
+      "events": "Kit finds a brass lantern from Tarrant Mill Office hidden in the reeds below the sluice gate. He takes it to Nell, who recognizes it as the one Ambrose Vane kept in the office. They conclude the light Kit saw came from the mill office, confirming the killer had access to the office and knowledge of the key. Later, Nell witnesses Silas Rudd burning papers with a dock worker at the Plough Inn.",
+      "stateChanges": "New physical evidence (the lantern) links the murder to someone with access to the mill office. Nell's suspicion of Ambrose is strengthened. Silas Rudd becomes a more active suspect after Nell witnesses him destroying evidence.",
+      "hookActivity": "The lantern sighting hook is advanced with concrete evidence. The Ambrose secret hook progresses with physical evidence. The murder investigation hook advances with new evidence. New hooks are created for the hidden lantern, Silas's burning papers, and the connection between the lantern and mill access.",
+      "mood": "Tense with growing urgency as new evidence emerges, mixed with the continuing romantic tension between Nell and Kit",
+      "chapterType": "Investigation"
+    },
+    {
+      "chapter": 8,
+      "title": "The Fete",
+      "characters": "Nell Ashby, Aunt Maud, Kit Merrow, Ambrose Vane, Ivy Tarrant, Constable Dorrit, Mrs. Tibbs",
+      "events": "Nell discusses the murder investigation with Aunt Maud in the kitchen, attends the church fete where she judges a jam competition featuring Kit Merrow's entry, observes various characters including Ambrose Vane and Ivy Tarrant, and compiles her notes about the case facts in the evening.",
+      "stateChanges": "Nell systematically compiles all known facts about the murder case but feels no closer to solving the mystery. She observes Ambrose Vane's behavior at the fete and judges Kit's jam entry, showing continued connection despite his recent arrest.",
+      "hookActivity": "The murder investigation hook progresses as Nell compiles her notes but still feels stuck. The romantic tension hook advances through Nell judging Kit's jam entry. The Ambrose secret hook progresses as Nell observes his behavior at the fete.",
+      "mood": "Reflective and determined but frustrated, as Nell feels she's gathering facts but not making progress toward solving the mystery.",
+      "chapterType": "Investigation"
+    },
+    {
+      "chapter": 9,
+      "title": "Debts and Wills",
+      "characters": "Nell Ashby, Silas Rudd, Ivy Tarrant, Ambrose Vane, Mr. Pell",
+      "events": "Nell investigates Silas Rudd's burning of papers and discovers his debt was forgiven by Owen. She then finds Owen's codicil revoking partnership with Ambrose and requiring audit of financial documents. Ambrose warns Nell about the dangers of the sluice bank at night.",
+      "stateChanges": "Silas Rudd cleared as suspect; Ambrose Vane established as prime suspect with clear financial motive; Nell's suspicion shifts strongly to Ambrose",
+      "hookActivity": "Financial motive hook progresses with specific evidence from will codicil; Ambrose secret hook advances with warning to Nell; Murder investigation hook progresses with clear evidence of murder; True identity hook advances as Nell suspects Ambrose; Sluice knowledge hook progresses with Ambrose's reference to sluice dangers",
+      "mood": "Tense and foreboding as Nell realizes she's getting close to the truth and the murderer is aware of her investigation",
+      "chapterType": "Investigation"
+    },
+    {
+      "chapter": 10,
+      "title": "The Drainage Board",
+      "characters": "Nell Ashby, Kit Merrow, Ambrose Vane",
+      "events": "Nell and Kit discover financial discrepancies in Fen Drainage Board records proving Ambrose has been skimming money for years; they argue about whether to go to police; Nell returns home to find her window ajar and case notes missing",
+      "stateChanges": "Nell now has concrete evidence of Ambrose's financial crimes; she and Kit have separated after their argument; Nell's home has been entered and her investigation notes stolen; she feels truly alone and in danger",
+      "hookActivity": "Multiple hooks resolved including discovery of financial discrepancies and connection to will codicil; Ambrose danger hook progresses as he becomes more threatening; Nell's investigation continues despite Kit's concerns",
+      "mood": "Tense, fearful, determined",
+      "chapterType": "Investigative"
+    },
+    {
+      "chapter": 11,
+      "title": "Bait",
+      "characters": "Nell Ashby, Kit Merrow, Ambrose Vane",
+      "events": "Nell sets a trap for Ambrose by falsely claiming she found the missing ledger. She and Kit watch as Ambrose enters the mill office to check the safe, confirming his guilt. Nell retrieves the ledger, now having concrete proof of Vane's financial crimes. Their romantic relationship deepens with a kiss and Kit giving Nell his personal sluice key.",
+      "stateChanges": "Nell now possesses concrete evidence of Ambrose's financial crimes. The romantic relationship between Nell and Kit has deepened significantly. Ambrose is now aware that Nell is onto him.",
+      "hookActivity": "The ambrose-secret hook advances as Nell now has concrete proof of his financial crimes. The murder-investigation hook progresses as Nell has the missing ledger with evidence. The romantic-tension hook advances with Nell and Kit's kiss. Hook-27 is resolved as Nell has recovered the ledger. Hook-29 progresses as Nell now has proof but needs to decide how to proceed safely.",
+      "mood": "Tense with moments of romantic connection, building toward confrontation",
+      "chapterType": "Turning point"
+    },
+    {
+      "chapter": 12,
+      "title": "The Gate",
+      "characters": "Nell Ashby, Kit Merrow, Ambrose Vane, Constable Arthur Dorrit",
+      "events": "Nell and Kit confront Ambrose Vane with the ledger containing evidence of his financial crimes. Ambrose confesses to murdering Owen Tarrant by pushing him into the mill race to prevent exposure of his skimming operation from the Fen Drainage Board fund. When Ambrose tries to escape, Nell and Kit trap him by closing the sluice gates. Constable Dorrit arrives and arrests Ambrose. Nell and Kit share a deep romantic kiss as they walk home together, finally free from the threat.",
+      "stateChanges": "The murder case is solved with Ambrose's confession and arrest. Nell's investigation skills are validated. The romantic relationship between Nell and Kit deepens significantly. The town will now have to reconcile with the truth that Owen's death was not an accident.",
+      "hookActivity": "Multiple key hooks are resolved including the true identity of the murderer, the financial motive, and the murder investigation itself. The romantic tension hook progresses as Nell and Kit's relationship deepens after the resolution of the case. New hooks are created for the aftermath of the revelation and the development of Nell and Kit's relationship.",
+      "mood": "Tense confrontation followed by relief, closure, and romantic fulfillment",
+      "chapterType": "Climax and resolution"
+    },
+    {
+      "chapter": 13,
+      "title": "Still Water",
+      "characters": "Nell Ashby, Kit Merrow, Ivy Tarrant, Mr. Josiah Pell, Constable Arthur Dorrit",
+      "events": "The coroner delivers an unlawful killing verdict for Owen Tarrant's death. Ivy Tarrant thanks Nell for finding the proof. Nell and Kit walk along the towpath, discussing Vane's arrest and financial motives. Kit formally asks to court Nell, and she accepts. Mr. Pell offers Nell a position as his articled clerk, which she accepts.",
+      "stateChanges": "Ambrose Vane is convicted of murder and imprisoned. Owen Tarrant's death is officially ruled a murder. Nell accepts a position as articled clerk to Mr. Pell. Nell and Kit begin a formal courtship. The town can begin healing with the truth revealed.",
+      "hookActivity": "The murder investigation hook is resolved with Ambrose's conviction. The romantic tension hook progresses as Nell and Kit agree to courtship. The personal growth hook advances as Nell accepts the articled clerk position. The town acceptance hook progresses as the community begins to heal.",
+      "mood": "Reflective and hopeful, with a sense of closure after the murder case and anticipation for new beginnings in Nell's career and personal life.",
+      "chapterType": "Resolution and transition"
+    }
+  ]
+}
