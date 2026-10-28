@@ -230,6 +230,57 @@ function evidence(value: unknown): ProposedScene["evidence"] {
   return out;
 }
 
+/**
+ * Escape double quotes a model left unescaped inside a string, as when it copies
+ * dialogue into a quote: `"opposition": "Get out," he said.` A quote inside a
+ * string closes it only when what follows (after spaces) is `,` `:` `}` `]` or
+ * the end; any other is escaped. Used only when the reply does not parse as is.
+ */
+export function escapeStrayQuotes(json: string): string {
+  let out = "";
+  let inString = false;
+  for (let i = 0; i < json.length; i += 1) {
+    const char = json[i]!;
+    if (inString && char === "\\") {
+      out += char + (json[i + 1] ?? "");
+      i += 1;
+      continue;
+    }
+    if (char === "\"") {
+      if (!inString) inString = true;
+      else if (/^\s*(?:[,:}\]]|$)/u.test(json.slice(i + 1, i + 40))) inString = false;
+      else {
+        out += "\\\"";
+        continue;
+      }
+    }
+    out += char;
+  }
+  return out;
+}
+
+/** Parse the JSON object or array in a reply, retrying once with stray quotes escaped. */
+function parseJson(cleaned: string, arrayFirst: boolean): unknown {
+  const body = arrayFirst ? `{"scenes":${cleaned.slice(cleaned.indexOf("["))}}` : cleaned;
+  const strict = extractJson(body);
+  try {
+    if (strict !== null) return JSON.parse(strict);
+  } catch (error) {
+    const start = body.indexOf("{");
+    const repaired = extractJson(escapeStrayQuotes(body.slice(start)));
+    if (repaired === null) throw error;
+    try {
+      return JSON.parse(repaired);
+    } catch {
+      throw error;
+    }
+  }
+  const start = body.indexOf("{");
+  if (start < 0) return null;
+  const repaired = extractJson(escapeStrayQuotes(body.slice(start)));
+  return repaired === null ? null : JSON.parse(repaired);
+}
+
 const normalizeId = (value: unknown) => typeof value === "string" ? value.trim().toLowerCase().replace(/\s+|_/gu, ".").replace(/\.{2,}/gu, ".") : "";
 
 /**
@@ -243,13 +294,7 @@ export function parseAnnotationReply(reply: string, ids: ReadonlyArray<string>):
   const arrayFirst = cleaned.indexOf("[") >= 0 && (cleaned.indexOf("{") < 0 || cleaned.indexOf("[") < cleaned.indexOf("{"));
   let parsed: unknown;
   try {
-    if (arrayFirst) {
-      const wrapped = extractJson(`{"scenes":${cleaned.slice(cleaned.indexOf("["))}}`);
-      parsed = wrapped === null ? null : JSON.parse(wrapped);
-    } else {
-      const json = extractJson(cleaned);
-      parsed = json === null ? null : JSON.parse(json);
-    }
+    parsed = parseJson(cleaned, arrayFirst);
   } catch (error) {
     return { ok: false, error: `the JSON does not parse: ${(error as Error).message}` };
   }

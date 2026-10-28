@@ -1,6 +1,6 @@
 # Seeded-error evaluation
 
-Generated 2026-10-28T08:52:54.771Z by `pnpm --filter @plotlint/rules eval` (see "How to run" below). Book: `wenlow + thornbury`, 9 clean chapters, 353 mutants.
+Generated 2026-10-28T10:43:33.719Z by `pnpm --filter @plotlint/rules eval` (see "How to run" below). Book: `wenlow + thornbury`, 9 clean chapters, 353 mutants.
 
 Phase 3 gate (PLAN.md): recall and false-alarm rate per rule, and each rule beats the LLM-only auditor on false positives. Phase 4 adds the structural (L4), genre-pack and prose-metric (L2) rules, scored the same way; the auditor was run on the continuity mutants only, so its columns are empty for the rest.
 

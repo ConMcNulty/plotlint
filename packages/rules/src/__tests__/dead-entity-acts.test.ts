@@ -56,6 +56,20 @@ describe("continuity/dead-entity-acts", () => {
     ], 6))).toEqual([]);
   });
 
+  it("ignores what an inquest finds about the dead", () => {
+    // As GLM extracted it from the lessing-fen corpus book: the inquest in ch3.
+    expect(checkSnapshot(snapshot([
+      fact("Owen Tarrant", "status", "drowned in the mill race", 1),
+      fact("Owen Tarrant", "ruling", "accidental", 3),
+      fact("Owen Tarrant", "signs_of_struggle", "none", 3),
+      fact("Owen Tarrant", "inquest verdict", "unlawful killing", 13),
+    ], 13))).toEqual([]);
+    expect(checkSnapshot(snapshot([
+      fact("Owen Tarrant", "status", "drowned in the mill race", 1),
+      fact("Owen Tarrant", "location", "the mill office", 3),
+    ], 3)).map((d) => d.chapter)).toEqual([3]);
+  });
+
   it("leaves a character whose death fact was later expired to dead-then-alive", () => {
     expect(checkSnapshot(snapshot([
       fact("Mira", "status", "dead", 5, 8),

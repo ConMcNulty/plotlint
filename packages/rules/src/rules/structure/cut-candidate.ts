@@ -10,8 +10,11 @@ import { dependencyGraph } from "./dependency-graph.js";
 // (default 1), so a chapter the settler recorded nothing for is not judged, and
 // at least two later chapters with facts, so unsettled chapters are not read as
 // "nothing depends on it"; and
-// scene nodes (option `scenes`, default true) are flagged only in a chapter
-// that has dependents itself.
+// scene nodes are opt-in (option `scenes`, default false) and flagged only in a
+// chapter that has dependents itself. Scene findings are off by default because
+// the settler's facts are chapter-level free text: on the 13-chapter, 39-scene
+// lessing-fen eval book only 2 of 13 scene flags were real (the later scenes
+// did use what the flagged scene established, in words no fact repeats).
 
 /** Up to this many of the node's facts are cited. */
 const MAX_CITED = 3;
@@ -26,7 +29,7 @@ export const cutCandidate: Rule = {
     const end = bookEnd(snapshot, chapters);
     const protectLast = numberOption(options, "protectLast", 2);
     const minFacts = Math.max(1, numberOption(options, "minFacts", 1));
-    const graph = dependencyGraph(snapshot, { ...(chapters ? { chapters } : {}), scenes: options.scenes !== false });
+    const graph = dependencyGraph(snapshot, { ...(chapters ? { chapters } : {}), scenes: options.scenes === true });
     const findings: Diagnostic[] = [];
     const flaggedChapters = new Set<number>();
     // Silence downstream only means something when later chapters were settled:
