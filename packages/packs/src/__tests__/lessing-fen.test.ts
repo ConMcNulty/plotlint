@@ -2,14 +2,16 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { Diagnostic } from "@plotlint/diagnostics";
-import { builtinRegistry, checkSnapshot, locateSceneQuote, SceneAnnotationsFileSchema, staleSceneAnnotations, type BookRuleData, type SceneAnnotationsFile } from "@plotlint/rules";
+import {
+  builtinRegistry, checkSnapshot, hookStatusRows, locateSceneQuote, SceneAnnotationsFileSchema, staleSceneAnnotations, type BookRuleData, type SceneAnnotationsFile,
+} from "@plotlint/rules";
 import { corpusRoot, loadCorpusBook, type CleanBook } from "@plotlint/rules/eval";
 import { knownRuleIds, resolveBookPacks } from "../node.js";
 
 // The lessing-fen corpus book (packages/rules/eval/corpus/lessing-fen): a
 // 13-chapter, 39-scene mystery with a romantic subplot and known structure
-// problems (PLANTED.md), settled and scene-annotated by glm-4.5-flash, read with
-// the general, mystery and romance packs. These pin what the state rules say
+// problems (PLANTED.md), settled, scene-annotated and hook-reconciled
+// (story/plotlint/hooks.json) by glm-4.5-flash, read with the general, mystery and romance packs. These pin what the state rules say
 // about it (scored in SCORE.md), so a change in any rule's findings shows here.
 
 const dir = join(corpusRoot, "lessing-fen");
@@ -83,12 +85,25 @@ describe("the lessing-fen corpus book", () => {
     }
   });
 
-  it("pins the rest: 29 unresolved hooks, the agency and tension notes, one misspelt name", () => {
+  it("reads the ledger through the hook overlay: 21 of the 29 hooks it leaves open are answered later, with the passage", () => {
+    const rows = hookStatusRows(snapshot, book.hooks, clean.chapters);
+    const reconciled = rows.filter((row) => row.entry && row.entry.annotator !== "author");
+    expect(reconciled).toHaveLength(29);
+    expect(reconciled.filter((row) => row.stale)).toEqual([]);
+    expect(rows.filter((row) => row.resolvedIn !== undefined)).toHaveLength(21);
+    // The planted dropped subplot (P1) and whistle (P2) stay open.
+    expect(rows.find((row) => row.id === "hook-4")).toMatchObject({ effective: "open" });
+    expect(rows.find((row) => row.id === "hook-5")).toMatchObject({ effective: "open" });
+    // The red herring's two hooks are closed by Silas's letter in ch9.
+    expect(rows.filter((row) => row.id === "hook-17" || row.id === "hook-20").map((row) => row.resolvedIn)).toEqual([9, 9]);
+  });
+
+  it("pins the rest: 8 unresolved hooks, the agency and tension notes, one misspelt name", () => {
+    expect(found.filter((d) => d.ruleId === "structure/unpaid-setup").map((d) => /hook (\S+) \(/u.exec(d.evidence[0] ?? "")?.[1])).toEqual([
+      "hook-4", "hook-5", "hook-8", "hook-7", "hook-9", "hook-21", "hook-25", "hook-26",
+    ]);
     expect(pinned("structure/unpaid-setup")).toEqual([
-      [1, "warning"], [1, "warning"], [2, "warning"], [2, "warning"], [3, "warning"], [3, "warning"], [3, "warning"], [3, "warning"],
-      [4, "warning"], [4, "warning"], [5, "warning"], [5, "warning"], [5, "warning"], [6, "warning"], [6, "warning"], [6, "warning"],
-      [7, "warning"], [7, "warning"], [7, "warning"], [8, "warning"], [8, "warning"], [9, "warning"], [9, "warning"],
-      [10, "warning"], [10, "warning"], [11, "warning"], [12, "warning"], [12, "warning"], [12, "warning"],
+      [2, "warning"], [2, "warning"], [3, "warning"], [3, "warning"], [3, "warning"], [7, "warning"], [9, "warning"], [9, "warning"],
     ]);
     expect(found.find((d) => d.ruleId === "structure/protagonist-agency")).toMatchObject({
       severity: "note", summary: "Nell Ashby causes 7 of 36 turning points (19%); the rest are done to them by others or by circumstance.",
@@ -98,6 +113,6 @@ describe("the lessing-fen corpus book", () => {
     });
     // A real slip of the drafting model: "Dorbit" once for Constable Dorrit (ch5).
     expect(found.find((d) => d.ruleId === "style/invented-term-spelling")).toMatchObject({ chapter: 5, summary: expect.stringMatching(/^"Dorbit" looks like a variant of "Dorrit"/u) });
-    expect(found).toHaveLength(34);
+    expect(found).toHaveLength(13);
   });
 });

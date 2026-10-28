@@ -71,6 +71,7 @@ function trackedItems(snapshot: RuntimeStateSnapshot, characters: ReadonlySet<st
 export const unpaidSetup: Rule = {
   id: "structure/unpaid-setup",
   layer: "structure",
+  hookOverlay: true,
   title: "Setups never paid off",
   rationale: "A question the story raises or an object it puts in the reader's hand is a promise. One that never returns leaves the reader waiting for a payoff that does not come; pay it off, cut it, or mark it as an open ending.",
   source: "Anton Chekhov, letter to A. S. Lazarev (1889) (\"Chekhov's gun\"); Robert McKee, Story (1997), ch. 10 \"Setups and Payoffs\"",

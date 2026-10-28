@@ -4,6 +4,7 @@ import type { z } from "zod";
 import { loadVerdicts } from "@plotlint/diagnostics/node";
 import { adaptiveOverlay, type AdaptiveOptions } from "./adaptive.js";
 import { FramesFileSchema, PacksFileSchema, RuleConfigFileSchema, type BookPlan, type BookRuleData, type RuleConfigFile } from "./book.js";
+import { HookOverlayFileSchema } from "./hook-overlay.js";
 import { InvariantsFileSchema } from "./invariants.js";
 import { SceneAnnotationsFileSchema } from "./scene-annotations.js";
 import { TravelFileSchema } from "./travel.js";
@@ -53,9 +54,9 @@ export async function readBookPlan(bookDir: string): Promise<BookPlan | undefine
   return Object.keys(plan).length ? plan : undefined;
 }
 
-/** Everything the rule engine reads for a book: `rules.json`, `frames.json`, `travel.json`, `invariants.json`, `packs.json`, `scenes.json`, and the plan in `book.json`. */
+/** Everything the rule engine reads for a book: `rules.json`, `frames.json`, `travel.json`, `invariants.json`, `packs.json`, `scenes.json`, `hooks.json`, and the plan in `book.json`. */
 export async function loadBookRuleData(bookDir: string): Promise<BookRuleData> {
-  const [config, frames, travel, invariants, packs, plan, scenes] = await Promise.all([
+  const [config, frames, travel, invariants, packs, plan, scenes, hooks] = await Promise.all([
     readPlotlintFile(bookDir, "rules.json", RuleConfigFileSchema),
     readPlotlintFile(bookDir, "frames.json", FramesFileSchema),
     readPlotlintFile(bookDir, "travel.json", TravelFileSchema),
@@ -63,11 +64,12 @@ export async function loadBookRuleData(bookDir: string): Promise<BookRuleData> {
     readPlotlintFile(bookDir, "packs.json", PacksFileSchema),
     readBookPlan(bookDir),
     readPlotlintFile(bookDir, "scenes.json", SceneAnnotationsFileSchema),
+    readPlotlintFile(bookDir, "hooks.json", HookOverlayFileSchema),
   ]);
   return {
     ...(config ? { config } : {}), ...(frames ? { frames } : {}), ...(travel ? { travel } : {}), ...(invariants ? { invariants } : {}),
     ...(packs ? { packs } : {}), ...(plan ? { plan } : {}),
-    ...(scenes ? { scenes } : {}),
+    ...(scenes ? { scenes } : {}), ...(hooks ? { hooks } : {}),
   };
 }
 

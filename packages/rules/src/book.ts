@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DiagnosticSeveritySchema } from "@plotlint/diagnostics";
+import type { HookOverlayFile } from "./hook-overlay.js";
 import type { InvariantsFile } from "./invariants.js";
 import type { SceneAnnotationsFile } from "./scene-annotations.js";
 import type { TravelFile } from "./travel.js";
@@ -99,4 +100,6 @@ export interface BookRuleData {
   readonly packs?: PacksFile;
   /** `scenes.json`: per-scene annotations (POV, goal, opposition, values, stakes) for the structure rules. */
   readonly scenes?: SceneAnnotationsFile;
+  /** `hooks.json`: hooks a later chapter answers although the settler's ledger leaves them open (see hook-overlay.ts). */
+  readonly hooks?: HookOverlayFile;
 }

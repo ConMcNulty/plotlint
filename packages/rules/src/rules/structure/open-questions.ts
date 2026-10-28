@@ -36,6 +36,7 @@ export function openCounts(snapshot: RuntimeStateSnapshot, end: number): number[
 export const openQuestions: Rule = {
   id: "structure/open-questions",
   layer: "structure",
+  hookOverlay: true,
   title: "Too few or too many open questions",
   rationale: "Readers turn pages to find out. Chapters with no open question give them no reason to; a chapter that raises a crowd of questions at once can confuse rather than intrigue. Keep at least one question alive and raise new ones a few at a time.",
   source: "Lee Child, \"A Simple Way to Create Suspense\", New York Times (2012); Robert McKee, Story (1997), on curiosity and concern",

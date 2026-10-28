@@ -26,6 +26,7 @@ import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../ut
 import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath } from "@plotlint/diagnostics/node";
 import { registerStudyCommands } from "./lint-study.js";
 import { addPacksCommand, bookPacks, effectiveRules } from "./lint-packs.js";
+import { addHooksCommand } from "./lint-hooks.js";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
@@ -674,6 +675,9 @@ async function withBackoff<T>(call: () => Promise<T>, attempts = 4): Promise<T> 
     }
   }
 }
+
+// `inkos lint hooks` and `inkos lint hooks reconcile` (lint-hooks.ts).
+addHooksCommand(lintCommand, { chapterTexts, loadSnapshot, withBackoff, parseChapter });
 
 lintCommand
   .command("annotate")
