@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  annotateChapter, annotationPrompt, detectLanguage, locateSceneQuote, mergeSceneAnnotations, parseAnnotationReply,
+  annotateChapter, annotationPrompt, detectLanguage, escapeStrayQuotes, locateSceneQuote, mergeSceneAnnotations, parseAnnotationReply,
   SceneAnnotationSchema, SceneAnnotationsFileSchema, sceneHash, segmentScenes, staleSceneAnnotations,
   type CompileMessage, type SceneAnnotation,
 } from "../index.js";
@@ -85,6 +85,18 @@ describe("parseAnnotationReply", () => {
   it("takes a bare array and assigns ids in order when the model leaves them out", () => {
     const result = parseAnnotationReply(JSON.stringify([{ ...goodScene1, id: undefined }, { ...goodScene2, id: undefined }]), ids);
     expect(result.ok && result.scenes.map((scene) => scene.id)).toEqual(ids);
+  });
+
+  it("repairs dialogue quotes the model left unescaped inside a string", () => {
+    // As glm-4.5-flash replied for ch7 of the lessing-fen corpus book.
+    const raw = reply([goodScene1, goodScene2]).replace(
+      JSON.stringify(goodScene1.evidence.opposition),
+      "\"\"Nobody goes in tonight,\" he said. \"Not you.\"\"",
+    );
+    expect(() => JSON.parse(raw)).toThrow();
+    const result = parseAnnotationReply(`\`\`\`json\n${raw}\n\`\`\``, ids);
+    expect(result.ok && result.scenes[0]!.evidence.opposition).toBe("\"Nobody goes in tonight,\" he said. \"Not you.\"");
+    expect(escapeStrayQuotes("{\"a\": \"say \"hi\" now\", \"b\": [\"x\"]}")).toBe("{\"a\": \"say \\\"hi\\\" now\", \"b\": [\"x\"]}");
   });
 
   it("reports a reply with no JSON, no scenes or no known id", () => {
