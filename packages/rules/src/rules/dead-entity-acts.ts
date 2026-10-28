@@ -22,8 +22,10 @@ const DEATH_PREDICATES = new Set([
   "死于", "死在", "被杀", "遇害",
 ]);
 
-// Facts that may still change after a death without the character acting.
-export const POSTHUMOUS_PREDICATE = /(cause.?of.?death|death|died|buried|burial|grave|tomb|body|corpse|remains|remembered|memory|legacy|estate|inherit|will|mourn|funeral|ghost|spirit|死|葬|墓|遗|尸|悼|纪念|鬼|魂)/u;
+// Facts that may still change after a death without the character acting,
+// including what an inquest finds about the body ("ruling · accidental",
+// "signs_of_struggle · none", from a real GLM import of a mystery).
+export const POSTHUMOUS_PREDICATE = /(cause.?of.?death|death|died|buried|burial|grave|tomb|body|corpse|remains|remembered|memory|legacy|estate|inherit|will|mourn|funeral|ghost|spirit|inquest|verdict|ruling|coroner|autopsy|post.?mortem|signs.?of|wound|injur|死|葬|墓|遗|尸|悼|纪念|鬼|魂|验尸|尸检|裁定)/u;
 
 export function isDeathFact(fact: CurrentStateFact): boolean {
   const predicate = normalize(fact.predicate);

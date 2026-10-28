@@ -7,7 +7,8 @@ import { hookPromise, hookStart, numberOption, renderHook, structureFinding, sum
 // One resolved `minGap` (default 2) or more chapters after it was planted, with no
 // recorded advance in between, may land without having been built up; that case
 // needs the book's chapter summaries to name hooks by id, since the ledger keeps
-// only a hook's first and last chapters, so it is skipped when they do not.
+// only a hook's first and last chapters, so it is skipped when they do not, and
+// for a hook whose id no summary ever names.
 // Both are notes: a quick setup and payoff inside one chapter is sometimes the point.
 
 export const unearnedPayoff: Rule = {
@@ -33,7 +34,11 @@ export const unearnedPayoff: Rule = {
         continue;
       }
       if (!traced || resolved - start < minGap) continue;
-      const between = summaryMentions(snapshot, hook).filter((chapter) => chapter > start && chapter < resolved);
+      // Summaries that never name this hook's id (GLM describes numbered hooks
+      // like "hook-3" in words) say nothing about whether it was advanced.
+      const named = summaryMentions(snapshot, hook);
+      if (named.length === 0) continue;
+      const between = named.filter((chapter) => chapter > start && chapter < resolved);
       const summarised = snapshot.chapterSummaries.rows.filter((row) => row.chapter > start && row.chapter < resolved).length;
       // Only when every chapter in between has a summary that could have named it.
       if (between.length > 0 || summarised < resolved - start - 1) continue;

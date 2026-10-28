@@ -20,7 +20,7 @@ with a reason.
 | `structure/unpaid-setup` | warning | Chekhov's gun: "If in the first act you have hung a pistol on the wall, then in the following one it should be fired." |
 | `structure/unearned-payoff` | warning | Setup and payoff (screenwriting craft, e.g. McKee, *Story*): a payoff the reader was not prepared for reads as a cheat. |
 | `structure/pov-discipline` | note | Limited-POV craft (Browne and King, *Self-Editing for Fiction Writers*): the narration knows only what its viewpoint character can know. Judged by the scene annotator, so only ever a note. |
-| `structure/cut-candidate` | note | The cut test (developmental editing): if nothing later depends on a scene, it may not be pulling its weight. Advisory only. |
+| `structure/cut-candidate` | note | The cut test (developmental editing): if nothing later depends on a chapter, it may not be pulling its weight (scenes too with option `scenes: true`). Advisory only. |
 | `structure/open-questions` | note | Narrative questions (Lee Child, "ask a question and delay the answer"): curiosity, not confusion. |
 | `structure/subplot-balance` | note | Subplot boards (outlining practice): a thread that vanishes leaves a promise unkept. |
 | `structure/scene-turn`, `structure/goal-conflict-outcome` | note | Scene and sequel (Dwight Swain, *Techniques of the Selling Writer*); value turns (McKee). Many good scenes break these, so they stay notes here. |
