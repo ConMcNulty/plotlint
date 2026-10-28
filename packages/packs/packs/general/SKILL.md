@@ -34,11 +34,18 @@ with a reason.
 
 Floors and bands, never targets: nothing rewards going further past a floor.
 
-- `metrics/lexical-diversity` min 40 (MTLD): only very repetitive prose is flagged.
-- `metrics/dialogue-ratio` 0.03 to 0.9: an almost dialogue-free or almost all-dialogue chapter.
-- `metrics/wall-of-text` max 400 words per paragraph.
+The bands are measured, about the 5th to 95th percentile of the chapters of four
+public-domain novels (Austen's *Emma*, Dickens's *Great Expectations*, Wharton's
+*The Age of Innocence* and *The House of Mirth*; `baselines/general.json` in
+`@plotlint/metrics`), so about one chapter in twenty of those books falls outside each:
 
-These are loose on purpose; genre packs narrow them.
+- `metrics/lexical-diversity` min 71 (MTLD).
+- `metrics/sentence-rhythm` sentence-length CV min 0.54; a flat stretch is 8 sentences with CV under 0.14.
+- `metrics/dialogue-ratio` 0.05 to 0.71: an almost dialogue-free or almost all-dialogue chapter.
+- `metrics/sensory-detail` min 4.4 sensory words per 1,000.
+- `metrics/wall-of-text` max 427 words per paragraph.
+
+Genre packs set their own bands where their genre's reference books measure differently.
 
 ## Scene annotations
 

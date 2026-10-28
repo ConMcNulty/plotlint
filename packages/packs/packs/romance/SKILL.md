@@ -1,6 +1,6 @@
 ---
 name: romance
-description: Check pack for romance. Turns protagonist agency, subplot balance and the tension curve down to notes; raises the dialogue floor; checks for a happy or hopeful ending, the relationship's share of the book and both leads' points of view; adds romance clichés.
+description: Check pack for romance. Turns protagonist agency, subplot balance and the tension curve down to notes; checks for a happy or hopeful ending, the relationship's share of the book and both leads' points of view; adds romance clichés.
 ---
 
 # Romance pack
@@ -20,7 +20,6 @@ stricter setting wins; your `rules.json` overrides both.
 | `structure/hopeful-ending` | warning | RWA's definition of the genre: "a central love story and an emotionally satisfying and optimistic ending" (HEA, happily ever after, or HFN, happy for now). In a finished book, warns when the last relationship fact between the leads is a break-up, a parting or a death with nothing hopeful after it. The leads are the rule option `leads` (two names) or else the pair with the most relationship facts with each other. |
 | `structure/central-relationship` | note | The relationship is the main plot (RWA; Hayes): notes when the leads appear together, or their relationship changes, in less than `minShare` (default 40%) of the chapters. |
 | `structure/both-leads-pov` | note | Dual-POV convention: notes a lead who never has the point of view in the scene annotations (`story/plotlint/scenes.json`); silent until a book has them. |
-| `metrics/dialogue-ratio` | min 0.15 | Banter and confession carry the genre (Hayes; Jennifer Crusie's essays on romantic comedy); a near-silent chapter is worth a look. |
 | `style/romance.Cliches` | note | The "breath she didn't know she was holding" family of stock phrases, skipped in dialogue. |
 
 ## Planned

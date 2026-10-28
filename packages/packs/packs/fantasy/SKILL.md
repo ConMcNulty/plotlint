@@ -1,6 +1,6 @@
 ---
 name: fantasy
-description: Check pack for fantasy and science fiction. World rules, travel and resource ledgers become errors; a tighter wall-of-text band against exposition dumps; one spelling per invented term; fantasy clichés.
+description: Check pack for fantasy and science fiction. World rules, travel and resource ledgers become errors; dialogue, sensory-detail and wall-of-text bands measured on fantasy reference books; one spelling per invented term; fantasy clichés.
 ---
 
 # Fantasy and science fiction pack
@@ -18,7 +18,9 @@ overrides both.
 | `continuity/impossible-travel` | error | Tolkien's practice of plotting journeys against the map and the calendar; readers of the genre check. |
 | `continuity/negative-resource` | error | Mana, ammunition and qi are the genre's stakes; spending what was never there (LitRPG and progression-fantasy ledgers) undoes them. |
 | `style/invented-term-spelling` | warning | Invented names have no dictionary, so spellcheck cannot keep them straight; series editors keep a bible of terms for that. Flags a rare spelling one or two letters, a hyphen or an apostrophe away from a capitalised term the book uses often ("Aes Sedia" for "Aes Sedai", "Mist-born" for "Mistborn"), at each use, with a quick fix to the usual spelling. Names the story state records as separate entities are left alone. A note in the general pack. |
-| `metrics/wall-of-text` | max 300 words per paragraph | "As you know, Bob" exposition (the SF workshop tradition, e.g. the Turkey City Lexicon) tends to arrive as one long block. |
+| `metrics/dialogue-ratio` | 0 to 0.69 | Measured on the fantasy reference books (MacDonald, Morris, Dunsany, Haggard, Baum): quests alone or among strangers leave chapters almost without dialogue, so there is no floor; the ceiling is their 95th percentile. |
+| `metrics/sensory-detail` | min 7 per 1,000 words | Secondary worlds are built through the senses; the reference books' 5th percentile sits well above general fiction's. |
+| `metrics/wall-of-text` | max 541 words per paragraph | Their 95th percentile. Exposition ("As you know, Bob", the Turkey City Lexicon) arrives as long blocks, but the genre's own paragraphs run long: a 300-word ceiling flagged two reference chapters in five. |
 | `style/fantasy.Cliches` | note | "An ancient evil", "the chosen one" (Diana Wynne Jones, *The Tough Guide to Fantasyland*). |
 
 ## Planned
