@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-28T04:56:07.356Z",
+ "generated": "2026-10-28T08:52:54.771Z",
  "book": "wenlow + thornbury",
  "chapters": 9,
  "skipped": [],
@@ -78,7 +78,13 @@
        "summary": "Jonas Marrow is recorded as dead since chapter 3, but gains new state in chapter 5."
       }
      ],
-     "collateral": []
+     "collateral": [
+      {
+       "ruleId": "metrics/lexical-diversity",
+       "chapter": 3,
+       "summary": "Lexical diversity is low for this genre: MTLD 67"
+      }
+     ]
     },
     {
      "id": "dead-entity-acts/7",
@@ -1225,7 +1231,7 @@
      "book": "wenlow"
     }
    ],
-   "collateralRate": 0.0030303030303030303,
+   "collateralRate": 0.0029154518950437317,
    "outcomes": [
     {
      "id": "invariant/1",
@@ -1335,7 +1341,7 @@
      "book": "wenlow"
     }
    ],
-   "collateralRate": 0.003048780487804878,
+   "collateralRate": 0.002932551319648094,
    "outcomes": [
     {
      "id": "unpaid-setup/1",
@@ -1677,7 +1683,13 @@
      "description": "Crane's deathbed answers everything in ch3 and the ledger records no new question after it (ch3–5 flat).",
      "caught": true,
      "echoes": [],
-     "collateral": []
+     "collateral": [
+      {
+       "ruleId": "metrics/lexical-diversity",
+       "chapter": 3,
+       "summary": "Lexical diversity is low for this genre: MTLD 66"
+      }
+     ]
     },
     {
      "id": "open-questions/3",
@@ -1722,7 +1734,13 @@
      "description": "Ch3 raises seven questions at once (five new hooks besides the council man and the ferry).",
      "caught": true,
      "echoes": [],
-     "collateral": []
+     "collateral": [
+      {
+       "ruleId": "metrics/lexical-diversity",
+       "chapter": 3,
+       "summary": "Lexical diversity is low for this genre: MTLD 69"
+      }
+     ]
     },
     {
      "id": "open-questions/8",
@@ -1749,7 +1767,13 @@
      "description": "Expected miss: everything is answered in ch3, but the settler leaves the hooks 'progressing', so the ledger still reads them as open.",
      "caught": false,
      "echoes": [],
-     "collateral": []
+     "collateral": [
+      {
+       "ruleId": "metrics/lexical-diversity",
+       "chapter": 3,
+       "summary": "Lexical diversity is low for this genre: MTLD 66"
+      }
+     ]
     }
    ]
   },
@@ -3107,14 +3131,223 @@
    ]
   },
   {
+   "ruleId": "metrics/predictability",
+   "mutants": 12,
+   "caught": 10,
+   "recall": 0.8333333333333334,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "predictability/1",
+     "ruleId": "metrics/predictability",
+     "chapter": 4,
+     "description": "Ch2's arrival at the Heron (the room, Rook and the name Marrow) pasted into ch4's walk to the abbey.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 2,
+       "summary": "8 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/2",
+     "ruleId": "metrics/predictability",
+     "chapter": 2,
+     "description": "Ch4's dig and the strongbox lock pasted into ch2's evening at the Heron.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 4,
+       "summary": "12 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/3",
+     "ruleId": "metrics/predictability",
+     "chapter": 5,
+     "description": "Ch1's ferry crossing (Crane at the oar, his three passengers) pasted into ch5's funeral.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 1,
+       "summary": "11 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/4",
+     "ruleId": "metrics/predictability",
+     "chapter": 1,
+     "description": "Ch3's deathbed vigil, three paragraphs, pasted into ch1's evening at the mill.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 3,
+       "summary": "13 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/5",
+     "ruleId": "metrics/predictability",
+     "chapter": 3,
+     "description": "Ch5's scene at the empty ferry landing pasted into ch3's return to Wenlow.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 5,
+       "summary": "11 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/6",
+     "ruleId": "metrics/predictability",
+     "chapter": 4,
+     "description": "Ch1's exchange at the mill about the letter, four paragraphs, pasted at the end of ch4's descent.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 1,
+       "summary": "16 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/7",
+     "ruleId": "metrics/predictability",
+     "chapter": 4,
+     "description": "The walk to Stavely reused for the walk to Gorse Hill, lightly reworded (names, direction, place).",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 2,
+       "summary": "8 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/8",
+     "ruleId": "metrics/predictability",
+     "chapter": 1,
+     "description": "Ch4's climb with the compass reused in ch1, reworded from Jonas to Elspeth.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 4,
+       "summary": "10 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/9",
+     "ruleId": "metrics/predictability",
+     "chapter": 4,
+     "description": "The same block of stock phrasing (a deep breath, a pounding heart, nothing would ever be the same) in ch2 and ch4.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 2,
+       "summary": "9 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/10",
+     "ruleId": "metrics/predictability",
+     "chapter": 5,
+     "description": "The stock block in ch3 for Elspeth and again in ch5 for Jonas.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/predictability",
+       "chapter": 3,
+       "summary": "8 sentences far more predictable than the rest of the book"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "predictability/11",
+     "ruleId": "metrics/predictability",
+     "chapter": 2,
+     "description": "Expected miss: the stock block once, in ch2 alone; the model is trained on this book, so phrasing it has never seen is not predictable to it.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "predictability/12",
+     "ruleId": "metrics/predictability",
+     "chapter": 3,
+     "description": "Expected miss: one short paragraph (Thorne's three sentences on Crane) reused in ch3, too little to pull a five-sentence window under the floor.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
    "ruleId": "metrics/lexical-diversity",
    "mutants": 10,
    "caught": 10,
    "recall": 1,
    "cleanFindings": [],
    "cleanRate": 0,
-   "collateral": [],
-   "collateralRate": 0,
+   "collateral": [
+    {
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 3,
+     "summary": "Lexical diversity is low for this genre: MTLD 67",
+     "mutant": "dead-entity-acts/6",
+     "book": "wenlow"
+    },
+    {
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 3,
+     "summary": "Lexical diversity is low for this genre: MTLD 66",
+     "mutant": "open-questions/2",
+     "book": "wenlow"
+    },
+    {
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 3,
+     "summary": "Lexical diversity is low for this genre: MTLD 69",
+     "mutant": "open-questions/7",
+     "book": "wenlow"
+    },
+    {
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 3,
+     "summary": "Lexical diversity is low for this genre: MTLD 66",
+     "mutant": "open-questions/10",
+     "book": "wenlow"
+    }
+   ],
+   "collateralRate": 0.011661807580174927,
    "outcomes": [
     {
      "id": "lexical-diversity/1",
@@ -3313,8 +3546,8 @@
   {
    "ruleId": "metrics/dialogue-ratio",
    "mutants": 11,
-   "caught": 9,
-   "recall": 0.8181818181818182,
+   "caught": 10,
+   "recall": 0.9090909090909091,
    "cleanFindings": [],
    "cleanRate": 0,
    "collateral": [],
@@ -3405,8 +3638,8 @@
      "id": "dialogue-ratio/10",
      "ruleId": "metrics/dialogue-ratio",
      "chapter": 1,
-     "description": "Expected miss: ch1 recast as speech but for its long first paragraph, which leaves 73% of its words in quotes, inside the band.",
-     "caught": false,
+     "description": "Ch1 recast as speech but for its long first paragraph, which leaves 73% of its words in quotes, just over the ceiling.",
+     "caught": true,
      "echoes": [],
      "collateral": []
     },
@@ -3423,9 +3656,9 @@
   },
   {
    "ruleId": "metrics/sensory-detail",
-   "mutants": 10,
+   "mutants": 11,
    "caught": 9,
-   "recall": 0.9,
+   "recall": 0.8181818181818182,
    "cleanFindings": [],
    "cleanRate": 0,
    "collateral": [],
@@ -3471,7 +3704,7 @@
      "id": "sensory-detail/5",
      "ruleId": "metrics/sensory-detail",
      "chapter": 1,
-     "description": "Ch1 with all but three of its sensory words replaced.",
+     "description": "Ch1 with all but one of its sensory words replaced.",
      "caught": true,
      "echoes": [],
      "collateral": []
@@ -3480,7 +3713,7 @@
      "id": "sensory-detail/6",
      "ruleId": "metrics/sensory-detail",
      "chapter": 2,
-     "description": "Ch2 with all but one of its sensory words replaced.",
+     "description": "Ch2 with all but two of its sensory words replaced.",
      "caught": true,
      "echoes": [],
      "collateral": []
@@ -3489,7 +3722,7 @@
      "id": "sensory-detail/7",
      "ruleId": "metrics/sensory-detail",
      "chapter": 3,
-     "description": "Ch3 with all but three of its sensory words replaced.",
+     "description": "Ch3 with all but one of its sensory words replaced.",
      "caught": true,
      "echoes": [],
      "collateral": []
@@ -3498,7 +3731,7 @@
      "id": "sensory-detail/8",
      "ruleId": "metrics/sensory-detail",
      "chapter": 4,
-     "description": "Ch4 with all but three of its sensory words replaced.",
+     "description": "Ch4 with all but two of its sensory words replaced.",
      "caught": true,
      "echoes": [],
      "collateral": []
@@ -3506,14 +3739,23 @@
     {
      "id": "sensory-detail/9",
      "ruleId": "metrics/sensory-detail",
-     "chapter": 3,
-     "description": "Ch3 with all but five of its sensory words replaced.",
+     "chapter": 1,
+     "description": "Ch1 with all but two of its sensory words replaced (3.3 per 1000 words).",
      "caught": true,
      "echoes": [],
      "collateral": []
     },
     {
      "id": "sensory-detail/10",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 3,
+     "description": "Expected miss: ch3 with all but three of its sensory words replaced, 5.6 per 1000 words, still above the 4.4 floor.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/11",
      "ruleId": "metrics/sensory-detail",
      "chapter": 5,
      "description": "Expected miss: ch5 with every sensory word replaced; at 455 words it is under the 500 the rule needs to judge a chapter.",
@@ -3572,24 +3814,6 @@
     {
      "id": "wall-of-text/5",
      "ruleId": "metrics/wall-of-text",
-     "chapter": 3,
-     "description": "A 600-word paragraph of the Margery's history, early in ch3.",
-     "caught": true,
-     "echoes": [],
-     "collateral": []
-    },
-    {
-     "id": "wall-of-text/6",
-     "ruleId": "metrics/wall-of-text",
-     "chapter": 3,
-     "description": "A 450-word paragraph of the Margery's history, late in ch3.",
-     "caught": true,
-     "echoes": [],
-     "collateral": []
-    },
-    {
-     "id": "wall-of-text/7",
-     "ruleId": "metrics/wall-of-text",
      "chapter": 4,
      "description": "A 600-word paragraph of the Margery's history, early in ch4.",
      "caught": true,
@@ -3597,7 +3821,7 @@
      "collateral": []
     },
     {
-     "id": "wall-of-text/8",
+     "id": "wall-of-text/6",
      "ruleId": "metrics/wall-of-text",
      "chapter": 4,
      "description": "A 450-word paragraph of the Margery's history, late in ch4.",
@@ -3606,7 +3830,7 @@
      "collateral": []
     },
     {
-     "id": "wall-of-text/9",
+     "id": "wall-of-text/7",
      "ruleId": "metrics/wall-of-text",
      "chapter": 5,
      "description": "A 600-word paragraph of the Margery's history, early in ch5.",
@@ -3615,10 +3839,28 @@
      "collateral": []
     },
     {
+     "id": "wall-of-text/8",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 2,
+     "description": "A 440-word paragraph of history in ch2, just over the 427-word ceiling.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/9",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 4,
+     "description": "A 440-word paragraph of history in ch4, just over the 427-word ceiling.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
      "id": "wall-of-text/10",
      "ruleId": "metrics/wall-of-text",
-     "chapter": 3,
-     "description": "Expected miss: a 330-word paragraph of history, just under the ceiling.",
+     "chapter": 4,
+     "description": "Expected miss: a 400-word paragraph of history, just under the 427-word ceiling.",
      "caught": false,
      "echoes": [],
      "collateral": []
@@ -3917,6 +4159,16 @@
     },
     {
      "ruleId": "metrics/repeated-phrase",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "metrics/predictability",
      "mutants": 0,
      "caught": 0,
      "caughtStrict": 0,

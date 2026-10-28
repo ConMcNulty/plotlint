@@ -44,9 +44,10 @@ public-domain novels (Austen's *Emma*, Dickens's *Great Expectations*, Wharton's
 - `metrics/dialogue-ratio` 0.05 to 0.71: an almost dialogue-free or almost all-dialogue chapter.
 - `metrics/sensory-detail` min 4.4 sensory words per 1,000.
 - `metrics/wall-of-text` max 427 words per paragraph.
-- `metrics/predictability` min -2.5, window 5 sentences: a stretch of five or more sentences whose
-  words are far easier to guess than the book's usual prose (robust z of its surprisal below -2.5).
-  Stock phrasing, or a description or exchange reused from other chapters. Surprisal comes from a
+- `metrics/predictability` min -6, window 5 sentences: a stretch of five or more sentences whose
+  words are far easier to guess than the book's usual prose (robust z of its surprisal below -6).
+  Stock phrasing, or a description or exchange reused from other chapters. Plain prose in the
+  reference novels stays above -4.6, and five sentences pasted from another chapter fall to -7 or lower. Surprisal comes from a
   word trigram model with Kneser-Ney smoothing trained on the book's other chapters (Kneser and Ney
   1995; surprisal after Hale 2001 and Levy 2008), so it measures predictability relative to this
   book, not to English. Options in `rules.json`: `min`, `window`, `minWindowWords` (40),

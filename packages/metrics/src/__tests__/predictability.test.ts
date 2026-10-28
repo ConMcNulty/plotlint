@@ -1,6 +1,6 @@
 import { DiagnosticSchema } from "@plotlint/diagnostics";
 import { describe, expect, it } from "vitest";
-import { findPredictableStretches, kneserNeyScorer, metricStateRules, predictabilityRule, type Scorer } from "../index.js";
+import { DEFAULT_PREDICTABILITY_BAND, findPredictableStretches, kneserNeyScorer, metricStateRules, predictabilityRule, type Scorer } from "../index.js";
 
 // A small deterministic generator of varied prose, so no two chapters share their sentences.
 function prng(seed: number) {
@@ -49,7 +49,9 @@ const book = () => new Map([
 describe("metrics/predictability", () => {
   it("flags the recurring ritual passage as a ranged note in each chapter that repeats it", () => {
     const chapters = book();
-    const diagnostics = metricStateRules()[1]!.check({ snapshot: {} as never, chapters, options: {} });
+    // This generated book is all template (1.7 bits per word against 7.5 to 8 in real
+    // prose), which squeezes its spread: the ritual scores z -5.1, so the floor is set here.
+    const diagnostics = metricStateRules()[1]!.check({ snapshot: {} as never, chapters, options: { min: -4.5 } });
     expect(diagnostics.length).toBeGreaterThan(0);
     for (const diagnostic of diagnostics) {
       expect(DiagnosticSchema.parse(diagnostic)).toMatchObject({ ruleId: "metrics/predictability", layer: "metrics", severity: "note", confidence: "deterministic" });
@@ -104,6 +106,23 @@ describe("metrics/predictability", () => {
       .check({ snapshot: {} as never, chapters, options: {} })).toEqual([]);
     expect(predictabilityRule({ scorer: mock, bands: { "metrics/predictability": { minChapters: 4 } } })
       .check({ snapshot: {} as never, chapters, options: { minChapters: 3 } })).toHaveLength(1);
+  });
+
+  it("flags only a deep dip at the default floor, which plain prose in real novels stays above", () => {
+    // Words cost 10 to 12 bits by sentence length; a "dim" sentence costs 1.5 bits less (a dip that
+    // ordinary dialogue reaches in a novel), a "lamp" sentence 8 bits less (text the book has said before).
+    const mock: Scorer = {
+      name: "mock model",
+      reference: "nothing",
+      score: (input) => new Map([...input].map(([chapter, sentences]) =>
+        [chapter, sentences.map((sentence) => sentence.map(() => 10 + (sentence.length % 3) - (sentence.includes("lamp") ? 8 : sentence.includes("dim") ? 1.5 : 0)))])),
+    };
+    const run = (word: string) => Array.from({ length: 6 }, () => `She looked at the ${word} corner and then at the ${word} door.`).join(" ");
+    const chapters = new Map([[1, chapter(1)], [2, `${chapter(2)}\n\n${run("dim")}`], [3, `${chapter(3)}\n\n${run("lamp")}`]]);
+    const report = findPredictableStretches(chapters, mock);
+    expect(report.stretches.map((s) => s.chapter)).toEqual([3]);
+    expect(findPredictableStretches(chapters, mock, { ...DEFAULT_PREDICTABILITY_BAND, min: -2.5 }).stretches.map((s) => s.chapter)).toEqual([2, 3]);
+    expect(DEFAULT_PREDICTABILITY_BAND.min).toBe(-6);
   });
 
   it("is fast enough for a novel", () => {

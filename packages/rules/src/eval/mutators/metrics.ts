@@ -56,16 +56,22 @@ const WALL = [
 /** The wall cut to its first `words` words, ended as a sentence. */
 const wallOf = (words: number) => `${WALL.split(/\s+/u).slice(0, words).join(" ").replace(/[,;:]$/u, "")}.`;
 
-/** `metrics/wall-of-text` (ceiling 350 words): a long paragraph of narration with no dialogue. */
+/** `metrics/wall-of-text` (ceiling 427 words): a long paragraph of narration with no dialogue. */
 export const wallOfTextMutator: Mutator = mutator("metrics/wall-of-text", "A wall of narration: a long paragraph with no dialogue or break.", () => [
+  // Not in ch3, nor late in ch5: their MTLD sits just over the 71 floor, and a long paragraph there tips lexical-diversity too.
   ...eachPlace((chapter, anchor, place) => ({
     chapter, description: `A ${place === "early" ? 600 : 450}-word paragraph of the Margery's history, ${place} in ch${chapter}.`,
     edits: [paragraphAfter(chapter, anchor, wallOf(place === "early" ? 600 : 450))],
     match: [["Margery", "history", "backstory"], METRIC],
-  })).slice(0, 9),
+  })).filter((spec) => spec.chapter !== 3 && !(spec.chapter === 5 && spec.description.includes("late"))),
+  ...([[2, 1], [4, 0]] as const).map(([chapter, place]): MutantSpec => ({
+    chapter, description: `A 440-word paragraph of history in ch${chapter}, just over the 427-word ceiling.`,
+    edits: [paragraphAfter(chapter, ANCHORS[chapter]![place], wallOf(440))],
+    match: [["Margery", "history", "backstory"], METRIC],
+  })),
   {
-    chapter: 3, description: "Expected miss: a 330-word paragraph of history, just under the ceiling.",
-    edits: [paragraphAfter(3, ANCHORS[3]![0], wallOf(330))],
+    chapter: 4, description: "Expected miss: a 400-word paragraph of history, just under the 427-word ceiling.",
+    edits: [paragraphAfter(4, ANCHORS[4]![0], wallOf(400))],
     match: [["Margery", "history", "backstory"], METRIC],
   },
 ]);
@@ -123,7 +129,7 @@ const asSpeech = (keepFirst: number) => (text: string) => {
   }).join("\n\n");
 };
 
-/** `metrics/dialogue-ratio` (ceiling 75% of words in quotes): a chapter that is nearly all speech. */
+/** `metrics/dialogue-ratio` (ceiling 71% of words in quotes): a chapter that is nearly all speech. */
 export const dialogueRatioMutator: Mutator = mutator("metrics/dialogue-ratio", "A chapter nearly all dialogue, a script with no ground under it.", (clean) => {
   const speech = (chapter: number, keep: number, description: string): MutantSpec => ({
     chapter, description, edits: [transform(clean, chapter, asSpeech(keep))], match: [["dialogue", "speech", "script", "talking heads"], METRIC],
@@ -133,7 +139,7 @@ export const dialogueRatioMutator: Mutator = mutator("metrics/dialogue-ratio", "
     ...[2, 3, 4].map((chapter) => speech(chapter, 1, `Ch${chapter} recast as speech but for its first narrative paragraph.`)),
     speech(3, 2, "Ch3 recast as speech but for its first two narrative paragraphs."),
     speech(3, 3, "Ch3 recast as speech but for its first three narrative paragraphs."),
-    speech(1, 1, "Expected miss: ch1 recast as speech but for its long first paragraph, which leaves 73% of its words in quotes, inside the band."),
+    speech(1, 1, "Ch1 recast as speech but for its long first paragraph, which leaves 73% of its words in quotes, just over the ceiling."),
     speech(5, 0, "Expected miss: ch5 recast as speech; at 455 words it is under the 500 the rule needs to judge a chapter."),
   ];
 });
@@ -158,15 +164,16 @@ const unsensed = (keep: number, chapter: string) => {
   });
 };
 
-/** `metrics/sensory-detail` (floor 10 sensory words per 1000): a chapter with its seeing, hearing and touch taken out. */
+/** `metrics/sensory-detail` (floor 4.4 sensory words per 1000): a chapter with its seeing, hearing and touch taken out. */
 export const sensoryDetailMutator: Mutator = mutator("metrics/sensory-detail", "Little sensory detail: the chapter's sensory words replaced with abstract ones.", (clean) => {
   const plain = (chapter: number, keep: number, description: string): MutantSpec => ({
     chapter, description, ...retext(clean, chapter, unsensed(keep, clean.chapters.get(chapter)!)), match: [["sensory", "description", "abstract", "vivid", "concrete", "detail"], METRIC],
   });
   return [
     ...[1, 2, 3, 4].map((chapter) => plain(chapter, 0, `Ch${chapter} with every colour, sound, smell and touch word replaced by a plain one.`)),
-    ...[1, 2, 3, 4].map((chapter) => plain(chapter, chapter === 2 ? 1 : 3, `Ch${chapter} with all but ${chapter === 2 ? "one" : "three"} of its sensory words replaced.`)),
-    plain(3, 5, "Ch3 with all but five of its sensory words replaced."),
+    ...[1, 2, 3, 4].map((chapter) => plain(chapter, chapter % 2 ? 1 : 2, `Ch${chapter} with all but ${chapter % 2 ? "one" : "two"} of its sensory words replaced.`)),
+    plain(1, 2, "Ch1 with all but two of its sensory words replaced (3.3 per 1000 words)."),
+    plain(3, 3, "Expected miss: ch3 with all but three of its sensory words replaced, 5.6 per 1000 words, still above the 4.4 floor."),
     plain(5, 0, "Expected miss: ch5 with every sensory word replaced; at 455 words it is under the 500 the rule needs to judge a chapter."),
   ];
 });
@@ -185,7 +192,7 @@ const SAME = [
 ];
 const samePassage = (paragraphs: number) => Array.from({ length: paragraphs }, (_, i) => `${SAME[i % SAME.length]} ${SAME[(i + 2) % SAME.length]} ${SAME[(i + 4) % SAME.length]}`).join("\n\n");
 
-/** `metrics/lexical-diversity` (MTLD floor 60): a stretch that keeps reusing a handful of words. */
+/** `metrics/lexical-diversity` (MTLD floor 71): a stretch that keeps reusing a handful of words. */
 export const lexicalDiversityMutator: Mutator = mutator("metrics/lexical-diversity", "Low lexical diversity: a long stretch written in a handful of words.", () => [
   ...eachPlace((chapter, anchor, place) => ({
     chapter, description: `Five paragraphs of 'they walked and walked' prose, ${place} in ch${chapter}.`,
@@ -234,4 +241,58 @@ export const repeatedPhraseMutator: Mutator = mutator("metrics/repeated-phrase",
   },
 ]);
 
-export const metricMutators: ReadonlyArray<Mutator> = [wallOfTextMutator, sentenceRhythmMutator, dialogueRatioMutator, sensoryDetailMutator, lexicalDiversityMutator, repeatedPhraseMutator];
+// ---- predictability ---------------------------------------------------------
+
+/** Paragraphs `from`..`to` (inclusive, 0 being the heading) of a clean chapter. */
+const paragraphs = (clean: CleanBook, chapter: number, from: number, to = from) => clean.chapters.get(chapter)!.split("\n\n").slice(from, to + 1).join("\n\n");
+
+// Stock phrasing of the kind generated drafts lean on, in two pronoun forms.
+const STOCK = (who: string, her: string, she: string) => [
+  `${who} took a deep breath.`,
+  `${her[0]!.toUpperCase()}${her.slice(1)} heart pounded in ${her} chest.`,
+  `${she[0]!.toUpperCase()}${she.slice(1)} knew that nothing would ever be the same again.`,
+  `The weight of the moment settled over ${her === "her" ? "her" : "him"} like a heavy cloak.`,
+  `${she[0]!.toUpperCase()}${she.slice(1)} squared ${her} shoulders and stepped forward into the unknown.`,
+  `Whatever lay ahead, ${she} would face it with everything ${she} had.`,
+].join(" ");
+
+/**
+ * `metrics/predictability`: a stretch the book has already said, so the trigram
+ * model trained on the other chapters guesses it word for word: a description or
+ * exchange pasted from another chapter, lightly reworded or not, or a block of
+ * stock phrasing reused. The mutant's chapter is the one the passage is pasted into.
+ */
+export const predictabilityMutator: Mutator = mutator("metrics/predictability", "A formulaic stretch: a passage reused from another chapter, or stock phrasing repeated.", (clean) => {
+  const match: MutantSpec["match"] = [["predictab", "formulaic", "reused", "repeat", "copied", "same passage", "stock"], METRIC];
+  const paste = (from: number, paras: [number, number], to: number, place: 0 | 1, description: string, edit: (text: string) => string = (text) => text): MutantSpec => ({
+    chapter: to, description, edits: [paragraphAfter(to, ANCHORS[to]![place], edit(paragraphs(clean, from, ...paras)))], match,
+  });
+  const reword = (pairs: Array<[string, string]>) => (text: string) => pairs.reduce((out, [a, b]) => out.split(a).join(b), text);
+  return [
+    paste(2, [3, 4], 4, 0, "Ch2's arrival at the Heron (the room, Rook and the name Marrow) pasted into ch4's walk to the abbey."),
+    paste(4, [5, 6], 2, 1, "Ch4's dig and the strongbox lock pasted into ch2's evening at the Heron."),
+    paste(1, [2, 3], 5, 0, "Ch1's ferry crossing (Crane at the oar, his three passengers) pasted into ch5's funeral."),
+    paste(3, [12, 14], 1, 1, "Ch3's deathbed vigil, three paragraphs, pasted into ch1's evening at the mill."),
+    paste(5, [8, 10], 3, 0, "Ch5's scene at the empty ferry landing pasted into ch3's return to Wenlow."),
+    paste(1, [16, 19], 4, 1, "Ch1's exchange at the mill about the letter, four paragraphs, pasted at the end of ch4's descent."),
+    paste(2, [1, 2], 4, 0, "The walk to Stavely reused for the walk to Gorse Hill, lightly reworded (names, direction, place).",
+      reword([["second of October", "fifth of October"], ["a full day's walk", "half a day's walk"], ["east", "north"], ["Stavely", "Gorse Hill"], ["river road", "hill path"], ["the roofs of", "the walls of"]])),
+    paste(4, [2, 3], 1, 0, "Ch4's climb with the compass reused in ch1, reworded from Jonas to Elspeth.",
+      reword([["Jonas went", "Elspeth went"], ["Jonas said", "Elspeth said"], ["he caught", "she caught"], ["with him", "with her"]])),
+    {
+      chapter: 4, description: "The same block of stock phrasing (a deep breath, a pounding heart, nothing would ever be the same) in ch2 and ch4.",
+      edits: [paragraphAfter(2, ANCHORS[2]![0], STOCK("Elspeth", "her", "she")), paragraphAfter(4, ANCHORS[4]![1], STOCK("Elspeth", "her", "she"))], match,
+    },
+    {
+      chapter: 5, description: "The stock block in ch3 for Elspeth and again in ch5 for Jonas.",
+      edits: [paragraphAfter(3, ANCHORS[3]![1], STOCK("Elspeth", "her", "she")), paragraphAfter(5, ANCHORS[5]![1], STOCK("Jonas", "his", "he"))], match,
+    },
+    {
+      chapter: 2, description: "Expected miss: the stock block once, in ch2 alone; the model is trained on this book, so phrasing it has never seen is not predictable to it.",
+      edits: [paragraphAfter(2, ANCHORS[2]![1], STOCK("Elspeth", "her", "she"))], match,
+    },
+    paste(1, [15, 15], 3, 1, "Expected miss: one short paragraph (Thorne's three sentences on Crane) reused in ch3, too little to pull a five-sentence window under the floor."),
+  ];
+});
+
+export const metricMutators: ReadonlyArray<Mutator> = [wallOfTextMutator, sentenceRhythmMutator, dialogueRatioMutator, sensoryDetailMutator, lexicalDiversityMutator, repeatedPhraseMutator, predictabilityMutator];

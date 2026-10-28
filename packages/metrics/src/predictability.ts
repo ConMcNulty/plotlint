@@ -10,12 +10,14 @@ export const PREDICTABILITY_RULE_ID = "metrics/predictability";
 /**
  * The default band. The floor is a robust z-score of a stretch's mean surprisal
  * against every stretch in the book (median and MAD), so it is relative to the
- * book: -2.5 means far more predictable than the book usually is. Newton's
- * Opticks (about 100,000 words cut into 20 parts) has one stretch below it, a
- * proposition stated in fixed formulae.
+ * book. The floor is -6: in Pride and Prejudice, Persuasion and The Hound of
+ * the Baskervilles (59,000 to 121,000 words) no stretch of plain prose goes below
+ * -4.6 (-2.5 flags 12 to 26 ordinary exchanges per novel), while five or more
+ * sentences pasted from another chapter score -7.3 or lower, and passages reused
+ * in the five-chapter eval corpus book, verbatim or lightly reworded, -8 or lower.
  */
 export const DEFAULT_PREDICTABILITY_BAND: Readonly<MetricBand> = {
-  min: -2.5,
+  min: -6,
   window: 5,
   minWindowWords: 40,
   minWords: 300,
@@ -70,7 +72,7 @@ export function findPredictableStretches(chapters: ChapterTexts, scorer: Scorer 
   const minWindowWords = bandNumber(band, "minWindowWords", 40);
   const minWords = bandNumber(band, "minWords", 300);
   const minChapters = bandNumber(band, "minChapters", 3);
-  const floor = bandNumber(band, "min", -2.5);
+  const floor = bandNumber(band, "min", -6);
   const empty: PredictabilityReport = { stretches: [], median: 0, mad: 0, windows: 0 };
 
   const tokenized = new Map<number, { spans: Span[]; tokens: TokenizedChapter }>();
@@ -174,7 +176,7 @@ export function predictabilityRule(defaults: PredictabilityOptions = {}): Rule {
           severity: "note",
           summary: `${count} sentences far more predictable than the rest of the book`,
           evidence: [
-            `Surprisal ${fixed(stretch.bitsPerWord)} bits per word; the book's median is ${fixed(report.median)} (robust z ${fixed(stretch.z)}, floor ${fixed(bandNumber(band, "min", -2.5))}${source})`,
+            `Surprisal ${fixed(stretch.bitsPerWord)} bits per word; the book's median is ${fixed(report.median)} (robust z ${fixed(stretch.z)}, floor ${fixed(bandNumber(band, "min", -6))}${source})`,
             `Measured with a ${scorer.name} against ${scorer.reference}`,
           ],
         });

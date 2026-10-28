@@ -14,7 +14,7 @@ beforeAll(async () => {
 
 describe("seeded-error eval of the metric rules", () => {
   it("has ten or more mutants per metric rule and catches most of them", () => {
-    for (const id of [...METRIC_RULE_IDS, "metrics/repeated-phrase"]) {
+    for (const id of [...METRIC_RULE_IDS, "metrics/repeated-phrase", "metrics/predictability"]) {
       const score = result.rules.find((rule) => rule.ruleId === id)!;
       expect(score.mutants, id).toBeGreaterThanOrEqual(10);
       expect(score.recall!, id).toBeGreaterThanOrEqual(0.8);
