@@ -90,6 +90,12 @@ describe("structure/unpaid-setup", () => {
     expect(run(unpaidSetup, book(5, { facts: [ring[0]!, ...ring.slice(2)] }), done)).toEqual([]);
     expect(run(unpaidSetup, book(5, { facts: ring }), withOptions(done, "structure/unpaid-setup", { items: false }))).toEqual([]);
   });
+
+  it("reads an object named before anyone holds it as set up earlier, so holding it is its return", () => {
+    // The ostler's lantern in ch2 is the setup; Jonas carrying it in ch4 pays it off.
+    const facts = [fact("Ned", "hung", "lantern", 2), kinded("possession", "Jonas", "carries", "lantern", 4), fact("Jonas", "location", "the hill", 5)];
+    expect(run(unpaidSetup, book(5, { facts }), { plan: { status: "completed" } })).toEqual([]);
+  });
 });
 
 describe("structure/unearned-payoff", () => {
@@ -196,6 +202,15 @@ describe("structure/subplot-balance", () => {
     expect(finding).toMatchObject({ severity: "warning", chapter: 4, summary: "The Lena subplot vanishes after ch4 (8 chapters before the end) with 2 questions unresolved." });
     expect(run(subplotBalance, book(12, { facts, hooks }), unfinished)[0]).toMatchObject({ severity: "note" });
     expect(run(subplotBalance, book(12, { facts, hooks }), withOptions(finished, "structure/subplot-balance", { gap: 9 }))).toEqual([]);
+  });
+
+  it("counts a minor character known only by their trade, so their hooks form a subplot", () => {
+    const innkeeper = [kinded("identity", "Rook", "occupation", "innkeeper", 2), fact("Mira", "goal", "find her father", 1)];
+    const rook = [hook("rook-bridge", 2, "open", 2, { expectedPayoff: "What Rook saw from the bridge" }), hook("rook-debt", 2, "open", 2, { expectedPayoff: "What Rook owes Mira's father" })];
+    expect(subplots(book(10, { facts: innkeeper, hooks: rook })).map((s) => s.key)).toEqual(["Rook"]);
+    // A thing with an identity fact of another kind is no character.
+    const sword = [kinded("identity", "the sword", "true name", "Dawnbringer", 2)];
+    expect(subplots(book(10, { facts: sword, hooks: [hook("sword-a", 2, "open", 2, { expectedPayoff: "Who forged the sword" }), hook("sword-b", 2, "open", 2, { expectedPayoff: "Where the sword goes" })] }))).toEqual([]);
   });
 
   it("groups hooks linked by dependsOn into one thread", () => {
