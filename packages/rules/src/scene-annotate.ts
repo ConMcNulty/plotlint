@@ -30,6 +30,8 @@ export interface AnnotateOptions {
   readonly names?: ReadonlyArray<string>;
   /** Model calls per chapter, counting the retry after a bad reply. Default 2. */
   readonly attempts?: number;
+  /** Called before each model call with the scenes it annotates, so a caller can show progress. */
+  readonly onCall?: (sceneIds: ReadonlyArray<string>, attempt: number) => void;
 }
 
 export interface QuoteStats {
@@ -376,6 +378,7 @@ export async function annotateChapter(
   const attempts = options.attempts ?? 2;
   let lastError = "";
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    options.onCall?.(ids, attempt);
     const reply = await complete(messages);
     const result = parseAnnotationReply(reply, ids);
     if (result.ok) {

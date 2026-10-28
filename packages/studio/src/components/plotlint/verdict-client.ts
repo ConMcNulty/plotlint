@@ -6,6 +6,8 @@ import type { LintDiagnostic } from "./lint-client";
 export interface VerdictEvent {
   readonly diagnostic: LintDiagnostic;
   readonly action: VerdictAction;
+  /** How many findings share the diagnostic's fingerprint, when the caller knows. */
+  readonly findings?: number;
 }
 
 const ACCEPTING: ReadonlySet<VerdictAction> = new Set(["fix", "edited"]);
@@ -14,7 +16,7 @@ const ACCEPTING: ReadonlySet<VerdictAction> = new Set(["fix", "edited"]);
 export function verdictBody(bookId: string, events: ReadonlyArray<VerdictEvent>) {
   return {
     bookId,
-    verdicts: events.map(({ diagnostic, action }) => ({
+    verdicts: events.map(({ diagnostic, action, findings }) => ({
       ruleId: diagnostic.ruleId,
       fingerprint: diagnostic.fingerprint,
       ...(diagnostic.chapter === undefined ? {} : { chapter: diagnostic.chapter }),
@@ -23,6 +25,7 @@ export function verdictBody(bookId: string, events: ReadonlyArray<VerdictEvent>)
       quote: (diagnostic.sourceRefs?.[0]?.quote ?? diagnostic.summary).slice(0, 500),
       layer: diagnostic.layer,
       confidence: diagnostic.confidence,
+      ...(findings ? { findings } : {}),
     })),
   };
 }

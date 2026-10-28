@@ -85,13 +85,24 @@ export function outcomeLine(decision: Pick<StudyDecision, "outcome">, rejectAbov
   return "not enough data";
 }
 
-/** One row per check: verdicts, accept %, reject % with its 95% interval, and the gate's outcome. */
+/** Findings the verdicts cover: exact when every verdict recorded it, `≥` a lower bound otherwise, `-` when none did. */
+export function findingsCell(row: Pick<StudyDecision, "n" | "findings" | "findingsKnown">): string {
+  if (row.findingsKnown === 0) return "-";
+  return row.findingsKnown < row.n ? `≥${row.findings}` : String(row.findings);
+}
+
+/**
+ * One row per check: verdicts, the findings they cover, accept %, reject % with
+ * its 95% interval, and the gate's outcome. The gate counts verdicts (one per
+ * fingerprint), not findings.
+ */
 export function formatStudyTable(decisions: ReadonlyArray<StudyDecision>, options: { rejectAbove?: number; books?: boolean } = {}): string[] {
-  const header = ["check", ...(options.books ? ["books"] : []), "n", "accept", "reject (95% CI)", "verdict"];
+  const header = ["check", ...(options.books ? ["books"] : []), "n", "findings", "accept", "reject (95% CI)", "verdict"];
   const rows = decisions.map((row) => [
     row.ruleId,
     ...(options.books ? [String(row.books)] : []),
     String(row.n),
+    findingsCell(row),
     pct(row.acceptRate),
     `${pct(row.rejectRate)} (${pct(row.rejectInterval.low)}-${pct(row.rejectInterval.high)})`,
     outcomeLine(row, options.rejectAbove) + (row.settled ? "" : row.outcome === "not-enough-data" ? "" : ", not yet settled"),
@@ -157,6 +168,7 @@ export function registerStudyCommands(lint: Command, listFindings: FindingLister
         }
         log(`${scope}: ${total} verdicts on ${decisions.length} checks; a check needs ${minVerdicts} to decide`);
         for (const line of formatStudyTable(decisions, { rejectAbove, books: opts.all === true })) log(`  ${line}`);
+        log("  n counts one verdict per finding fingerprint; findings is how many flagged spans those verdicts covered (≥ where older verdicts did not record it). The gate uses n.");
         if (offByDefault.length > 0) log(`Turn off by default: ${offByDefault.join(", ")}`);
         for (const decision of lowered) log(`Lowered to ${decision.setting} in "${books[0]!.id}" by the author's verdicts: ${decision.ruleId}`);
       } catch (e) {
@@ -195,7 +207,8 @@ export function registerStudyCommands(lint: Command, listFindings: FindingLister
 
         let verdict: Verdict;
         if (matches[0]) {
-          verdict = verdictOn(matches[0], action, author);
+          // Findings sharing the fingerprint (the same words flagged again) are covered by this one verdict.
+          verdict = verdictOn(matches[0], action, { ...author, findings: matches.length });
         } else if (opts.rule) {
           // A finding the writer already fixed is gone from the book; record it from what was given.
           const layer = layerOfRuleId(opts.rule);

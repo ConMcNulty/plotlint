@@ -181,7 +181,7 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
   if (options.layers.has("metrics")) {
     // Book-level metrics (repetition across chapters) read every chapter but report into each one.
     const names = snapshot ? projectDictionary(snapshot) : [];
-    for (const { rule, enabled, severity, options: ruleOptions } of new RuleRegistry(metricStateRules({ names })).configure(book.config)) {
+    for (const { rule, enabled, severity, options: ruleOptions } of new RuleRegistry(metricStateRules({ names, bands: packs.metrics })).configure(book.config)) {
       if (!enabled) continue;
       // The rule reads only chapter text and names, so a book without state still gets it.
       for (const diagnostic of rule.check({ snapshot: snapshot ?? ({} as RuntimeStateSnapshot), chapters: texts, book, options: ruleOptions })) {
@@ -711,6 +711,13 @@ lintCommand
             ...(opts.force ? { force: true } : {}),
             ...(file.protagonist ? { protagonist: file.protagonist } : {}),
             ...(names.length ? { names } : {}),
+            // The model call can take minutes; say what is running (on stderr when stdout carries JSON).
+            onCall: (ids, attempt) => {
+              const scenes = `${ids.length} scene${ids.length === 1 ? "" : "s"}`;
+              const line = attempt === 1 ? `ch${chapter}: annotating ${scenes}…` : `ch${chapter}: reply unusable, asking again (attempt ${attempt})…`;
+              if (opts.json) process.stderr.write(`${line}\n`);
+              else log(line);
+            },
           });
           results.push(result);
           // Saved after every chapter, so an interrupted run keeps what it did.

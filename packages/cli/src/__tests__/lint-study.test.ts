@@ -8,6 +8,7 @@ import { StateManager, createWorkManifest, saveRuntimeStateSnapshot, saveWorkMan
 import { appendVerdicts } from "@plotlint/diagnostics/node";
 import { studyReport, verdictOfAction, verdictStats, type Verdict, type VerdictAction } from "@plotlint/diagnostics/verdicts";
 import {
+  findingsCell,
   formatStudyTable,
   layerOfRuleId,
   outcomeLine,
@@ -58,11 +59,21 @@ describe("lint study parsing", () => {
   it("formats the gate table with a verdict line per check", () => {
     const decisions = studyReport([verdictStats([...many("style/cliche", 2, 20), ...many("style/filter", 20, 2), ...many("style/rare", 1, 1)])]);
     const lines = formatStudyTable(decisions);
-    expect(lines[0]).toMatch(/^check\s+n\s+accept\s+reject \(95% CI\)\s+verdict$/u);
-    expect(lines[1]).toMatch(/^style\/cliche\s+22\s+9%\s+91% \(72%-97%\)\s+turn off by default \(rejected > 50%\)$/u);
-    expect(lines[2]).toMatch(/^style\/filter\s+22\s+91%\s+9% .*stays on$/u);
-    expect(lines[3]).toMatch(/^style\/rare\s+2\s+50%.*not enough data$/u);
+    expect(lines[0]).toMatch(/^check\s+n\s+findings\s+accept\s+reject \(95% CI\)\s+verdict$/u);
+    expect(lines[1]).toMatch(/^style\/cliche\s+22\s+-\s+9%\s+91% \(72%-97%\)\s+turn off by default \(rejected > 50%\)$/u);
+    expect(lines[2]).toMatch(/^style\/filter\s+22\s+-\s+91%\s+9% .*stays on$/u);
+    expect(lines[3]).toMatch(/^style\/rare\s+2\s+-\s+50%.*not enough data$/u);
     expect(outcomeLine({ outcome: "stays-on" })).toBe("stays on");
+  });
+
+  it("shows the findings a check's verdicts cover, without changing the gate", () => {
+    const flood = [{ ...verdict("style/flood", "f1", "not-useful"), findings: 12 }, { ...verdict("style/flood", "f2", "fix"), findings: 3 }];
+    const exact = studyReport([verdictStats(flood)]);
+    expect(exact[0]).toMatchObject({ n: 2, findings: 15, findingsKnown: 2, rejectRate: 0.5 });
+    expect(findingsCell(exact[0]!)).toBe("15");
+    const partly = studyReport([verdictStats([...flood, verdict("style/flood", "f3", "fix")])]);
+    expect(findingsCell(partly[0]!)).toBe("≥16");
+    expect(findingsCell(studyReport([verdictStats([verdict("style/x", "x", "fix")])])[0]!)).toBe("-");
   });
 });
 
@@ -108,7 +119,7 @@ describe("inkos lint study and verdict", () => {
     const finding = linted.books[0]!.diagnostics[0]!;
 
     const recorded = JSON.parse(run(["lint", "verdict", "reject", finding.fingerprint, "study-one", "--action", "intentional", "--json"]));
-    expect(recorded.verdict).toMatchObject({ ruleId: finding.ruleId, fingerprint: finding.fingerprint, verdict: "rejected", action: "intentional", layer: "continuity" });
+    expect(recorded.verdict).toMatchObject({ ruleId: finding.ruleId, fingerprint: finding.fingerprint, verdict: "rejected", action: "intentional", layer: "continuity", findings: 1 });
     expect(run(["lint", "verdict", "accept", finding.fingerprint, "study-one"])).toContain("Recorded accepted (edited)");
     // A finding already fixed is no longer in the book; --rule records it anyway.
     run(["lint", "verdict", "accept", "0000000000000000", "study-one", "--rule", "style/general.Cliches", "--chapter", "3"]);
@@ -128,6 +139,8 @@ describe("inkos lint study and verdict", () => {
     expect(pooled.checks.find((row: { ruleId: string }) => row.ruleId === "style/general.Cliches")).toMatchObject({ n: 27, accepted: 2, books: 2 });
     const text = run(["lint", "study", "--all"]);
     expect(text).toContain("turn off by default (rejected > 50%)");
+    expect(text).toMatch(/books\s+n\s+findings/u);
+    expect(text).toContain("The gate uses n.");
     expect(text).toContain("not enough data");
     expect(run(["lint", "study", "study-two"])).toContain(`Lowered to off in "study-two" by the author's verdicts: style/general.Cliches`);
   });

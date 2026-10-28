@@ -47,6 +47,12 @@ export const VerdictSchema = z.object({
   quote: z.string().optional(),
   layer: DiagnosticLayerSchema,
   confidence: DiagnosticConfidenceSchema,
+  /**
+   * How many findings shared this fingerprint when the writer decided (a check
+   * flagging the same words over and over), when the recorder knew. One verdict
+   * still counts once for the gate; this only shows how much it covered.
+   */
+  findings: z.number().int().min(1).optional(),
 }).strict().refine((verdict) => verdictOfAction(verdict.action) === verdict.verdict, {
   message: "action does not match verdict (fix and edited accept; intentional, dismissed and not-useful reject)",
 });
@@ -56,7 +62,7 @@ export type Verdict = z.infer<typeof VerdictSchema>;
 export function verdictOn(
   diagnostic: Diagnostic & { readonly fingerprint?: string },
   action: VerdictAction,
-  extra: { readonly at?: string; readonly author?: string } = {},
+  extra: { readonly at?: string; readonly author?: string; readonly findings?: number } = {},
 ): Verdict {
   const { fingerprint, ...finding } = diagnostic;
   const quote = finding.sourceRefs?.[0]?.quote ?? finding.summary;
@@ -71,6 +77,7 @@ export function verdictOn(
     ...(quote ? { quote: quote.slice(0, 500) } : {}),
     layer: finding.layer,
     confidence: finding.confidence,
+    ...(extra.findings ? { findings: extra.findings } : {}),
   });
 }
 
@@ -153,12 +160,27 @@ export interface RuleVerdictStats {
   /** 95% Wilson interval of the rejection rate. */
   readonly rejectInterval: Interval;
   readonly byAction: Readonly<Record<VerdictAction, number>>;
+  /** Findings the standing verdicts cover: each verdict's `findings`, or 1 where it was not recorded. */
+  readonly findings: number;
+  /** Standing verdicts that recorded `findings`; below `n`, `findings` is a lower bound. */
+  readonly findingsKnown: number;
 }
 
 const emptyActions = (): Record<VerdictAction, number> =>
   Object.fromEntries(VerdictActionSchema.options.map((action) => [action, 0])) as Record<VerdictAction, number>;
 
-function statsOf(ruleId: string, layer: DiagnosticLayer, accepted: number, rejected: number, byAction: Record<VerdictAction, number>): RuleVerdictStats {
+interface Tally {
+  layer: DiagnosticLayer;
+  accepted: number;
+  rejected: number;
+  byAction: Record<VerdictAction, number>;
+  findings: number;
+  findingsKnown: number;
+}
+
+const emptyTally = (layer: DiagnosticLayer): Tally => ({ layer, accepted: 0, rejected: 0, byAction: emptyActions(), findings: 0, findingsKnown: 0 });
+
+function statsOf(ruleId: string, { layer, accepted, rejected, byAction, findings, findingsKnown }: Tally): RuleVerdictStats {
   const n = accepted + rejected;
   return {
     ruleId,
@@ -170,39 +192,44 @@ function statsOf(ruleId: string, layer: DiagnosticLayer, accepted: number, rejec
     rejectRate: n === 0 ? 0 : rejected / n,
     rejectInterval: wilsonInterval(rejected, n),
     byAction,
+    findings,
+    findingsKnown,
   };
 }
 
 /** Accept and reject counts per rule over the standing verdicts (latest per finding), sorted by rule id. */
 export function verdictStats(verdicts: ReadonlyArray<Verdict>): RuleVerdictStats[] {
-  const byRule = new Map<string, { layer: DiagnosticLayer; accepted: number; rejected: number; byAction: Record<VerdictAction, number> }>();
+  const byRule = new Map<string, Tally>();
   for (const verdict of latestVerdicts(verdicts)) {
-    const entry = byRule.get(verdict.ruleId) ?? { layer: verdict.layer, accepted: 0, rejected: 0, byAction: emptyActions() };
+    const entry = byRule.get(verdict.ruleId) ?? emptyTally(verdict.layer);
     entry.layer = verdict.layer;
     if (verdict.verdict === "accepted") entry.accepted++;
     else entry.rejected++;
     entry.byAction[verdict.action]++;
+    entry.findings += verdict.findings ?? 1;
+    if (verdict.findings !== undefined) entry.findingsKnown++;
     byRule.set(verdict.ruleId, entry);
   }
-  return [...byRule].sort(([a], [b]) => a.localeCompare(b))
-    .map(([ruleId, entry]) => statsOf(ruleId, entry.layer, entry.accepted, entry.rejected, entry.byAction));
+  return [...byRule].sort(([a], [b]) => a.localeCompare(b)).map(([ruleId, entry]) => statsOf(ruleId, entry));
 }
 
 /** Pool per-book stats into one row per rule, summing counts (each book's verdicts are already latest per finding). */
 export function poolStats(statsAcrossBooks: ReadonlyArray<ReadonlyArray<RuleVerdictStats>>): Array<RuleVerdictStats & { readonly books: number }> {
-  const pooled = new Map<string, { layer: DiagnosticLayer; accepted: number; rejected: number; books: number; byAction: Record<VerdictAction, number> }>();
+  const pooled = new Map<string, Tally & { books: number }>();
   for (const book of statsAcrossBooks) {
     for (const row of book) {
-      const entry = pooled.get(row.ruleId) ?? { layer: row.layer, accepted: 0, rejected: 0, books: 0, byAction: emptyActions() };
+      const entry = pooled.get(row.ruleId) ?? { ...emptyTally(row.layer), books: 0 };
       entry.accepted += row.accepted;
       entry.rejected += row.rejected;
+      entry.findings += row.findings;
+      entry.findingsKnown += row.findingsKnown;
       if (row.n > 0) entry.books++;
       for (const action of VerdictActionSchema.options) entry.byAction[action] += row.byAction[action];
       pooled.set(row.ruleId, entry);
     }
   }
   return [...pooled].sort(([a], [b]) => a.localeCompare(b))
-    .map(([ruleId, entry]) => ({ ...statsOf(ruleId, entry.layer, entry.accepted, entry.rejected, entry.byAction), books: entry.books }));
+    .map(([ruleId, entry]) => ({ ...statsOf(ruleId, entry), books: entry.books }));
 }
 
 /** The phase 4 gate per check: `stays-on`, `off-by-default` (rejected more often than allowed) or `not-enough-data`. */
