@@ -106,6 +106,7 @@ const paragraphs =(text: string) => text.replace(/\r\n?/gu, "\n").split(/\n\s*\n
 export const fairPlay: Rule = {
   id: "structure/fair-play",
   layer: "structure",
+  hookOverlay: true,
   title: "Solution not fairly clued",
   rationale: "A fair-play mystery lets the reader solve it: the culprit is on stage early, and the solution rests on clues shown before the reveal. A culprit who first appears late, or a solution built on facts the reveal chapter introduces, reads as a cheat.",
   source: "Ronald Knox, \"Decalogue\" (1929), rule 1 (\"the criminal must be someone mentioned in the early part of the story\"); S. S. Van Dine, \"Twenty Rules for Writing Detective Stories\" (1928), rules 1 and 15",

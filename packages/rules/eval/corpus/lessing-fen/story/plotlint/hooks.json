@@ -1,0 +1,249 @@
+{
+  "version": 1,
+  "hooks": [
+    {
+      "id": "hook",
+      "status": "resolved",
+      "resolvedIn": 3,
+      "evidence": "She wanted to stand up and shout. She wanted to ask why the sluice gate had been opened with a key, not by the usual mechanism.",
+      "note": "Nell begins investigating the murder theory by noticing inconsistencies in the official accident verdict at the inquest, starting her pursuit against the town's acceptance of the accident ruling.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "08dac5116b91a4"
+    },
+    {
+      "id": "hook-2",
+      "status": "resolved",
+      "resolvedIn": 12,
+      "evidence": "He found out, you see,\" Vane said, his voice dropping to a confidential murmur. \"About the Drainage Board money. He was a fool, trusting me with it. He went to the bank, asked for an audit. I saw the letter he'd written. It was all over for me.",
+      "note": "Ambrose Vane confesses to using the third key to open the sluice gate and push Owen Tarrant into the race.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "0d7e25d39e461d"
+    },
+    {
+      "id": "hook-4",
+      "status": "open",
+      "note": "The silver bosun's whistle from H.M.S. Cormorant 1916 is never mentioned again after chapter 2, and its significance is never revealed in the subsequent chapters.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "1c9c8503e41f15"
+    },
+    {
+      "id": "hook-5",
+      "status": "open",
+      "note": "The conflict with Bea over her marriage to Leonard Fawley is not resolved in any of the chapters provided. Bea leaves for Canada in chapter 4, and there is no further mention of her or the resolution of their conflict in chapters 3-13.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "1fc13559a3cf20"
+    },
+    {
+      "id": "hook-8",
+      "status": "open",
+      "note": "answer dropped: the quote is not in chapter 12 (said: Ambrose lied about his whereabouts because he was at the sluice gate committing the murder to cover up his embezzlement from the Drainage Board fund.)",
+      "annotator": "llm@glm-4.5-flash"
+    },
+    {
+      "id": "hook-6",
+      "status": "resolved",
+      "resolvedIn": 12,
+      "evidence": "That night, I waited.",
+      "note": "Vane directly admits he was at the sluice gate the night of the murder, contradicting his alibi that he was at home in town.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "15a03ef44a2049"
+    },
+    {
+      "id": "hook-7",
+      "status": "open",
+      "note": "The chapters show Nell confronting Ambrose with ledger evidence, not mud evidence as specified in the hook.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "110401dbe9f3c4"
+    },
+    {
+      "id": "hook-9",
+      "status": "open",
+      "note": "The chapters confirm Ambrose was skimming funds, but this information comes from his confession and Dorrit's investigation, not from Nell's own thorough investigation of his financial dealings.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "07aeff6419f065"
+    },
+    {
+      "id": "hook-11",
+      "status": "resolved",
+      "resolvedIn": 9,
+      "evidence": "I, Owen Tarrant, being of sound mind and body, do hereby revoke all previous bequests to my junior partner, Ambrose Vane. Upon my death, the partnership between myself and Ambrose Vane is hereby dissolved, and he shall receive no further share in the mill or its profits. Furthermore, all books and documents pertaining to the Fen Drainage Board fund, currently held in trust by the mill, are to be surrendered directly to the manager of the Fen & County Bank for immediate audit.",
+      "note": "The will reveals Tarrant discovered Vane was stealing from the Drainage Board funds and changed his will to revoke Vane's bequests and expose the embezzlement, providing a clear motive for murder.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "005c485e553907"
+    },
+    {
+      "id": "hook-12",
+      "status": "resolved",
+      "resolvedIn": 11,
+      "evidence": "Nell reached out and took the ledger from the safe. It was heavy, solid proof of Vane's guilt.",
+      "note": "Nell finds the missing ledger in the safe at the mill office, which contains evidence of Vane's financial crimes.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "09006e736f8213"
+    },
+    {
+      "id": "hook-13",
+      "status": "resolved",
+      "resolvedIn": 12,
+      "evidence": "I hid it there after,\" Vane said with a shrug. \"And the last ledger... I burned it. It had the incriminating figures.",
+      "note": "Vane confesses to using the mill office lantern during the murder and hiding it in the reeds, confirming he had access to it.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "1ddf65a0b05e6e"
+    },
+    {
+      "id": "hook-14",
+      "status": "resolved",
+      "resolvedIn": 11,
+      "evidence": "I've baited the trap,\" she said quietly. \"I told Vane the missing ledger has turned up and that Hollis is collecting it from the mill office safe tomorrow morning.",
+      "note": "Nell continues pursuing the investigation by setting a trap for Vane despite the danger, obtaining concrete evidence (the ledger) that leads to his arrest.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "09d430e3ffeff8"
+    },
+    {
+      "id": "hook-15",
+      "status": "resolved",
+      "resolvedIn": 12,
+      "evidence": "I pushed him in.",
+      "note": "Ambrose Vane confesses to being at the mill office and pushing Owen Tarrant into the sluice race, confirming he was the one with the lantern.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "0ffa26516fc286"
+    },
+    {
+      "id": "hook-16",
+      "status": "resolved",
+      "resolvedIn": 12,
+      "evidence": "He was right there, looking over the edge. I just... gave him a push. He didn't even scream.",
+      "note": "Vane confesses he took the key the night of the murder and lied about it being missing for months to cover up his crime.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "10d1ea5e974d8b"
+    },
+    {
+      "id": "hook-17",
+      "status": "resolved",
+      "resolvedIn": 9,
+      "evidence": "I found it on his desk yesterday,\" Silas said, his voice trembling slightly. \"After he was… after they found him. I went to his house, to see if Ivy was alright, and I saw it there. I owed him that money for years, and he just… wrote it off",
+      "note": "Silas Rudd's potential involvement is eliminated when he shows Nell a letter proving Owen had forgiven his gambling debt days before the murder, removing his motive.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "105dbcabc8b8e1"
+    },
+    {
+      "id": "hook-18",
+      "status": "resolved",
+      "resolvedIn": 10,
+      "evidence": "There's no entry for three hundred pounds from Tarrant's Mill. There's an entry for two hundred.",
+      "note": "Nell and Kit discover Vane has been skimming money from the Drainage Board fund by underreporting payments from the mill, keeping the difference for himself.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "0906a437160aa2"
+    },
+    {
+      "id": "hook-19",
+      "status": "resolved",
+      "resolvedIn": 12,
+      "evidence": "I hid it there after,",
+      "note": "Ambrose Vane confesses he hid the lantern in the reeds after committing the murder to conceal his involvement.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "03fcf5046fde98"
+    },
+    {
+      "id": "hook-20",
+      "status": "resolved",
+      "resolvedIn": 9,
+      "evidence": "I found it on his desk yesterday,\" Silas said, his voice trembling slightly. \"After he was… after they found him. I went to his house, to see if Ivy was alright, and I saw it there. I owed him that money for years, and he just… wrote it off.",
+      "note": "Silas Rudd was burning IOUs for a debt that Owen Tarrant had already forgiven, which had no connection to the murder.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "077c38d9141114"
+    },
+    {
+      "id": "hook-21",
+      "status": "open",
+      "note": "No sentence in chapters 8-13 explicitly states the connection between the lantern from the mill office and access to the sluice key.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "091f5a646651c6"
+    },
+    {
+      "id": "hook-22",
+      "status": "resolved",
+      "resolvedIn": 10,
+      "evidence": "The missing hundred pounds was a ghost, a sum that had been written out of the mill's books as if it had never existed.",
+      "note": "Nell discovers the financial discrepancies in the drainage board records, connecting the missing ledger to Vane's embezzlement.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "1c20bc86245508"
+    },
+    {
+      "id": "hook-23",
+      "status": "resolved",
+      "resolvedIn": 12,
+      "evidence": "Nell said, the words coming out flat and clear, cutting through the night air. \"You pushed Owen Tarrant into the race",
+      "note": "Nell confronts Ambrose at the mill office with her evidence, leading to his confession of murder.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "082f8b3d6d5338"
+    },
+    {
+      "id": "hook-25",
+      "status": "open",
+      "note": "Ambrose Vane is caught and arrested once Nell obtains the truth, rather than becoming more dangerous as she gets closer to it.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "14dcdd718ae0d3"
+    },
+    {
+      "id": "hook-26",
+      "status": "open",
+      "note": "None of the chapters show Nell explicitly understanding or investigating the connection between the will codicil and the missing financial records. The information is provided through Kit, but not through Nell's own investigation or understanding.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "07cd9d889cf64e"
+    },
+    {
+      "id": "hook-28",
+      "status": "resolved",
+      "resolvedIn": 11,
+      "evidence": "no two ways about it.\"\n\n\"No, Kit,\" Nell said, reaching out and placing a hand on his arm. \"He's a strong man, and he knows the mill. If he sees us, it could be dangerous. I need you to be my eyes and ears from a distance",
+      "note": "Nell and Kit reconcile their differences by agreeing to work together on their plan to catch Vane, with Nell valuing Kit's knowledge and including him in the operation.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "0d92b51d120bb1"
+    },
+    {
+      "id": "hook-29",
+      "status": "resolved",
+      "resolvedIn": 12,
+      "evidence": "You are under arrest for the murder of Owen Tarrant",
+      "note": "Nell presents the ledger evidence to Constable Dorrit, who arrests Vane for the murder.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "02bbd5474def8c"
+    },
+    {
+      "id": "hook-32",
+      "status": "resolved",
+      "resolvedIn": 13,
+      "evidence": "Yes, Kit,” she said. “I would like that very much.",
+      "note": "Kit formally asks to court Nell and she accepts, showing their relationship has deepened beyond working together on the case.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "1de0601b6cb8d3"
+    },
+    {
+      "id": "hook-33",
+      "status": "resolved",
+      "resolvedIn": 13,
+      "evidence": "I was wondering… if you would allow me to court you? Properly. Not in the middle of a murder inquiry. Just… Nell Ashby. If you’d be willing.",
+      "note": "Kit explicitly asks Nell to court him properly now that the murder case is resolved, and she accepts.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "0f39dd7e9387f1"
+    },
+    {
+      "id": "hook-34",
+      "status": "resolved",
+      "resolvedIn": 13,
+      "evidence": "I would like to offer you a position, Nell. As my articled clerk.",
+      "note": "Mr. Pell offers Nell a position as his articled clerk, recognizing her investigative abilities and professional growth.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "0acc1e586cc34c"
+    },
+    {
+      "id": "hook-35",
+      "status": "resolved",
+      "resolvedIn": 13,
+      "evidence": "The town could begin to heal now, with the truth laid bare.",
+      "note": "The townspeople reacted with satisfaction and relief, allowing the town to begin healing with the truth revealed.",
+      "annotator": "llm@glm-4.5-flash",
+      "hookHash": "1007e26626fc8a"
+    }
+  ]
+}
