@@ -54,6 +54,8 @@ export interface LoopOptions {
   readonly tokensUsed?: () => number;
   /** Most of a round's findings the author may defend or defer before the rest escalate. Default 0.5. */
   readonly maxDefendShare?: number;
+  /** Stop and fall back when held-out checks rise while visible ones fall. Default true; off for the single-pass baseline. */
+  readonly guardHeldOut?: boolean;
   /** When a human must look before the result is adopted. Default `escalations`. */
   readonly gate?: GateMode;
   /** Called after each round, so a caller can show progress. */
@@ -163,6 +165,7 @@ export async function runLoop(options: LoopOptions): Promise<LoopResult> {
   const baseVoice = voiceDistance(voiceSample, options.text);
   const maxDefendShare = options.maxDefendShare ?? 0.5;
   const gateMode = options.gate ?? "escalations";
+  const guardHeldOut = options.guardHeldOut ?? true;
   const vocabulary = options.vocabulary ?? new Set(options.text.toLowerCase().match(/[\p{L}\p{N}']+/gu) ?? []);
 
   let draft: Draft = { chapter, text: options.text };
@@ -200,16 +203,17 @@ export async function runLoop(options: LoopOptions): Promise<LoopResult> {
     if (now.held.weighted <= start.held.weighted) safe = { text: draft.text, filed, gaming };
 
     // Stop conditions, checked on the draft as it stands.
-    if (now.visible.errors === 0 && now.visible.warnings <= threshold) stop = { reason: "clean", round };
-    else if (now.blockingOpen === 0 && now.waiting.some((finding) => finding.diagnostic.severity !== "note")) stop = { reason: "escalated", round, detail: `nothing left for the author: ${now.waiting.length} finding${now.waiting.length === 1 ? "" : "s"} wait for the human` };
-    else if (round > maxRounds) stop = { reason: "rounds", round };
-    else if (options.tokenBudget !== undefined && (options.tokensUsed?.() ?? 0) >= options.tokenBudget) stop = { reason: "tokens", round };
-    else if (now.visible.weighted < start.visible.weighted && now.held.weighted > start.held.weighted) {
+    // The held-out check comes first: a draft that only looks clean because the loop gamed the visible checks is not kept.
+    if (guardHeldOut && now.visible.weighted < start.visible.weighted && now.held.weighted > start.held.weighted) {
       stop = { reason: "held-out", round, detail: `visible score ${start.visible.weighted} → ${now.visible.weighted}, held-out ${start.held.weighted} → ${now.held.weighted}; kept the last draft whose held-out score had not risen` };
       draft = { chapter, text: safe.text };
       filed = safe.filed;
       gaming = safe.gaming;
-    } else if (sinceBest >= patience) stop = { reason: "stalled", round, detail: `no lower visible score in ${patience} rounds` };
+    } else if (now.visible.errors === 0 && now.visible.warnings <= threshold) stop = { reason: "clean", round };
+    else if (now.blockingOpen === 0 && now.waiting.some((finding) => finding.diagnostic.severity !== "note")) stop = { reason: "escalated", round, detail: `nothing left for the author: ${now.waiting.length} finding${now.waiting.length === 1 ? "" : "s"} wait for the human` };
+    else if (round > maxRounds) stop = { reason: "rounds", round };
+    else if (options.tokenBudget !== undefined && (options.tokensUsed?.() ?? 0) >= options.tokenBudget) stop = { reason: "tokens", round };
+    else if (sinceBest >= patience) stop = { reason: "stalled", round, detail: `no lower visible score in ${patience} rounds` };
     if (now.visible.weighted < best) {
       best = now.visible.weighted;
       sinceBest = 0;
@@ -339,11 +343,11 @@ export async function runLoop(options: LoopOptions): Promise<LoopResult> {
 
 /**
  * The single-pass baseline for the phase 5 gate: the same editors and author, one
- * round of answers, no reruns between rounds and no stop conditions beyond that.
+ * round of answers, no reruns between rounds and none of the loop's safeguards.
  * The editors run once more on the result only to measure it.
  */
 export function runSinglePass(options: LoopOptions): Promise<LoopResult> {
-  return runLoop({ ...options, maxRounds: 1, voiceLimit: Infinity, patience: Infinity });
+  return runLoop({ ...options, maxRounds: 1, voiceLimit: Infinity, patience: Infinity, guardHeldOut: false });
 }
 
 /** Editors over one lint function: continuity (L0–L3 state), developmental (L4) and line (L0–L2 text). */

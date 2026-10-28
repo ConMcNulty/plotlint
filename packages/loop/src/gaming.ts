@@ -51,15 +51,21 @@ const diagnostic = (ruleId: string, layer: Diagnostic["layer"], chapter: number,
   range: { sourceId: `chapter:${chapter}`, start: span.start, end: span.end },
 });
 
-/** Inserted words the book never used before: long, not common, not names. Three or more, and at least a quarter of the new long words. */
+/**
+ * Inserted words the book never used before: nine letters or more, not common, not names, not
+ * two removed words joined. Three or more, and at least a third of the long inserted words.
+ */
 export function thesaurusWords(input: GamingInput): Diagnostic[] {
   const inserted: Array<{ word: string; span: Span }> = [];
   let long = 0;
   for (const [index, edit] of input.edits.entries()) {
     const removed = new Set(words(edit.find).map((word) => word.norm));
     const at = input.changed[index]!;
+    const removedList = words(edit.find).map((word) => word.norm);
+    // Two removed words joined into one ("mill race" → "millrace") is a spelling fix, not a new word.
+    const joined = new Set(removedList.slice(1).map((word, index) => removedList[index]! + word));
     for (const word of words(edit.replace, at.start)) {
-      if (word.norm.length < 7 || removed.has(word.norm) || COMMON.has(word.norm)) continue;
+      if (word.norm.length < 9 || removed.has(word.norm) || joined.has(word.norm) || COMMON.has(word.norm)) continue;
       // A capitalised word mid-sentence is a name, which the book may introduce.
       const raw = input.after.slice(word.start, word.end);
       if (/^\p{Lu}/u.test(raw) && word.start > 0 && !/[.!?"“]\s*$/u.test(input.after.slice(Math.max(0, word.start - 3), word.start))) continue;
@@ -67,7 +73,7 @@ export function thesaurusWords(input: GamingInput): Diagnostic[] {
       if (!input.vocabulary.has(word.norm)) inserted.push({ word: raw, span: { start: word.start, end: word.end } });
     }
   }
-  if (inserted.length < 3 || inserted.length < long / 4) return [];
+  if (inserted.length < 3 || inserted.length < long / 3) return [];
   const span = { start: Math.min(...inserted.map((entry) => entry.span.start)), end: Math.max(...inserted.map((entry) => entry.span.end)) };
   return [diagnostic("loop/thesaurus-words", "style", input.chapter, span,
     `The revision brings in ${inserted.length} long words the book has never used`,

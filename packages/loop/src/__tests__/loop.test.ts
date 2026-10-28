@@ -177,6 +177,12 @@ describe("gaming detectors", () => {
     expect(flags.map((flag) => flag.ruleId)).toEqual(["loop/thesaurus-words"]);
   });
 
+  it("does not count joined compounds or short plain words", () => {
+    const edit = place(before, "watched the water for a long time", "watched the millrace, marriage, reckless, created");
+    const { text: after, changed } = applyEdits(before, [edit]);
+    expect(detectGaming({ chapter, before, after, edits: [{ ...edit, findingId: "f1" }], changed, findings: [], vocabulary: vocabularyOf([before, "mill race"]) })).toEqual([]);
+  });
+
   it("flags an inserted mention-only line answering a setup finding", () => {
     const finding: Finding = { id: "f1", key: "k", editors: ["developmental"], diagnostic: { ruleId: "structure/unpaid-setup", layer: "structure", severity: "warning", confidence: "extracted", code: "unpaid-setup", summary: "The brass key never comes back", evidence: ["key"], chapter } };
     const edit = place(before, "The boat was late.", "The boat was late. She noticed the brass key in her pocket.");
@@ -286,6 +292,18 @@ describe("runLoop", () => {
     expect(result.stop.reason).toBe("held-out");
     expect(result.text).toBe(TEXT);
     expect(result.gate.needsHuman).toBe(true);
+  });
+
+  it("does not call a gamed draft clean", async () => {
+    const heldLint = async (draft: Draft): Promise<Diagnostic[]> => [
+      ...await lint(draft),
+      ...(draft.text.includes("felt that") ? [] : [{ ...textFinding(draft.text, "Mira"), ruleId: "loop/empty-setup", layer: "structure" as const, severity: "warning" as const }]),
+    ];
+    const result = await runLoop({ chapter, text: TEXT, editors: layerEditors(heldLint), author: fixingAuthor });
+    expect(result.stop.reason).toBe("held-out");
+    expect(result.text).toBe(TEXT);
+    // The baseline has no safeguards: it keeps the gamed draft.
+    expect((await runSinglePass({ chapter, text: TEXT, editors: layerEditors(heldLint), author: fixingAuthor })).text).not.toBe(TEXT);
   });
 
   it("runs a single pass as one round", async () => {
