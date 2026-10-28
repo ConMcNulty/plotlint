@@ -28,8 +28,9 @@ checks:
   # Name spelling drift is a slip in any book; a note outside fantasy.
   style/invented-term-spelling: note
 # Floors and bands, never targets: a metric flags only text outside the band. The
-# general bands live in @plotlint/metrics (baselines/general.json, measured from
-# reference books); genre packs narrow them by rule id, in the metric rules' units
+# general bands live in @plotlint/metrics (baselines/general.json, measured on
+# public-domain reference novels); genre packs replace them by rule id with bands
+# measured on their own genre's reference books, in the metric rules' units
 # (MTLD score, dialogue share of words 0-1, words in the longest unbroken run).
 metrics:
   # Relative to the book itself, not to reference books: the floor is a robust

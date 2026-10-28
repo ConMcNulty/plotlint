@@ -17,5 +17,9 @@ checks:
   structure/open-questions: warning
   # Knox and Van Dine: the culprit on stage early, the solution resting on clues shown before the reveal.
   structure/fair-play: warning
+# Measured on the mystery reference books (@plotlint/metrics baselines/mystery.json,
+# about p5 to p95 of their chapters): interrogation and interview push dialogue
+# higher than in general fiction, and narration comes in shorter runs.
 metrics:
-  metrics/dialogue-ratio: { min: 0.1 }
+  metrics/dialogue-ratio: { min: 0.08, max: 0.94, source: mystery reference books }
+  metrics/wall-of-text: { max: 365, source: mystery reference books }

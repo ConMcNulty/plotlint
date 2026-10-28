@@ -366,7 +366,8 @@ describe("CLI mini-flows", () => {
     }));
     const bookDir = new StateManager(projectDir).bookDir("lint-novel");
     await mkdir(join(bookDir, "chapters"), { recursive: true });
-    const wall = Array.from({ length: 40 }, (_, i) => `the clerk read clause ${i} of the treaty aloud`).join(" and ");
+    // About 450 words: over the general wall-of-text ceiling, under the 500 words the dialogue and sensory bands need.
+    const wall = Array.from({ length: 45 }, (_, i) => `the clerk read clause ${i} of the treaty aloud`).join(" and ");
     await writeFile(join(bookDir, "chapters", "0001_one.md"), "# Chapter 1\n\nRain fell on the market. Her heart skipped a beat.\n");
     await writeFile(join(bookDir, "chapters", "0002_two.md"), "# Chapter 2\n\nSnow buried the road.\n\nHer heart skipped a beat again.\n");
     await writeFile(join(bookDir, "chapters", "0003_three.md"), `# Chapter 3\n\nFog crept along the canal. Her heart skipped a beat.\n\nThen ${wall}.\n`);

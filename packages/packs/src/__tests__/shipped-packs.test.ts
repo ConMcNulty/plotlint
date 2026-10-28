@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { baseline } from "@plotlint/metrics";
 import { builtinRegistry, checkText } from "@plotlint/rules";
 import { generalPack } from "@plotlint/style/node";
 import { bookPackCatalog, builtinPacks, loadPackDir, proposeFromGenre, resolveBookPacks, resolvePacks, validatePack } from "../node.js";
@@ -59,11 +60,24 @@ describe("shipped packs", () => {
     expect(resolved.config.rules).toMatchObject({
       "continuity/world-rule-broken": "error", "continuity/impossible-travel": "error", "structure/protagonist-agency": "note",
     });
-    expect(resolved.metrics["metrics/wall-of-text"]).toEqual({ max: 300 });
-    expect(resolved.metrics["metrics/dialogue-ratio"]).toEqual({ min: 0.15 });
+    expect(resolved.metrics["metrics/wall-of-text"]).toEqual({ max: 541, source: "fantasy reference books" });
+    expect(resolved.metrics["metrics/dialogue-ratio"]).toEqual({ min: 0, max: 0.69, source: "fantasy reference books" });
     expect(resolved.styleRules.map((rule) => rule.id)).toEqual(expect.arrayContaining(["style/general.Cliches", "style/romance.Cliches", "style/fantasy.Cliches"]));
     const mystery = resolvePacks(["mystery"], packs, { knownRuleIds: known });
     expect(mystery.config.rules).toMatchObject({ "continuity/knowledge-leak": "error", "structure/unpaid-setup": "error" });
+  });
+
+  it("take their metric bands from their genre's measured baseline", () => {
+    for (const name of ["mystery", "romance", "fantasy"]) {
+      const measured = baseline(name)!;
+      expect(measured.provisional, name).toBe(false);
+      for (const [id, band] of Object.entries(packs.get(name)!.manifest.metrics ?? {})) {
+        expect(band.source, `${name} ${id}`).toBe(`${name} reference books`);
+        // A pack band is the genre's own band, or no floor where the genre measured none.
+        if (band.min !== undefined) expect(band.min, `${name} ${id} min`).toBe(measured.bands[id]!.min ?? 0);
+        if (band.max !== undefined) expect(band.max, `${name} ${id} max`).toBe(measured.bands[id]!.max);
+      }
+    }
   });
 
   it("turn genre checks off in general and on in their genre's pack", () => {

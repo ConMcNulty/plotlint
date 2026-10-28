@@ -15,6 +15,13 @@ checks:
   continuity/negative-resource: error
   # Invented names have no dictionary to keep them straight: one spelling per term.
   style/invented-term-spelling: warning
+# Measured on the fantasy reference books (@plotlint/metrics baselines/fantasy.json,
+# about p5 to p95 of their chapters): long journeys alone or among strangers leave
+# chapters with almost no dialogue, so there is no dialogue floor, and secondary
+# worlds are described through the senses more densely than general fiction.
+# Their paragraphs also run longer: the old 300-word wall-of-text ceiling flagged
+# two reference chapters in five, the general 427 one in seven.
 metrics:
-  # Exposition dumps arrive as long unbroken paragraphs.
-  metrics/wall-of-text: { max: 300 }
+  metrics/dialogue-ratio: { min: 0, max: 0.69, source: fantasy reference books }
+  metrics/sensory-detail: { min: 7, source: fantasy reference books }
+  metrics/wall-of-text: { max: 541, source: fantasy reference books }
