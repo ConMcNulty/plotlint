@@ -31,3 +31,8 @@ checks:
 # general bands live in @plotlint/metrics (baselines/general.json, measured from
 # reference books); genre packs narrow them by rule id, in the metric rules' units
 # (MTLD score, dialogue share of words 0-1, words in the longest unbroken run).
+metrics:
+  # Relative to the book itself, not to reference books: the floor is a robust
+  # z-score of a five-sentence stretch's surprisal (a Kneser-Ney trigram model
+  # trained on the other chapters) against all stretches of the book.
+  metrics/predictability: { min: -2.5, window: 5 }

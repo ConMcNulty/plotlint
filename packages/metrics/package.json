@@ -1,7 +1,7 @@
 {
   "name": "@plotlint/metrics",
   "version": "0.1.0",
-  "description": "L2 prose metrics for plotlint: lexical diversity, sentence rhythm, dialogue ratio, sensory detail and walls of text, checked against bands from reference books",
+  "description": "L2 prose metrics for plotlint: lexical diversity, sentence rhythm, dialogue ratio, sensory detail, walls of text, cross-chapter repetition and predictability, checked against bands from reference books",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

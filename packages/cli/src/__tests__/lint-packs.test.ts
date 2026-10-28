@@ -102,6 +102,7 @@ describe("inkos lint packs", () => {
     expect(byId.get("structure/subplot-balance")).toMatchObject({ layer: "structure", severity: "note", from: ["romance"] });
     expect(byId.get("mechanics/harper")).toMatchObject({ layer: "mechanics", enabled: true });
     expect(byId.has("metrics/repeated-phrase")).toBe(true);
+    expect(byId.has("metrics/predictability")).toBe(true);
     expect(run(["lint", "rules", "thorn"])).toMatch(/style\/general\.Intensifiers {2}note {2}\(adaptive\)/u);
   });
 

@@ -12,7 +12,7 @@ const UPCOMING = new Set([
   "structure/unearned-payoff", "structure/scene-turn", "structure/goal-conflict-outcome", "structure/protagonist-agency",
   "structure/tension-curve", "structure/pov-discipline",
   "metrics/lexical-diversity", "metrics/sentence-rhythm", "metrics/dialogue-ratio", "metrics/sensory-detail",
-  "metrics/wall-of-text", "metrics/repeated-phrase",
+  "metrics/wall-of-text", "metrics/repeated-phrase", "metrics/predictability",
 ]);
 const known = [...builtinRegistry.list().map((rule) => rule.id), "mechanics/harper"];
 

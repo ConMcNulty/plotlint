@@ -128,7 +128,7 @@ async function bookState(bookDir: string): Promise<BookState> {
     dictionary,
     styleRules: configureTextRules(packs.styleRules, packs.config),
     metricRules: configureTextRules(createMetricRules(packs.metrics), packs.config),
-    metricStateRules: new RuleRegistry(metricStateRules({ names: dictionary })).configure(packs.config).filter(({ enabled }) => enabled),
+    metricStateRules: new RuleRegistry(metricStateRules({ names: dictionary, bands: packs.metrics })).configure(packs.config).filter(({ enabled }) => enabled),
     book,
     config: packs.config,
     stateDiagnostics: () => (checked ??= snapshot ? checkSnapshot(snapshot, { chapters, book }) : []),
