@@ -12,6 +12,7 @@ export default defineConfig({
       { find: /^@plotlint\/diagnostics$/, replacement: source("../diagnostics/src/index.ts") },
       { find: /^@plotlint\/diagnostics\/node$/, replacement: source("../diagnostics/src/node.ts") },
       { find: /^@plotlint\/diagnostics\/verdicts$/, replacement: source("../diagnostics/src/verdicts.ts") },
+      { find: /^@plotlint\/metrics$/, replacement: source("../metrics/src/index.ts") },
       { find: /^@plotlint\/rules\/node$/, replacement: source("../rules/src/node.ts") },
       { find: /^@plotlint\/rules$/, replacement: source("../rules/src/index.ts") },
       { find: /^@plotlint\/style\/node$/, replacement: source("../style/src/node.ts") },

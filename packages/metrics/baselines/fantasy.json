@@ -1,52 +1,123 @@
 {
   "version": 1,
   "genre": "fantasy",
-  "provisional": true,
-  "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+  "provisional": false,
+  "note": "Measured from 227 chapters of 5 public-domain novels (texts from Standard Ebooks). Floors and ceilings sit near the 5th and 95th percentiles of those chapters, every book weighing the same whatever its number of chapters.",
   "sourceBooks": [
     {
       "title": "Phantastes",
       "author": "George MacDonald",
-      "gutenberg": 325
-    },
-    {
-      "title": "Lilith",
-      "author": "George MacDonald",
-      "gutenberg": 1640
+      "year": 1858,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/george-macdonald_phantastes"
     },
     {
       "title": "The Well at the World's End",
       "author": "William Morris",
-      "gutenberg": 169
+      "year": 1896,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/william-morris_the-well-at-the-worlds-end"
     },
     {
-      "title": "The Wood Beyond the World",
-      "author": "William Morris",
-      "gutenberg": 3055
+      "title": "The King of Elfland's Daughter",
+      "author": "Lord Dunsany",
+      "year": 1924,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/lord-dunsany_the-king-of-elflands-daughter"
+    },
+    {
+      "title": "She",
+      "author": "H. Rider Haggard",
+      "year": 1887,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/h-rider-haggard_she"
+    },
+    {
+      "title": "The Wonderful Wizard of Oz",
+      "author": "L. Frank Baum",
+      "year": 1900,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/l-frank-baum_the-wonderful-wizard-of-oz"
     }
   ],
-  "metrics": {},
-  "bands": {
+  "chapters": 227,
+  "metrics": {
     "metrics/lexical-diversity": {
-      "min": 60,
-      "minWords": 300
+      "p5": 63.807,
+      "p10": 67.1112,
+      "p50": 79.4769,
+      "p90": 97.5419,
+      "p95": 105.3381,
+      "min": 56.8133,
+      "max": 119.4766
     },
     "metrics/sentence-rhythm": {
-      "min": 0.4,
-      "window": 8,
-      "windowCv": 0.15,
-      "minSentences": 20
+      "p5": 0.5066,
+      "p10": 0.5272,
+      "p50": 0.6435,
+      "p90": 0.7798,
+      "p95": 0.8422,
+      "min": 0.386,
+      "max": 1.2179
+    },
+    "metrics/sentence-rhythm#window": {
+      "p5": 0.1539,
+      "p10": 0.1698,
+      "p50": 0.269,
+      "p90": 0.3973,
+      "p95": 0.4614,
+      "min": 0.053,
+      "max": 0.951
     },
     "metrics/dialogue-ratio": {
-      "max": 0.7,
-      "minWords": 500
+      "p5": 0.0051,
+      "p10": 0.0115,
+      "p50": 0.1986,
+      "p90": 0.6011,
+      "p95": 0.6862,
+      "min": 0,
+      "max": 0.9984
     },
     "metrics/sensory-detail": {
-      "min": 10,
-      "minWords": 500
+      "p5": 7.0157,
+      "p10": 8.967,
+      "p50": 18.547,
+      "p90": 29.2292,
+      "p95": 31.8778,
+      "min": 0,
+      "max": 39.3812
     },
     "metrics/wall-of-text": {
-      "max": 450
+      "p5": 70,
+      "p10": 110.2146,
+      "p50": 265.4349,
+      "p90": 468.9236,
+      "p95": 541.1299,
+      "min": 2,
+      "max": 1043
+    }
+  },
+  "bands": {
+    "metrics/lexical-diversity": {
+      "minWords": 300,
+      "min": 64
+    },
+    "metrics/sentence-rhythm": {
+      "minSentences": 20,
+      "window": 8,
+      "min": 0.51,
+      "windowCv": 0.15
+    },
+    "metrics/dialogue-ratio": {
+      "minWords": 500,
+      "max": 0.69
+    },
+    "metrics/sensory-detail": {
+      "minWords": 500,
+      "min": 7
+    },
+    "metrics/wall-of-text": {
+      "max": 541
     }
   }
 }

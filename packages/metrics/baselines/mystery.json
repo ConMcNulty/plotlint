@@ -1,52 +1,117 @@
 {
   "version": 1,
   "genre": "mystery",
-  "provisional": true,
-  "note": "Provisional: set by hand, not measured. Project Gutenberg was unreachable when this package was built, so the floors and ceilings are cautious guesses kept wide on purpose (few findings rather than false alarms). Replace them by running `pnpm --filter @plotlint/metrics baselines -- --download` with network access, or with Gutenberg plain-text files placed in .corpus/<genre>/.",
+  "provisional": false,
+  "note": "Measured from 91 chapters of 4 public-domain novels (texts from Standard Ebooks). Floors and ceilings sit near the 5th and 95th percentiles of those chapters, every book weighing the same whatever its number of chapters.",
   "sourceBooks": [
     {
       "title": "The Hound of the Baskervilles",
       "author": "Arthur Conan Doyle",
-      "gutenberg": 2852
+      "year": 1902,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/arthur-conan-doyle_the-hound-of-the-baskervilles"
     },
     {
       "title": "The Sign of the Four",
       "author": "Arthur Conan Doyle",
-      "gutenberg": 2097
+      "year": 1890,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/arthur-conan-doyle_the-sign-of-the-four"
     },
     {
       "title": "The Mysterious Affair at Styles",
       "author": "Agatha Christie",
-      "gutenberg": 863
+      "year": 1920,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/agatha-christie_the-mysterious-affair-at-styles"
     },
     {
-      "title": "The Secret Adversary",
-      "author": "Agatha Christie",
-      "gutenberg": 1155
+      "title": "The Moonstone",
+      "author": "Wilkie Collins",
+      "year": 1868,
+      "source": "Standard Ebooks",
+      "url": "https://github.com/standardebooks/wilkie-collins_the-moonstone"
     }
   ],
-  "metrics": {},
-  "bands": {
+  "chapters": 91,
+  "metrics": {
     "metrics/lexical-diversity": {
-      "min": 60,
-      "minWords": 300
+      "p5": 77.2043,
+      "p10": 81.3364,
+      "p50": 95.5222,
+      "p90": 111.3025,
+      "p95": 117.1394,
+      "min": 51.1602,
+      "max": 134.8236
     },
     "metrics/sentence-rhythm": {
-      "min": 0.4,
-      "window": 8,
-      "windowCv": 0.15,
-      "minSentences": 20
+      "p5": 0.5555,
+      "p10": 0.5839,
+      "p50": 0.6782,
+      "p90": 0.7715,
+      "p95": 0.7803,
+      "min": 0.4729,
+      "max": 0.7926
+    },
+    "metrics/sentence-rhythm#window": {
+      "p5": 0.1594,
+      "p10": 0.1853,
+      "p50": 0.2614,
+      "p90": 0.4084,
+      "p95": 0.4857,
+      "min": 0.1058,
+      "max": 0.7623
     },
     "metrics/dialogue-ratio": {
-      "max": 0.8,
-      "minWords": 500
+      "p5": 0.082,
+      "p10": 0.2143,
+      "p50": 0.5594,
+      "p90": 0.8886,
+      "p95": 0.9358,
+      "min": 0,
+      "max": 0.9688
     },
     "metrics/sensory-detail": {
-      "min": 10,
-      "minWords": 500
+      "p5": 5.7152,
+      "p10": 7.0624,
+      "p50": 12.2768,
+      "p90": 21.7413,
+      "p95": 24.3828,
+      "min": 2.1436,
+      "max": 31.0541
     },
     "metrics/wall-of-text": {
-      "max": 350
+      "p5": 63.507,
+      "p10": 83.1102,
+      "p50": 173.2106,
+      "p90": 297.4886,
+      "p95": 365.0919,
+      "min": 10,
+      "max": 615
+    }
+  },
+  "bands": {
+    "metrics/lexical-diversity": {
+      "minWords": 300,
+      "min": 77
+    },
+    "metrics/sentence-rhythm": {
+      "minSentences": 20,
+      "window": 8,
+      "min": 0.56,
+      "windowCv": 0.16
+    },
+    "metrics/dialogue-ratio": {
+      "minWords": 500,
+      "min": 0.08,
+      "max": 0.94
+    },
+    "metrics/sensory-detail": {
+      "minWords": 500,
+      "min": 5.7
+    },
+    "metrics/wall-of-text": {
+      "max": 365
     }
   }
 }

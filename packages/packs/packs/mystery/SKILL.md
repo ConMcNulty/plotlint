@@ -19,7 +19,8 @@ overrides both.
 | `structure/unearned-payoff` | error | "The culprit must be someone mentioned early" (Knox, rule 1): a solution with no earlier setup breaks fair play. |
 | `structure/fair-play` | warning | Knox's Decalogue rule 1 ("the criminal must be someone mentioned in the early part of the story") and Van Dine's rules 1 and 15 (the reader has an equal chance to solve it; the clues are all there). From the story state it finds the reveal (facts such as "is the killer", "murdered by", "true identity", in the chapter a mystery hook resolves) and warns when the culprit first appears after the first third of the book (option `culpritBy`: a fraction of the book, or a number of chapters before the reveal), or when nothing before the reveal links the culprit to what the solution rests on: "solution rests on information first given in the reveal chapter". |
 | `structure/open-questions` | warning | The mystery is a question held open; long stretches with nothing unresolved lose the reader. |
-| `metrics/dialogue-ratio` | min 0.1 | Interrogation and interview carry the genre; a near-silent chapter is worth a look. |
+| `metrics/dialogue-ratio` | 0.08 to 0.94 | Measured on the mystery reference books (Doyle, Christie, Collins): interrogation and interview carry the genre, so a near-silent chapter is worth a look and an almost all-dialogue one is not. |
+| `metrics/wall-of-text` | max 365 words per paragraph | The same books' 95th percentile: detection is told in shorter runs of narration than general fiction. |
 | `style/mystery.Cliches` | note | Genre stock phrases ("the game is afoot"), fine once as pastiche. |
 
 ## Planned

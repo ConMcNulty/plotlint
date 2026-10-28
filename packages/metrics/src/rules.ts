@@ -25,7 +25,7 @@ export const METRIC_RULE_IDS = [
 ] as const;
 export type MetricRuleId = (typeof METRIC_RULE_IDS)[number];
 
-export const metricRuleInfo: Readonly<Record<MetricRuleId | "metrics/repeated-phrase", MetricRuleInfo>> = {
+export const metricRuleInfo: Readonly<Record<MetricRuleId | "metrics/repeated-phrase" | "metrics/predictability", MetricRuleInfo>> = {
   "metrics/lexical-diversity": {
     id: "metrics/lexical-diversity",
     title: "Low lexical diversity",
@@ -61,6 +61,12 @@ export const metricRuleInfo: Readonly<Record<MetricRuleId | "metrics/repeated-ph
     title: "Phrase repeated across chapters",
     rationale: "A distinctive phrase of four to seven words that turns up in several chapters becomes a tic the reader notices. Common function-word strings, dialogue tags and character names are ignored.",
     source: "Browne and King, \"Self-Editing for Fiction Writers\", ch. 11 \"Sophistication\" on repetition; antislop phrase lists",
+  },
+  "metrics/predictability": {
+    id: "metrics/predictability",
+    title: "Unusually predictable stretch",
+    rationale: "Prose whose next word is easy to guess is formulaic: stock phrasing, a description or exchange reused from elsewhere. Each chapter is scored by a word trigram model (Kneser-Ney smoothing) trained on the book's other chapters, so predictability is measured against this book, not against English; a run of sentences far below the book's own usual surprisal is flagged. Only a floor is checked: surprise is not a target.",
+    source: "Surprisal as a measure of processing difficulty (Hale 2001, \"A probabilistic Earley parser as a psycholinguistic model\"; Levy 2008, \"Expectation-based syntactic comprehension\", Cognition 106(3)); Kneser and Ney (1995), \"Improved backing-off for M-gram language modeling\"",
   },
 };
 

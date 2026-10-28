@@ -1,27 +1,28 @@
 {
-  "note": "Public-domain reference novels per genre, by Project Gutenberg ebook number. `pnpm --filter @plotlint/metrics baselines -- --download` fetches them into .corpus/<genre>/<number>.txt (gitignored); any other plain-text Gutenberg file dropped into .corpus/<genre>/ is measured too.",
+  "note": "Public-domain reference novels per genre (first published before 1929, so public domain in the US). Texts come from Standard Ebooks' source repositories (CC0 editions of public-domain works, https://github.com/standardebooks), read as XHTML; Project Gutenberg, Wikisource and the Internet Archive were unreachable from the build sandbox. `pnpm --filter @plotlint/metrics baselines -- --download` fetches them into .corpus/<genre>/<repo>.json (gitignored); a Project Gutenberg plain-text file dropped into .corpus/<genre>/ is measured too.",
   "general": [
-    { "gutenberg": 158, "title": "Emma", "author": "Jane Austen" },
-    { "gutenberg": 1400, "title": "Great Expectations", "author": "Charles Dickens" },
-    { "gutenberg": 541, "title": "The Age of Innocence", "author": "Edith Wharton" },
-    { "gutenberg": 284, "title": "The House of Mirth", "author": "Edith Wharton" }
+    { "standardEbooks": "jane-austen_emma", "title": "Emma", "author": "Jane Austen", "year": 1815 },
+    { "standardEbooks": "charles-dickens_great-expectations", "title": "Great Expectations", "author": "Charles Dickens", "year": 1861 },
+    { "standardEbooks": "edith-wharton_the-age-of-innocence", "title": "The Age of Innocence", "author": "Edith Wharton", "year": 1920 },
+    { "standardEbooks": "edith-wharton_the-house-of-mirth", "title": "The House of Mirth", "author": "Edith Wharton", "year": 1905 }
   ],
   "mystery": [
-    { "gutenberg": 2852, "title": "The Hound of the Baskervilles", "author": "Arthur Conan Doyle" },
-    { "gutenberg": 2097, "title": "The Sign of the Four", "author": "Arthur Conan Doyle" },
-    { "gutenberg": 863, "title": "The Mysterious Affair at Styles", "author": "Agatha Christie" },
-    { "gutenberg": 1155, "title": "The Secret Adversary", "author": "Agatha Christie" }
+    { "standardEbooks": "arthur-conan-doyle_the-hound-of-the-baskervilles", "title": "The Hound of the Baskervilles", "author": "Arthur Conan Doyle", "year": 1902 },
+    { "standardEbooks": "arthur-conan-doyle_the-sign-of-the-four", "title": "The Sign of the Four", "author": "Arthur Conan Doyle", "year": 1890 },
+    { "standardEbooks": "agatha-christie_the-mysterious-affair-at-styles", "title": "The Mysterious Affair at Styles", "author": "Agatha Christie", "year": 1920 },
+    { "standardEbooks": "wilkie-collins_the-moonstone", "title": "The Moonstone", "author": "Wilkie Collins", "year": 1868 }
   ],
   "romance": [
-    { "gutenberg": 1342, "title": "Pride and Prejudice", "author": "Jane Austen" },
-    { "gutenberg": 105, "title": "Persuasion", "author": "Jane Austen" },
-    { "gutenberg": 161, "title": "Sense and Sensibility", "author": "Jane Austen" },
-    { "gutenberg": 4276, "title": "North and South", "author": "Elizabeth Gaskell" }
+    { "standardEbooks": "jane-austen_pride-and-prejudice", "title": "Pride and Prejudice", "author": "Jane Austen", "year": 1813 },
+    { "standardEbooks": "jane-austen_persuasion", "title": "Persuasion", "author": "Jane Austen", "year": 1817 },
+    { "standardEbooks": "charlotte-bronte_jane-eyre", "title": "Jane Eyre", "author": "Charlotte Brontë", "year": 1847 },
+    { "standardEbooks": "elizabeth-gaskell_north-and-south", "title": "North and South", "author": "Elizabeth Gaskell", "year": 1855 }
   ],
   "fantasy": [
-    { "gutenberg": 325, "title": "Phantastes", "author": "George MacDonald" },
-    { "gutenberg": 1640, "title": "Lilith", "author": "George MacDonald" },
-    { "gutenberg": 169, "title": "The Well at the World's End", "author": "William Morris" },
-    { "gutenberg": 3055, "title": "The Wood Beyond the World", "author": "William Morris" }
+    { "standardEbooks": "george-macdonald_phantastes", "title": "Phantastes", "author": "George MacDonald", "year": 1858 },
+    { "standardEbooks": "william-morris_the-well-at-the-worlds-end", "title": "The Well at the World's End", "author": "William Morris", "year": 1896 },
+    { "standardEbooks": "lord-dunsany_the-king-of-elflands-daughter", "title": "The King of Elfland's Daughter", "author": "Lord Dunsany", "year": 1924 },
+    { "standardEbooks": "h-rider-haggard_she", "title": "She", "author": "H. Rider Haggard", "year": 1887 },
+    { "standardEbooks": "l-frank-baum_the-wonderful-wizard-of-oz", "title": "The Wonderful Wizard of Oz", "author": "L. Frank Baum", "year": 1900 }
   ]
 }

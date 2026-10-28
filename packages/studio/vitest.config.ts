@@ -22,6 +22,7 @@ export default defineConfig({
       "@plotlint/rules/node": resolve(__dirname, "../rules/src/node.ts"),
       "@plotlint/rules": resolve(__dirname, "../rules/src/index.ts"),
       "@plotlint/mechanics": resolve(__dirname, "../mechanics/src/index.ts"),
+      "@plotlint/metrics": resolve(__dirname, "../metrics/src/index.ts"),
       "@plotlint/packs/node": resolve(__dirname, "../packs/src/node.ts"),
       "@plotlint/packs": resolve(__dirname, "../packs/src/index.ts"),
       "@plotlint/style/node": resolve(__dirname, "../style/src/node.ts"),

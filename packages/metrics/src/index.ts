@@ -1,9 +1,13 @@
 export type { Baseline, MetricBand, MetricBands, MetricStats, SourceBook } from "./bands.js";
 export { bandNumber, describeBand, mergeBands, outside } from "./bands.js";
 export { BASELINE_GENRES, baseline, baselineBands } from "./baselines.js";
-export { BASELINE_VALUES, bandsFromStats, buildBaseline, gutenbergHeader, percentiles, splitChapters, stripGutenberg } from "./corpus.js";
+export { BASELINE_VALUES, bandsFromStats, buildBaseline, gutenbergHeader, percentiles, splitChapters, standardEbooksChapters, standardEbooksSpine, stripGutenberg, xhtmlToText } from "./corpus.js";
 export type { ChapterMetrics, DialogueRatio, FlatStretch, Rhythm, RhythmOptions, SensoryDensity, WallOfText } from "./measures.js";
 export { dialogueRatio, measureChapter, mtld, sensoryDensity, sentenceRhythm, wallOfText } from "./measures.js";
+export type { PredictabilityOptions, PredictabilityReport, PredictableStretch } from "./predictability.js";
+export { DEFAULT_PREDICTABILITY_BAND, findPredictableStretches, PREDICTABILITY_RULE_ID, predictabilityRule } from "./predictability.js";
+export type { KneserNeyOptions, Scorer, TokenizedChapter } from "./surprisal.js";
+export { kneserNeyScorer } from "./surprisal.js";
 export type { RepeatedPhrase, RepeatedPhraseOptions } from "./repetition.js";
 export { findRepeatedPhrases, metricStateRules, repeatedPhraseRule } from "./repetition.js";
 export type { MetricRule, MetricRuleId, MetricRuleInfo } from "./rules.js";

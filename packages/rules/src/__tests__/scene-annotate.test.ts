@@ -126,8 +126,11 @@ describe("annotateChapter", () => {
 
   it("retries once with the problem when the reply is unusable", async () => {
     const model = fake("Sure! Here are the scenes.", reply([goodScene1, goodScene2]));
-    const result = await annotateChapter(3, CHAPTER, model.complete, { annotator: "llm@test-model" });
+    const calls: Array<[ReadonlyArray<string>, number]> = [];
+    const result = await annotateChapter(3, CHAPTER, model.complete, { annotator: "llm@test-model", onCall: (ids, attempt) => calls.push([ids, attempt]) });
     expect(result.calls).toBe(2);
+    // Told before each model call, for the CLI's progress line.
+    expect(calls).toEqual([[["ch3.s1", "ch3.s2"], 1], [["ch3.s1", "ch3.s2"], 2]]);
     expect(model.calls[1]!.at(-1)!.content).toContain("could not be used: the reply has no JSON object");
     await expect(annotateChapter(3, CHAPTER, fake("no", "still no").complete, { annotator: "llm@test-model" }))
       .rejects.toThrow("after 2 attempts");

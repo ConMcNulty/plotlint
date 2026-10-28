@@ -21,6 +21,7 @@ Every time a writer acts on a finding, plotlint appends one line to the book's v
 | `author` | Optional, who decided (the CLI's `--author`). |
 | `quote` | The flagged text or the finding's summary, at most 500 characters, so the file reads well to a human. |
 | `layer`, `confidence` | Copied from the finding, so reports can be split by layer and by deterministic, extracted or judged. |
+| `findings` | Optional: how many findings shared the fingerprint when the writer decided (a check that flags the same words again and again). `inkos lint verdict` records it; older lines and Studio's per-finding verdicts leave it out. |
 
 The schema is `VerdictSchema` in `@plotlint/diagnostics/verdicts`; `@plotlint/diagnostics/node` has `loadVerdicts` and `appendVerdicts`. The file is append-only JSON lines: Studio, the CLI and agents only ever add whole lines, a crash can tear at most the last line, and the reader skips lines it cannot parse (reporting their numbers) instead of failing. CRLF line ends, as an editor on Windows may leave them, are fine.
 
@@ -39,6 +40,8 @@ Turning a whole check off for a book (a rule suppression or `rules.json`) is not
 ### One finding, one vote
 
 Writers change their mind. Every report counts only the **latest verdict per check and fingerprint** (by `at`, ties to the later line): a finding marked intentional and later fixed counts once, as accepted. Older lines stay in the file as history.
+
+Findings that share a fingerprint (the same words flagged again in the same chapter, with the same evidence) are one finding to this count, so a check that floods a chapter weighs no more in the gate than one that flags it once. That is deliberate: the gate asks whether writers want a check's findings, not how many there are. To show how much a verdict covered, `inkos lint study` adds a **findings** column next to `n`: the sum of each standing verdict's `findings`, or 1 where a verdict did not record it. It is exact when every verdict recorded the count, prefixed `≥` (a lower bound) when only some did, and `-` when none did. The gate logic does not read it.
 
 ## Protocol
 
@@ -112,11 +115,12 @@ inkos lint study --all --json --min 20 --reject-above 0.5
 
 ```
 3 books: 61 verdicts on 4 checks; a check needs 20 to decide
-  check                        books   n  accept  reject (95% CI)  verdict
-  mechanics/harper                 3  24     88%      13% (4%-31%)  stays on
-  style/general.Cliches            3  27      7%     93% (77%-98%)  turn off by default (rejected > 50%)
-  style/general.FilterWords        2   8     50%     50% (22%-78%)  not enough data
-  style/general.Intensifiers       1   2      0%   100% (34%-100%)  not enough data
+  check                        books   n  findings  accept  reject (95% CI)  verdict
+  mechanics/harper                 3  24        24     88%      13% (4%-31%)  stays on
+  style/general.Cliches            3  27      ≥41      7%     93% (77%-98%)  turn off by default (rejected > 50%)
+  style/general.FilterWords        2   8         -     50%     50% (22%-78%)  not enough data
+  style/general.Intensifiers       1   2         2      0%   100% (34%-100%)  not enough data
+  n counts one verdict per finding fingerprint; findings is how many flagged spans those verdicts covered (≥ where older verdicts did not record it). The gate uses n.
 Turn off by default: style/general.Cliches
 ```
 

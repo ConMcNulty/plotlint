@@ -20,5 +20,6 @@ checks:
   # The relationship is the main plot, and both leads get a point of view.
   structure/central-relationship: note
   structure/both-leads-pov: note
-metrics:
-  metrics/dialogue-ratio: { min: 0.15 }
+# No metric bands of its own: on the romance reference books (@plotlint/metrics
+# baselines/romance.json) dialogue and paragraph length sit in the general bands,
+# and the old 15% dialogue floor flagged about one reference chapter in ten.

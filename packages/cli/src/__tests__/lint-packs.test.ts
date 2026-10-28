@@ -97,11 +97,13 @@ describe("inkos lint packs", () => {
     const byId = new Map(rules.map((rule) => [rule.id, rule]));
     expect(byId.get("style/general.Intensifiers")).toMatchObject({ layer: "style", severity: "note", from: ["adaptive"] });
     expect(byId.get("metrics/wall-of-text")).toMatchObject({ layer: "metrics", severity: "warning", from: ["rules.json"] });
-    expect(byId.get("metrics/dialogue-ratio")).toMatchObject({ layer: "metrics", from: expect.arrayContaining(["romance"]) });
-    expect(byId.get("metrics/dialogue-ratio")!.band).toBeDefined();
+    // Romance sets no band of its own (its reference books measure inside the general bands).
+    expect(byId.get("metrics/dialogue-ratio")).toMatchObject({ layer: "metrics", enabled: true });
+    expect(byId.get("metrics/dialogue-ratio")!.band).toBeUndefined();
     expect(byId.get("structure/subplot-balance")).toMatchObject({ layer: "structure", severity: "note", from: ["romance"] });
     expect(byId.get("mechanics/harper")).toMatchObject({ layer: "mechanics", enabled: true });
     expect(byId.has("metrics/repeated-phrase")).toBe(true);
+    expect(byId.has("metrics/predictability")).toBe(true);
     expect(run(["lint", "rules", "thorn"])).toMatch(/style\/general\.Intensifiers {2}note {2}\(adaptive\)/u);
   });
 

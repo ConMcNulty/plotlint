@@ -1,5 +1,6 @@
 import type { Diagnostic } from "@plotlint/diagnostics";
 import { textDiagnostic, type ChapterTexts, type Rule } from "@plotlint/rules";
+import { predictabilityRule, type PredictabilityOptions } from "./predictability.js";
 import { metricRuleInfo } from "./rules.js";
 import { isMostlyCjk, proseParagraphs, sentences, words, type Span } from "./text.js";
 
@@ -179,7 +180,12 @@ export function repeatedPhraseRule(defaults: RepeatedPhraseOptions = {}): Rule {
   return rule;
 }
 
-/** The book-level metric rules, for callers that run state rules (the CLI adds them next to `builtinRegistry`). */
-export function metricStateRules(options: RepeatedPhraseOptions = {}): Rule[] {
-  return [repeatedPhraseRule(options)];
+/**
+ * The book-level metric rules, for callers that run state rules (the CLI adds them
+ * next to `builtinRegistry`): repeated phrases and predictability. `bands` (a pack's
+ * `metrics:` section) and `scorer` go to `metrics/predictability`.
+ */
+export function metricStateRules(options: RepeatedPhraseOptions & PredictabilityOptions = {}): Rule[] {
+  const { bands, scorer, ...phrases } = options;
+  return [repeatedPhraseRule(phrases), predictabilityRule({ ...(bands ? { bands } : {}), ...(scorer ? { scorer } : {}) })];
 }

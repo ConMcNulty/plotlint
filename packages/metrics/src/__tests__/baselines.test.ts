@@ -2,7 +2,10 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { baseline, BASELINE_GENRES, bandsFromStats, buildBaseline, percentiles, splitChapters, stripGutenberg } from "../index.js";
+import {
+  baseline, BASELINE_GENRES, bandsFromStats, buildBaseline, percentiles, splitChapters, standardEbooksChapters, standardEbooksSpine,
+  stripGutenberg, xhtmlToText,
+} from "../index.js";
 
 const baselinesDir = fileURLToPath(new URL("../../baselines", import.meta.url));
 
@@ -26,9 +29,42 @@ describe("reference corpus", () => {
     expect(chapters[1]!.startsWith("Second chapter words.")).toBe(true);
   });
 
-  it("computes interpolated percentiles", () => {
-    const stats = percentiles(Array.from({ length: 101 }, (_, i) => i));
-    expect(stats).toEqual({ p5: 5, p10: 10, p50: 50, p90: 90, p95: 95, min: 0, max: 100 });
+  it("computes interpolated percentiles, weighted or not", () => {
+    const values = Array.from({ length: 101 }, (_, i) => i);
+    expect(percentiles(values)).toEqual({ p5: 5, p10: 10, p50: 50, p90: 90, p95: 95, min: 0, max: 100 });
+    expect(percentiles(values, values.map(() => 0.25))).toEqual(percentiles(values));
+    // Ten chapters of one book at 0 and one chapter of another at 10, each book weighing the same.
+    const weighted = percentiles([...Array(10).fill(0), 10], [...Array(10).fill(0.1), 1]);
+    expect(weighted.p90).toBeGreaterThan(percentiles([...Array(10).fill(0), 10]).p90);
+    expect(percentiles([7])).toMatchObject({ p5: 7, p95: 7 });
+  });
+
+  const se = (body: string, type = "bodymatter z3998:fiction") => [
+    "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head><title>I</title></head>\r\n",
+    `<body epub:type="${type}">\r\n${body}\r\n</body>\r\n</html>\r\n`,
+  ].join("");
+
+  it("reads Standard Ebooks XHTML: chapter sections only, as plain paragraphs", () => {
+    const chapter = (n: number) => `<section id="chapter-${n}" epub:type="chapter"><h2 epub:type="ordinal">${n}</h2>`
+      + `<p>“Well⁠—no,” said Mr.&#160;Knightley &amp; she.<a href="endnotes.xhtml#note-1" id="noteref-1" epub:type="noteref">1</a></p>`
+      + `<hr/><p>Line one<br/>\r\n\t\tline <i>two</i>.</p></section>`;
+    const part = `<section id="part-1" epub:type="part"><h2>Part One</h2>${chapter(1)}${chapter(2)}</section>`;
+    const chapters = standardEbooksChapters(se(part));
+    expect(chapters).toHaveLength(2);
+    expect(chapters[0]).toBe("“Well—no,” said Mr. Knightley & she.\n\n* * *\n\nLine one\nline two.");
+    expect(standardEbooksChapters(se("<section epub:type=\"imprint\"><p>Standard Ebooks.</p></section>", "frontmatter"))).toEqual([]);
+    expect(standardEbooksChapters(se("<section epub:type=\"prologue\"><p>Before it all.</p></section>"))).toEqual(["Before it all."]);
+    expect(xhtmlToText("<p>a&#x2019;b &lt;c&gt;</p>")).toBe("a’b <c>");
+  });
+
+  it("lists a content.opf's XHTML in spine order", () => {
+    const opf = [
+      "<manifest><item href=\"css/core.css\" id=\"core.css\" media-type=\"text/css\"/>",
+      "<item href=\"text/chapter-2.xhtml\" id=\"chapter-2.xhtml\" media-type=\"application/xhtml+xml\"/>",
+      "<item href=\"text/chapter-1.xhtml\" id=\"chapter-1.xhtml\" media-type=\"application/xhtml+xml\"/></manifest>",
+      "<spine><itemref idref=\"chapter-1.xhtml\"/><itemref idref=\"chapter-2.xhtml\"/><itemref idref=\"missing\"/></spine>",
+    ].join("\n");
+    expect(standardEbooksSpine(opf)).toEqual(["text/chapter-1.xhtml", "text/chapter-2.xhtml"]);
   });
 
   it("sets floors, ceilings and a dialogue band from the stats", () => {
@@ -67,7 +103,14 @@ describe("committed baselines", () => {
       // Run `pnpm --filter @plotlint/metrics baselines -- --sync` if this fails.
       expect(baseline(json.genre)).toEqual(json);
       expect(json.version).toBe(1);
-      expect(json.sourceBooks.length).toBeGreaterThan(0);
+      expect(json.sourceBooks.length).toBeGreaterThanOrEqual(4);
+      // Measured, not hand-set: every band comes from public-domain books with a source to re-fetch them from.
+      expect(json.provisional).toBe(false);
+      expect(json.chapters).toBeGreaterThan(50);
+      for (const book of json.sourceBooks) {
+        expect(book.year).toBeLessThan(1929);
+        expect(book.url).toMatch(/^https:\/\//u);
+      }
     }
   });
 });
