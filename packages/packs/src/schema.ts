@@ -21,6 +21,26 @@ export type MetricBand = { min?: number; max?: number; [key: string]: unknown };
 /** Bands by metric rule id, the shape `createMetricRules` in `@plotlint/metrics` takes. */
 export type MetricBands = Record<string, MetricBand>;
 
+/** A beta-reader persona for the closed loop's reader panel. */
+export const ReaderPersonaSchema = z.object({
+  name: PackNameSchema,
+  brief: z.string().min(1),
+}).strict();
+export type PackReaderPersona = z.infer<typeof ReaderPersonaSchema>;
+
+/** How the closed loop (`@plotlint/loop`) treats this genre. */
+export const PackLoopSchema = z.object({
+  /** Rule ids or globs, highest first: ranks findings and settles editors' conflicting notes. */
+  priority: z.array(RuleKeySchema).optional(),
+  /** Open warnings allowed when the loop stops clean. */
+  warnings: z.number().int().min(0).optional(),
+  /** The beta-reader panel; replaces the panel of the packs this one builds on. */
+  readers: z.array(ReaderPersonaSchema).min(1).optional(),
+  /** Extra checks the author agent never sees, on top of the loop's defaults. */
+  heldOut: z.array(RuleKeySchema).optional(),
+}).strict();
+export type PackLoop = z.infer<typeof PackLoopSchema>;
+
 export const PackManifestSchema = z.object({
   name: PackNameSchema,
   title: z.string().min(1),
@@ -38,6 +58,8 @@ export const PackManifestSchema = z.object({
   styles: z.string().min(1).optional(),
   /** How the pack is proposed for a book without an LLM: words in InkOS's genre field. */
   selection: z.object({ keywords: z.array(z.string().min(1)).optional() }).strict().optional(),
+  /** Closed-loop settings: priority, warning threshold, reader panel, held-out checks. */
+  loop: PackLoopSchema.optional(),
 }).strict();
 export type PackManifest = z.infer<typeof PackManifestSchema>;
 

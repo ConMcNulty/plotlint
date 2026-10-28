@@ -130,3 +130,24 @@ describe("PackManifestSchema", () => {
     expect(PackManifestSchema.safeParse({ ...ok, extra: 1 }).success).toBe(false);
   });
 });
+
+describe("loop settings", () => {
+  const loops = catalog(
+    { name: "general", loop: { priority: ["continuity/*", "style/*"], warnings: 2, readers: [{ name: "skeptic", brief: "b" }] } },
+    { name: "mystery", loop: { priority: ["structure/fair-play"], warnings: 1, readers: [{ name: "sleuth", brief: "b" }], heldOut: ["metrics/sensory-detail"] } },
+    { name: "cozy", extends: ["mystery"], loop: { priority: ["continuity/knowledge-leak"] } },
+    { name: "romance", loop: { priority: ["structure/central-relationship"], readers: [{ name: "fan", brief: "b" }, { name: "sleuth", brief: "c" }] } },
+  );
+
+  it("puts the most specific pack's priorities first and general's last", () => {
+    const { loop } = resolvePacks(["cozy", "romance"], loops);
+    expect(loop.priority).toEqual(["continuity/knowledge-leak", "structure/fair-play", "structure/central-relationship", "continuity/*", "style/*"]);
+    expect(loop.warnings).toBe(1);
+    expect(loop.readers.map((reader) => reader.name)).toEqual(["sleuth", "fan"]);
+    expect(loop.heldOut).toEqual(["metrics/sensory-detail"]);
+  });
+
+  it("falls back to general's panel", () => {
+    expect(resolvePacks([], loops).loop).toEqual({ priority: ["continuity/*", "style/*"], warnings: 2, readers: [{ name: "skeptic", brief: "b" }], heldOut: [] });
+  });
+});

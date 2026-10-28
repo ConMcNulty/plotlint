@@ -1,5 +1,5 @@
 export * from "./schema.js";
-export type { ResolvedPacks, ResolveOptions } from "./resolve.js";
+export type { ResolvedLoop, ResolvedPacks, ResolveOptions } from "./resolve.js";
 export { effectiveMetricBands, effectiveRuleConfig, PackResolutionError, resolvePacks } from "./resolve.js";
 export type { PackProblem } from "./validate.js";
 export { validatePack } from "./validate.js";

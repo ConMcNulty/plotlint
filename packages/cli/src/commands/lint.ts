@@ -27,6 +27,7 @@ import { addSuppression, loadSuppressions, removeSuppressions, suppressionsPath 
 import { registerStudyCommands } from "./lint-study.js";
 import { addPacksCommand, bookPacks, effectiveRules } from "./lint-packs.js";
 import { addHooksCommand } from "./lint-hooks.js";
+import { addLoopCommand } from "./lint-loop.js";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
@@ -47,9 +48,11 @@ interface BookLint {
   packs: string[];
 }
 
-interface LintOptions {
+export interface LintOptions {
   layers: ReadonlySet<DiagnosticLayer>;
   chapter?: number;
+  /** Chapter text to check in place of the file's, by chapter number (the closed loop's drafts). */
+  drafts?: ReadonlyMap<number, string>;
 }
 
 const everything: LintOptions = { layers: new Set(DiagnosticLayerSchema.options) };
@@ -121,8 +124,9 @@ async function lintChapterText(
   chapter: number,
   rules: ReadonlyArray<TextRule>,
   snapshot: RuntimeStateSnapshot | undefined,
+  draft?: string,
 ): Promise<LocatedDiagnostic[]> {
-  const text = await readFile(path, "utf-8");
+  const text = draft ?? await readFile(path, "utf-8");
   if (rules.length === 0 || isMostlyCjk(text)) return [];
   const diagnostics = await checkText({ sourceId: `chapter:${chapter}`, chapter, text }, rules,
     snapshot ? { snapshot, dictionary: projectDictionary(snapshot) } : {});
@@ -150,7 +154,7 @@ const emptySnapshot = (): RuntimeStateSnapshot => ({
 });
 
 /** Run the checks over one book's state and chapter text and split the findings by its saved suppressions. */
-async function lintBook(state: StateManager, id: string, options: LintOptions): Promise<BookLint> {
+export async function lintBook(state: StateManager, id: string, options: LintOptions): Promise<BookLint> {
   const bookDir = state.bookDir(id);
   const { suppressions } = await loadSuppressions(bookDir);
   const snapshot = await loadSnapshot(bookDir);
@@ -163,7 +167,7 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
   // The book's packs set the rule config, then the checks its author keeps rejecting are lowered, then its own rules.json wins.
   const packs = bookPacks(bookDir, loaded, [await loadAdaptiveOverlay(bookDir)]);
   const book = { ...loaded, config: packs.config };
-  const texts = await chapterTexts(bookDir);
+  const texts = new Map([...await chapterTexts(bookDir), ...(options.drafts ?? [])]);
   // State rules run by their own layer: continuity rules under `continuity`, structural ones under `structure`.
   // Structure rules over scene annotations need no story state, so they run on an empty one.
   const stateRules = builtinRegistry.list().filter((rule) => options.layers.has(rule.layer));
@@ -178,7 +182,7 @@ async function lintBook(state: StateManager, id: string, options: LintOptions): 
   const files = await chapterFiles(bookDir);
   const chapters = options.chapter === undefined ? [...files.keys()] : files.has(options.chapter) ? [options.chapter] : [];
   const rules = configureTextRules(textRules(options.layers, packs.styleRules, packs.metrics), packs.config);
-  for (const chapter of chapters) diagnostics.push(...await lintChapterText(files.get(chapter)!, chapter, rules, snapshot));
+  for (const chapter of chapters) diagnostics.push(...await lintChapterText(files.get(chapter)!, chapter, rules, snapshot, options.drafts?.get(chapter)));
   if (options.layers.has("metrics")) {
     // Book-level metrics (repetition across chapters) read every chapter but report into each one.
     const names = snapshot ? projectDictionary(snapshot) : [];
@@ -678,6 +682,9 @@ async function withBackoff<T>(call: () => Promise<T>, attempts = 4): Promise<T> 
 
 // `inkos lint hooks` and `inkos lint hooks reconcile` (lint-hooks.ts).
 addHooksCommand(lintCommand, { chapterTexts, loadSnapshot, withBackoff, parseChapter });
+
+// `inkos lint loop`, `compare`, `prefer` and `study` (lint-loop.ts).
+addLoopCommand(lintCommand, { chapterFiles, lintBook, withBackoff, parseChapter });
 
 lintCommand
   .command("annotate")
