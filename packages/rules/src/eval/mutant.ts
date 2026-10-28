@@ -1,6 +1,7 @@
-import type { CurrentStateFact, FactKind } from "@actalk/inkos-core";
+import type { CurrentStateFact, FactKind, HookRecord } from "@actalk/inkos-core";
 import type { BookRuleData } from "../book.js";
 import type { ChapterTexts } from "../evidence.js";
+import { SceneAnnotationSchema, type SceneAnnotation, type SceneAnnotationInput } from "../scene-annotations.js";
 
 // Seeded-error evaluation (PLAN.md "Evaluation"): take a clean book, inject one
 // known error at a time (a mutant) and measure whether the rule meant to catch it
@@ -13,7 +14,9 @@ export interface CleanBook {
   readonly name: string;
   readonly chapters: ChapterTexts;
   readonly facts: ReadonlyArray<CurrentStateFact>;
-  /** The corpus's `story/plotlint/` files, read as a book's are. */
+  /** Oracle hooks, in InkOS's hook-ledger shape; empty when the corpus has no `hooks.json`. */
+  readonly hooks: ReadonlyArray<HookRecord>;
+  /** The corpus's `story/plotlint/` files and `book.json` plan, read as a book's are. */
   readonly book: BookRuleData;
 }
 
@@ -33,8 +36,14 @@ export interface Mutant {
   readonly description: string;
   readonly chapters: ChapterTexts;
   readonly facts: ReadonlyArray<CurrentStateFact>;
-  /** Extra book data for this mutant, over the mutator's `book` data. */
+  readonly hooks: ReadonlyArray<HookRecord>;
+  /** Extra book data for this mutant (e.g. changed scene annotations), over the mutator's `book` data. */
   readonly book?: Partial<BookRuleData>;
+  /**
+   * "book" for an error the rule reports about the whole book, with no chapter
+   * (protagonist agency, a lead with no POV): any new finding of the rule catches it.
+   */
+  readonly scope?: "chapter" | "book";
   /**
    * How to tell that an auditor issue is about the seeded error: every group must
    * have one word (case-insensitive substring) in the issue's summary or evidence.
@@ -46,6 +55,8 @@ export interface Mutator {
   /** The rule that should catch these mutants; the harness skips the mutator when it is not registered. */
   readonly ruleId: string;
   readonly description: string;
+  /** The corpus book the mutants are seeded into; "wenlow" when absent. */
+  readonly corpus?: string;
   /**
    * Book data the rule needs, applied to the clean run and every mutant (e.g. a
    * travel graph or the author's invariants), so false alarms are measured with it too.
@@ -80,6 +91,13 @@ export const insertAfter = (chapter: number, anchor: string, sentence: string): 
 /** Rewrite a passage that occurs once in the chapter. */
 export const rewrite = (chapter: number, find: string, replace: string): TextEdit => ({ chapter, find, replace });
 
+/** Rewrite a whole clean chapter (for edits all through it, such as a name taken out); put it before other edits to the chapter. */
+export function transform(clean: CleanBook, chapter: number, change: (text: string) => string): TextEdit {
+  const text = clean.chapters.get(chapter);
+  if (text === undefined) throw new Error(`no chapter ${chapter} in ${clean.name}`);
+  return { chapter, find: text, replace: change(text) };
+}
+
 const sameFact = (a: CurrentStateFact, b: Pick<CurrentStateFact, "subject" | "predicate" | "object" | "validFromChapter">) =>
   a.subject === b.subject && a.predicate === b.predicate && a.object === b.object && a.validFromChapter === b.validFromChapter;
 
@@ -90,14 +108,39 @@ export interface FactChange {
   readonly set: Partial<CurrentStateFact> | null;
 }
 
+export interface HookChange {
+  /** The clean hook's id. */
+  readonly target: string;
+  /** Fields to overwrite; `null` removes the hook. */
+  readonly set: Partial<HookRecord> | null;
+}
+
+export interface SceneChange {
+  /** The clean scene annotation's id (`ch2.s1`). */
+  readonly target: string;
+  /** Fields to overwrite; `null` removes the annotation. */
+  readonly set: Partial<SceneAnnotationInput> | null;
+}
+
 export interface MutantSpec {
   readonly chapter: number;
   readonly description: string;
   readonly edits?: ReadonlyArray<TextEdit>;
   readonly add?: ReadonlyArray<CurrentStateFact>;
   readonly change?: ReadonlyArray<FactChange>;
+  readonly addHooks?: ReadonlyArray<HookRecord>;
+  readonly changeHooks?: ReadonlyArray<HookChange>;
+  /** Changes to the clean book's scene annotations (`scenes.json`). */
+  readonly changeScenes?: ReadonlyArray<SceneChange>;
+  readonly addScenes?: ReadonlyArray<SceneAnnotationInput>;
   readonly book?: Partial<BookRuleData>;
+  readonly scope?: "chapter" | "book";
   readonly match: ReadonlyArray<ReadonlyArray<string>>;
+}
+
+/** A hook as InkOS's ledger records it (type "mystery" unless `extra` says otherwise). */
+export function hook(hookId: string, startChapter: number, lastAdvancedChapter: number, status: HookRecord["status"], expectedPayoff: string, extra: Partial<HookRecord> = {}): HookRecord {
+  return { hookId, startChapter, type: "mystery", status, lastAdvancedChapter, expectedPayoff, notes: "", ...extra };
 }
 
 /**
@@ -122,17 +165,40 @@ export function buildMutant(clean: CleanBook, ruleId: string, index: number, spe
     facts = change.set === null ? facts.filter((_, i) => i !== at) : facts.map((f, i) => (i === at ? { ...f, ...change.set } : f));
   }
   facts.push(...(spec.add ?? []));
+  let hooks = [...clean.hooks];
+  for (const change of spec.changeHooks ?? []) {
+    const at = hooks.findIndex((h) => h.hookId === change.target);
+    if (at < 0) throw new Error(`${id}: no clean hook ${change.target}`);
+    hooks = change.set === null ? hooks.filter((_, i) => i !== at) : hooks.map((h, i) => (i === at ? { ...h, ...change.set } : h));
+  }
+  hooks.push(...(spec.addHooks ?? []));
+  let book = spec.book;
+  if (spec.changeScenes?.length || spec.addScenes?.length) {
+    const file = clean.book.scenes;
+    if (!file) throw new Error(`${id}: the clean book has no scenes.json`);
+    let scenes: SceneAnnotation[] = [...file.scenes];
+    for (const change of spec.changeScenes ?? []) {
+      const at = scenes.findIndex((scene) => scene.id === change.target);
+      if (at < 0) throw new Error(`${id}: no clean scene annotation ${change.target}`);
+      scenes = change.set === null ? scenes.filter((_, i) => i !== at)
+        : scenes.map((scene, i) => (i === at ? SceneAnnotationSchema.parse({ ...scene, ...change.set }) : scene));
+    }
+    scenes.push(...(spec.addScenes ?? []).map((scene) => SceneAnnotationSchema.parse(scene)));
+    book = { ...book, scenes: { ...file, ...book?.scenes, scenes } };
+  }
   return {
-    id, ruleId, chapter: spec.chapter, description: spec.description, chapters, facts, match: spec.match,
-    ...(spec.book ? { book: spec.book } : {}),
+    id, ruleId, chapter: spec.chapter, description: spec.description, chapters, facts, hooks, match: spec.match,
+    ...(book ? { book } : {}),
+    ...(spec.scope ? { scope: spec.scope } : {}),
   };
 }
 
 /** A mutator from a list of specs. */
-export function mutator(ruleId: string, description: string, specs: (clean: CleanBook) => MutantSpec[], book?: Mutator["book"]): Mutator {
+export function mutator(ruleId: string, description: string, specs: (clean: CleanBook) => MutantSpec[], book?: Mutator["book"], corpus?: string): Mutator {
   return {
     ruleId, description,
     ...(book ? { book } : {}),
+    ...(corpus ? { corpus } : {}),
     mutants: (clean) => specs(clean).map((spec, index) => buildMutant(clean, ruleId, index, spec)),
   };
 }

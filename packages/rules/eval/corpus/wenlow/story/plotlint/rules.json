@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "rules": {
+    "structure/tension-curve": { "options": { "minChapters": 5, "flatRun": 3 } },
+    "structure/subplot-balance": { "options": { "gap": 2 } },
+    "structure/goal-conflict-outcome": { "options": { "window": 3, "minScenes": 2 } }
+  }
+}

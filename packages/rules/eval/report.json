@@ -1,7 +1,7 @@
 {
- "generated": "2026-10-27T19:14:01.331Z",
- "book": "wenlow",
- "chapters": 5,
+ "generated": "2026-10-28T04:56:07.356Z",
+ "book": "wenlow + thornbury",
+ "chapters": 9,
  "skipped": [],
  "rules": [
   {
@@ -1221,10 +1221,11 @@
      "ruleId": "continuity/invariant",
      "chapter": 2,
      "summary": "Invariant \"Alderman Pask is not named before chapter 5.\" fails in chapter 2: the text says \"Pask\".",
-     "mutant": "knowledge-leak/6"
+     "mutant": "knowledge-leak/6",
+     "book": "wenlow"
     }
    ],
-   "collateralRate": 0.008620689655172414,
+   "collateralRate": 0.0030303030303030303,
    "outcomes": [
     {
      "id": "invariant/1",
@@ -1313,6 +1314,2312 @@
      "chapter": 4,
      "description": "pask-named-late: Pask is named in ch4 (text only).",
      "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/unpaid-setup",
+   "mutants": 12,
+   "caught": 12,
+   "recall": 1,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [
+    {
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 3,
+     "summary": "\"Which member of the parish council paid to sink the Margery\", opened in ch3, is never resolved by the last chapter (ch5).",
+     "mutant": "subplot-balance/6",
+     "book": "wenlow"
+    }
+   ],
+   "collateralRate": 0.003048780487804878,
+   "outcomes": [
+    {
+     "id": "unpaid-setup/1",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 4,
+     "description": "Tobias's letter is never read: ch5 no longer says what it told, and father-letter stays open from ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/2",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 1,
+     "description": "Jonas's 'east of true' line on Gorse Hill is cut, so the compass's oddity planted in ch1 is never paid off.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/3",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 1,
+     "description": "Crane never admits writing the letter (ch3 rewritten); letter-writer stays open from ch1, last advanced in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/4",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 3,
+     "description": "The ledger's names are never given: ch5 drops Pask, and council-conspirator stays open from ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/5",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 3,
+     "description": "Jonas never takes the ferry across in ch5; crane-ferry (who rows after Crane) stays open from ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/6",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 2,
+     "description": "The strongbox hole is empty in ch4; missing-strongbox is due by ch4 (paysOffInArc) and still progressing in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/7",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 2,
+     "description": "Rook hands Elspeth a brass spyglass from the Margery in ch2 (possession, and the spyglass the subject of its own fact); it never returns.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/8",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 1,
+     "description": "Thorne gives Elspeth a sealed warrant in ch1 (two facts name it); it is never mentioned again.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/9",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 3,
+     "description": "Crane presses a pewter locket on Jonas in ch3 ('carries', and the locket's own fact); it never comes up again.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/10",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 2,
+     "description": "Rook hints he saw something from the bridge the night the Margery sank (a new hook, opened ch2); no chapter returns to it.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/11",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 3,
+     "description": "GLM-style ledger row: 'hook-11', a question about the nurse raised in ch3 and never advanced.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unpaid-setup/12",
+     "ruleId": "structure/unpaid-setup",
+     "chapter": 2,
+     "description": "Expected miss: Elspeth buys 'a tin whistle' at the Heron (GLM's indefinite value, read as a kind rather than one object).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/unearned-payoff",
+   "mutants": 10,
+   "caught": 8,
+   "recall": 0.8,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "unearned-payoff/1",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 4,
+     "description": "The boot prints are explained the moment they are found (cottage-break-in resolved in ch4).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/2",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 1,
+     "description": "The late passenger on Crane's ferry is raised and named in the same paragraph of ch1 (new hook).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/3",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 2,
+     "description": "Why Rook wipes every coin is asked and answered at once in ch2 (new hook).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/4",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 3,
+     "description": "The ledger records Crane's illness only at his bedside, where it ends (crane-illness opened and resolved in ch3).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/5",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 4,
+     "description": "Elspeth reads her father's letter on the spot in ch4 (father-letter opened and resolved in ch4).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/6",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 5,
+     "description": "Who will speak for Jonas's licence is raised and settled in two lines of ch5 (new hook).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/7",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 3,
+     "description": "GLM records the compass hook only when Elspeth gives it away, and Jonas explains it at once (compass-east-of-true opened and resolved in ch3).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/8",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 2,
+     "description": "GLM-style row 'hook' (an id too bare to trace): why the warden is in Stavely, asked and answered in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/9",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 5,
+     "description": "Expected miss: the strongbox question (opened ch2) is answered in ch5 with nothing in between; spotting the gap needs chapter summaries.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "unearned-payoff/10",
+     "ruleId": "structure/unearned-payoff",
+     "chapter": 5,
+     "description": "Expected miss: the break-in (ch4) is explained in ch5, one chapter on, which the rule allows.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/cut-candidate",
+   "mutants": 10,
+   "caught": 8,
+   "recall": 0.8,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "cut-candidate/1",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 1,
+     "description": "A scene at the forge: the smith's apprentice Davy Quill makes a pike weathervane (ch1.s2); nothing returns to it.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/2",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 2,
+     "description": "A scene in the Heron's kitchen: the cook Hester Bly bakes a damson tart for a wedding (ch2.s2).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/3",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 3,
+     "description": "A scene at the Wenlow alehouse: two drovers argue over a lame heifer (ch3.s2).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/4",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 2,
+     "description": "A scene on the Stavely bridge: a fiddler, Nat Ormerod, busks for pennies (ch2.s2).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/5",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 1,
+     "description": "A scene at the mill: the miller's widow, Martha Gell, counts sacks and finds one short (ch1.s2).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/6",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 3,
+     "description": "GLM-style free-form facts for an appended scene: the sexton, Eli Danby, 'is busy with' a new bell rope (ch3.s2).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/7",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 2,
+     "description": "A scene of Thorne alone at the warden's house, writing a report on river tolls (ch2.s2).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/8",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 1,
+     "description": "A scene of the drovers going on to market with forty ewes (ch1.s2), recorded with a generic value ('some ewes').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/9",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 2,
+     "description": "Expected miss: the appended scene's object, a lantern, happens to be named again in ch4, so it reads as depended on.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "cut-candidate/10",
+     "ruleId": "structure/cut-candidate",
+     "chapter": 3,
+     "description": "Expected miss: the appended scene's fact has no evidence quote, so it cannot be placed in the scene and counts for the whole chapter.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/open-questions",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "open-questions/1",
+     "ruleId": "structure/open-questions",
+     "chapter": 3,
+     "description": "Thorne lays the whole affair out in ch2: every hook is answered by ch2, and ch3–5 have no open question.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/2",
+     "ruleId": "structure/open-questions",
+     "chapter": 3,
+     "description": "Crane's deathbed answers everything in ch3 and the ledger records no new question after it (ch3–5 flat).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/3",
+     "ruleId": "structure/open-questions",
+     "chapter": 2,
+     "description": "Every question raised in ch1 is answered by ch2, and the next is not raised until ch5 (ch2–4 flat).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/4",
+     "ruleId": "structure/open-questions",
+     "chapter": 1,
+     "description": "The ledger opens nothing until ch4: the questions of ch1–3 are not recorded as open (ch1–3 flat).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/5",
+     "ruleId": "structure/open-questions",
+     "chapter": 1,
+     "description": "Ch1 raises eight questions at once (four new hooks on top of the four it opens).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/6",
+     "ruleId": "structure/open-questions",
+     "chapter": 2,
+     "description": "Ch2 raises seven questions at once (five new hooks besides the strongbox and Crane's illness).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/7",
+     "ruleId": "structure/open-questions",
+     "chapter": 3,
+     "description": "Ch3 raises seven questions at once (five new hooks besides the council man and the ferry).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/8",
+     "ruleId": "structure/open-questions",
+     "chapter": 4,
+     "description": "Ch4 raises seven questions at once (five new hooks besides the letter and the break-in), one left as an open ending.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/9",
+     "ruleId": "structure/open-questions",
+     "chapter": 1,
+     "description": "Seven of the book's hooks are recorded as opened in ch1 (the settler backdates them to the letter).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "open-questions/10",
+     "ruleId": "structure/open-questions",
+     "chapter": 3,
+     "description": "Expected miss: everything is answered in ch3, but the settler leaves the hooks 'progressing', so the ledger still reads them as open.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/subplot-balance",
+   "mutants": 10,
+   "caught": 8,
+   "recall": 0.8,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "subplot-balance/1",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 2,
+     "description": "A Rook subplot (what he saw from the bridge, what he owes Tobias) is opened in ch2 and never comes back (book at ch5 of 12).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "subplot-balance/2",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 3,
+     "description": "A thread about the parish nurse (two linked hooks, ch3) is dropped after ch3 (book at ch5 of 12).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "subplot-balance/3",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 2,
+     "description": "The post-office boy thread (who paid him, where he went; linked hooks) opens in ch2 and vanishes (book at ch5 of 12).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "subplot-balance/4",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 1,
+     "description": "Thorne's own drowned father, two linked hooks raised in ch1, is never touched again (book at ch5 of 12).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "subplot-balance/5",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 2,
+     "description": "Tobias's debts and his second family (hooks naming Tobias Marrow) surface in ch1–2 and are dropped (book at ch5 of 12).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "subplot-balance/6",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 3,
+     "description": "The council thread is dropped: the ledger's names are never read out, and council-conspirator is left open after ch3 (finished book; unpaid-setup sees it too).",
+     "caught": true,
+     "echoes": [],
+     "collateral": [
+      {
+       "ruleId": "structure/unpaid-setup",
+       "chapter": 3,
+       "summary": "\"Which member of the parish council paid to sink the Margery\", opened in ch3, is never resolved by the last chapter (ch5)."
+      }
+     ]
+    },
+    {
+     "id": "subplot-balance/7",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 1,
+     "description": "The drovers' thread (two linked hooks, ch1): why they crossed with the warden is never answered (book at ch5 of 12).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "subplot-balance/8",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 2,
+     "description": "A Saltmere smuggling thread (linked hooks, ch2) is raised by Thorne and dropped (book at ch5 of 12).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "subplot-balance/9",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 2,
+     "description": "Expected miss: GLM-style rows 'hook-12' and 'hook-13' name no character and are not linked, so they form no subplot.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "subplot-balance/10",
+     "ruleId": "structure/subplot-balance",
+     "chapter": 1,
+     "description": "Expected miss: a Thorne thread (two hooks naming her) is dropped after ch1, but Thorne herself is on the page in every chapter, so it reads as alive.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/scene-turn",
+   "mutants": 10,
+   "caught": 8,
+   "recall": 0.8,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "scene-turn/1",
+     "ruleId": "structure/scene-turn",
+     "chapter": 1,
+     "description": "Ch1–3 end where they began: nothing Elspeth learns moves her nearer the truth.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/2",
+     "ruleId": "structure/scene-turn",
+     "chapter": 2,
+     "description": "Ch2–4 end where they began.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/3",
+     "ruleId": "structure/scene-turn",
+     "chapter": 3,
+     "description": "Ch3–5 end where they began: the gold and the ledger change nothing.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/4",
+     "ruleId": "structure/scene-turn",
+     "chapter": 1,
+     "description": "Ch1–4 end where they began.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/5",
+     "ruleId": "structure/scene-turn",
+     "chapter": 1,
+     "description": "No scene in the book turns.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/6",
+     "ruleId": "structure/scene-turn",
+     "chapter": 2,
+     "description": "Ch2–4 flat, the annotator writing the axis with different case and spacing ('Truth', 'truth ').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/7",
+     "ruleId": "structure/scene-turn",
+     "chapter": 1,
+     "description": "Ch1–3 flat, each scene on an axis of its own (safety, trust, hope) but ending where it began.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/8",
+     "ruleId": "structure/scene-turn",
+     "chapter": 3,
+     "description": "Ch3–5 flat, the annotator still calling each outcome a success.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/9",
+     "ruleId": "structure/scene-turn",
+     "chapter": 1,
+     "description": "Expected miss: ch1–3 flat, but the annotator names the end on another axis ('truth' to 'trust'), so the scenes read as turning.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "scene-turn/10",
+     "ruleId": "structure/scene-turn",
+     "chapter": 1,
+     "description": "Expected miss: ch1–4 flat, but the annotator leaves ch3's end value blank, which breaks the run into two short ones.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/goal-conflict-outcome",
+   "mutants": 10,
+   "caught": 8,
+   "recall": 0.8,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "goal-conflict-outcome/1",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 1,
+     "description": "Ch1–2 have no goal: Elspeth drifts to Stavely with nothing she wants.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/2",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 2,
+     "description": "Nothing stands in the way in ch2–3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/3",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 3,
+     "description": "No goal in ch3–4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/4",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 4,
+     "description": "No opposition in ch4–5: the box and the ledger are handed over unopposed.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/5",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 1,
+     "description": "No goal in ch1–3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/6",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 2,
+     "description": "No goal in ch2, nothing in the way in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/7",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 1,
+     "description": "Ch1 unopposed and ch3 aimless, with ch2 between them.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/8",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 3,
+     "description": "Ch3 unopposed and ch5 aimless.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/9",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 1,
+     "description": "Expected miss: ch1–2 have no goal, but the annotator writes 'none' instead of leaving the field empty.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "goal-conflict-outcome/10",
+     "ruleId": "structure/goal-conflict-outcome",
+     "chapter": 2,
+     "description": "Expected miss: nothing in the way in ch2–3, which the annotator words as an opposition ('nothing stands in her way').",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/protagonist-agency",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "protagonist-agency/1",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 4,
+     "description": "Thorne, not Elspeth, decides the box goes back to Wenlow in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/2",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 5,
+     "description": "Thorne takes the ledger from Elspeth in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/3",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 4,
+     "description": "Ch4 turns by chance: the lid gives of itself (circumstance).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/4",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 5,
+     "description": "Ch5 turns on circumstance: the ledger is handed over as a matter of course.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/5",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 4,
+     "description": "Jonas decides to carry the box down in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/6",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 5,
+     "description": "Jonas gives the ledger to Thorne in ch5 ('by: Jonas').",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/7",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 4,
+     "description": "Both of Elspeth's turns go to Thorne.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/8",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 5,
+     "description": "The vicar, not Elspeth, takes the ledger to the warden in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/9",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 5,
+     "description": "Thorne takes the ledger ('by: Captain Thorne', the annotator's spelling).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "protagonist-agency/10",
+     "ruleId": "structure/protagonist-agency",
+     "chapter": 4,
+     "description": "Expected miss: Thorne decides ch4, but the annotator records no turning point for ch3, leaving four (fewer than the five the rule needs).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/tension-curve",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "tension-curve/1",
+     "ruleId": "structure/tension-curve",
+     "chapter": 1,
+     "description": "Stakes level at 5 across ch1–3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/2",
+     "ruleId": "structure/tension-curve",
+     "chapter": 2,
+     "description": "Stakes level at 5–6 across ch2–5: the abbey is no higher than the road.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/3",
+     "ruleId": "structure/tension-curve",
+     "chapter": 3,
+     "description": "Stakes level at 7 across ch3–5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/4",
+     "ruleId": "structure/tension-curve",
+     "chapter": 1,
+     "description": "Stakes level at 5 through the whole book.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/5",
+     "ruleId": "structure/tension-curve",
+     "chapter": 2,
+     "description": "Stakes wobbling within one point (6, 7, 6, 6) across ch2–5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/6",
+     "ruleId": "structure/tension-curve",
+     "chapter": 1,
+     "description": "The peak comes in ch1: Thorne all but accuses Elspeth, and nothing later matches it.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/7",
+     "ruleId": "structure/tension-curve",
+     "chapter": 2,
+     "description": "The peak comes in ch2: the threat of the road by Christmas outweighs everything after.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/8",
+     "ruleId": "structure/tension-curve",
+     "chapter": 2,
+     "description": "Peaks in ch1 and ch2 (10 each), lower after.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/9",
+     "ruleId": "structure/tension-curve",
+     "chapter": 1,
+     "description": "The peak in ch1 at 9, with the abbey lowered to 4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "tension-curve/10",
+     "ruleId": "structure/tension-curve",
+     "chapter": 3,
+     "description": "Expected miss: the peak is Crane's deathbed in ch3, three-fifths of the way, just at the rule's cut-off.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/pov-discipline",
+   "mutants": 10,
+   "caught": 10,
+   "recall": 1,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "pov-discipline/1",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 1,
+     "description": "Thorne's private thoughts in Elspeth's scene (ch1).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/2",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 2,
+     "description": "Rook's unspoken opinion (ch2).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/3",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 3,
+     "description": "The nurse's unspoken fear (ch3).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/4",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 4,
+     "description": "Thorne's doubts, which Elspeth cannot see (ch4).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/5",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 5,
+     "description": "Jonas's hidden fear, told from inside him (ch5).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/6",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 2,
+     "description": "Events in Wenlow that Elspeth, in Stavely, cannot perceive (ch2).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/7",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 3,
+     "description": "Crane's memory, from inside his head (ch3).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/8",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 4,
+     "description": "A watcher Elspeth does not see (ch4).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/9",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 5,
+     "description": "The old passenger's thought (ch5).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "pov-discipline/10",
+     "ruleId": "structure/pov-discipline",
+     "chapter": 1,
+     "description": "Jonas's secret shame, which the annotator paraphrases (ch1).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/fair-play",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "fair-play/1",
+     "ruleId": "structure/fair-play",
+     "chapter": 4,
+     "description": "Every clue before the reveal is cut: no bottle in Margaret's basket, no cut foxgloves, no debt.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/2",
+     "ruleId": "structure/fair-play",
+     "chapter": 4,
+     "description": "Margaret Lyle is someone else (Agnes Pell) in ch1–3, so the culprit first appears in the reveal chapter.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/3",
+     "ruleId": "structure/fair-play",
+     "chapter": 3,
+     "description": "Another woman (Ada Brough) quarrels with Venn in ch1, so Margaret first appears in ch3, after the first third.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "structure/fair-play",
+       "chapter": 4,
+       "summary": "The solution in ch4 rests on information first given in the reveal chapter: nothing before it links Margaret Lyle to Silas Venn, green glass bottle, arrested."
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/4",
+     "ruleId": "structure/fair-play",
+     "chapter": 4,
+     "description": "A new culprit, Edwin Crabbe, never seen before, is named in the reveal.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/5",
+     "ruleId": "structure/fair-play",
+     "chapter": 4,
+     "description": "No clues before the reveal, which GLM records as 'is the killer of'.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/6",
+     "ruleId": "structure/fair-play",
+     "chapter": 4,
+     "description": "Margaret is renamed in ch1–3 (Hester Quayle), and the reveal is recorded victim-first, 'Silas Venn · murdered by · Margaret Lyle'.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/7",
+     "ruleId": "structure/fair-play",
+     "chapter": 4,
+     "description": "No clues before the reveal, and the solution turns on digitalis bought at the Hexham chemist, first mentioned in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/8",
+     "ruleId": "structure/fair-play",
+     "chapter": 3,
+     "description": "Margaret first appears in ch3 (renamed Ada Brough in ch1) and her ch3 clues are cut too.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "structure/fair-play",
+       "chapter": 4,
+       "summary": "The solution in ch4 rests on information first given in the reveal chapter: nothing before it links Margaret Lyle to Silas Venn, green glass bottle, arrested."
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/9",
+     "ruleId": "structure/fair-play",
+     "chapter": 4,
+     "description": "The vicar, Arthur Lyle, never on the page, confesses; his sister's surname in ch1 passes for his appearance, but nothing before the reveal links him to the crime.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "fair-play/10",
+     "ruleId": "structure/fair-play",
+     "chapter": 4,
+     "description": "Expected miss: no clues before the reveal, which GLM words 'was responsible for the death of', outside the reveal vocabulary.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/hopeful-ending",
+   "mutants": 10,
+   "caught": 8,
+   "recall": 0.8,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "hopeful-ending/1",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Nell turns Tom down for good.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/2",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Tom breaks it off after the arrest.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/3",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Margaret poisoned Tom's tea too: he dies the night of the arrest.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/4",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "The leads are estranged at the end.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/5",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Tom no longer loves Nell.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/6",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Nell calls Tom her former sweetheart.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/7",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Nell says goodbye and leaves for London.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/8",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Nell dies the night of the arrest.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/9",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Expected miss: GLM records Nell as 'single again', naming no one, so the fact is not about the couple.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "hopeful-ending/10",
+     "ruleId": "structure/hopeful-ending",
+     "chapter": 4,
+     "description": "Expected miss: 'feelings for Tom Hale · cooled' reads as neither together nor ended.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/central-relationship",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "central-relationship/1",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Another constable, Will Pryce, has Tom's part in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/2",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "The doctor, Ellis Marsh, walks Nell home in ch1 instead of Tom.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/3",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Peter Venn walks Nell home in ch1 instead of Tom.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/4",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Jack Dunn, the housekeeper's son, has Tom's part in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/5",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Constable Bob Kerr has Tom's part in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/6",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Kitty Byrne, not Nell, keeps the bookshop and is asked to the dance in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/7",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Rose Abbott has Nell's part in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/8",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Mary Quayle has Nell's part in ch1 (the annotator keeps Nell as ch1's POV).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/9",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Tom is an unnamed constable in ch1, and his ch1 facts are not recorded.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "central-relationship/10",
+     "ruleId": "structure/central-relationship",
+     "chapter": 1,
+     "description": "Expected miss: Tom's part in ch1 goes to Will Pryce, but Tom is named in passing ('Tom Hale's bicycle'), which counts as on the page.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "structure/both-leads-pov",
+   "mutants": 10,
+   "caught": 10,
+   "recall": 1,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "both-leads-pov/1",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is told from Mrs Dunn's point of view.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/2",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is told from outside anyone's head; the annotator leaves its POV empty.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/3",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is the doctor's point of view.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/4",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is retold through Nell, so she has every POV scene.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/5",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is the nephew's point of view.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/6",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is told by an omniscient narrator.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/7",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is told from the culprit's point of view.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/8",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is given to the Hexham sergeant.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/9",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is Mrs Dunn's, the annotator noting her name.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "both-leads-pov/10",
+     "ruleId": "structure/both-leads-pov",
+     "chapter": 2,
+     "description": "Ch2 is told in the village's collective voice.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "style/invented-term-spelling",
+   "mutants": 11,
+   "caught": 9,
+   "recall": 0.8181818181818182,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "invented-term-spelling/1",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 2,
+     "description": "'Stavley' for Stavely (two letters swapped).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/2",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 4,
+     "description": "'Throne' for Thorne.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/3",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 3,
+     "description": "'Margary' for the barge Margery.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/4",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 5,
+     "description": "'Wenlowe' for Wenlow (a letter added).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/5",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 1,
+     "description": "'Elsbeth' for Elspeth.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/6",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 4,
+     "description": "'Jonah' for Jonas.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/7",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 2,
+     "description": "'Wen-low' for Wenlow (a hyphen added).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/8",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 5,
+     "description": "'Cranne' for Crane (a letter doubled).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/9",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 5,
+     "description": "'Thorn' for Thorne (a letter dropped).",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/10",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 2,
+     "description": "Expected miss: 'Rooke' for Rook; names under five letters are too short to judge.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "invented-term-spelling/11",
+     "ruleId": "style/invented-term-spelling",
+     "chapter": 1,
+     "description": "Expected miss: 'Throne' only at the start of a sentence, where any word is capitalised.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "metrics/repeated-phrase",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [
+    {
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 3,
+     "summary": "\"the river went past\" recurs in 3 chapters",
+     "book": "wenlow"
+    },
+    {
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 5,
+     "summary": "\"the river went past\" recurs in 3 chapters",
+     "book": "wenlow"
+    }
+   ],
+   "cleanRate": 0.2222222222222222,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "repeated-phrase/1",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 2,
+     "description": "\"with a heart like a stone\" in ch1, ch2, ch4.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 4,
+       "summary": "\"came with a heart like a stone\" recurs in 3 chapters"
+      },
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 4,
+       "summary": "\"it came with a heart like a\" recurs in 3 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/2",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 3,
+     "description": "\"as quiet as a held breath\" in ch2, ch3, ch5.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"came as quiet as a held breath\" recurs in 3 chapters"
+      },
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"it came as quiet as a held\" recurs in 3 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/3",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 3,
+     "description": "\"the colour of old pewter\" in ch1, ch3, ch5.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"it came the colour of old pewter\" recurs in 3 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/4",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 2,
+     "description": "\"like a door swinging shut\" in ch1, ch2, ch3.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 3,
+       "summary": "\"it came like a door swinging shut\" recurs in 3 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/5",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 4,
+     "description": "\"with the patience of a heron\" in ch3, ch4, ch5.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"came with the patience of a heron\" recurs in 3 chapters"
+      },
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"it came with the patience of a\" recurs in 3 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/6",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 4,
+     "description": "\"as cold as the river bottom\" in ch1, ch4, ch5.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"came as cold as the river bottom\" recurs in 3 chapters"
+      },
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"it came as cold as the river\" recurs in 3 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/7",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 4,
+     "description": "\"like a hand on her shoulder\" in ch2, ch4, ch5.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"came like a hand on her shoulder\" recurs in 3 chapters"
+      },
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 5,
+       "summary": "\"it came like a hand on her\" recurs in 3 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/8",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 2,
+     "description": "\"with nothing left to lose\" in ch1, ch2, ch3, ch4.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 3,
+       "summary": "\"it came with nothing left to lose\" recurs in 4 chapters"
+      },
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 4,
+       "summary": "\"it came with nothing left to lose\" recurs in 4 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/9",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 3,
+     "description": "\"the weight of ten long years\" in ch2, ch3, ch4.",
+     "caught": true,
+     "echoes": [
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 4,
+       "summary": "\"came the weight of ten long years\" recurs in 3 chapters"
+      },
+      {
+       "ruleId": "metrics/repeated-phrase",
+       "chapter": 4,
+       "summary": "\"it came the weight of ten long\" recurs in 3 chapters"
+      }
+     ],
+     "collateral": []
+    },
+    {
+     "id": "repeated-phrase/10",
+     "ruleId": "metrics/repeated-phrase",
+     "chapter": 3,
+     "description": "Expected miss: \"like a door swinging shut\" in only two chapters (ch1, ch3).",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "metrics/lexical-diversity",
+   "mutants": 10,
+   "caught": 10,
+   "recall": 1,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "lexical-diversity/1",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 1,
+     "description": "Five paragraphs of 'they walked and walked' prose, early in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/2",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 1,
+     "description": "Five paragraphs of 'they walked and walked' prose, late in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/3",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 2,
+     "description": "Five paragraphs of 'they walked and walked' prose, early in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/4",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 2,
+     "description": "Five paragraphs of 'they walked and walked' prose, late in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/5",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 3,
+     "description": "Five paragraphs of 'they walked and walked' prose, early in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/6",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 3,
+     "description": "Five paragraphs of 'they walked and walked' prose, late in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/7",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 4,
+     "description": "Five paragraphs of 'they walked and walked' prose, early in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/8",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 4,
+     "description": "Five paragraphs of 'they walked and walked' prose, late in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/9",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 5,
+     "description": "Five paragraphs of 'they walked and walked' prose, early in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "lexical-diversity/10",
+     "ruleId": "metrics/lexical-diversity",
+     "chapter": 2,
+     "description": "Expected miss: one paragraph of 'they walked and walked' prose, too little to pull a whole chapter under the floor.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "metrics/sentence-rhythm",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "sentence-rhythm/1",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 1,
+     "description": "Twelve nine-word sentences in a row, early in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/2",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 1,
+     "description": "Twelve nine-word sentences in a row, late in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/3",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 2,
+     "description": "Twelve nine-word sentences in a row, early in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/4",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 2,
+     "description": "Twelve nine-word sentences in a row, late in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/5",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 3,
+     "description": "Twelve nine-word sentences in a row, early in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/6",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 3,
+     "description": "Twelve nine-word sentences in a row, late in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/7",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 4,
+     "description": "Twelve nine-word sentences in a row, early in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/8",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 4,
+     "description": "Twelve nine-word sentences in a row, late in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/9",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 5,
+     "description": "Twelve nine-word sentences in a row, early in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sentence-rhythm/10",
+     "ruleId": "metrics/sentence-rhythm",
+     "chapter": 4,
+     "description": "Expected miss: only six nine-word sentences in a row, under the eight the rule looks for.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "metrics/dialogue-ratio",
+   "mutants": 11,
+   "caught": 9,
+   "recall": 0.8181818181818182,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "dialogue-ratio/1",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 1,
+     "description": "Ch1's narration recast as a character's speech, every paragraph in quotation marks.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/2",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 2,
+     "description": "Ch2's narration recast as a character's speech, every paragraph in quotation marks.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/3",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 3,
+     "description": "Ch3's narration recast as a character's speech, every paragraph in quotation marks.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/4",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 4,
+     "description": "Ch4's narration recast as a character's speech, every paragraph in quotation marks.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/5",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 2,
+     "description": "Ch2 recast as speech but for its first narrative paragraph.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/6",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 3,
+     "description": "Ch3 recast as speech but for its first narrative paragraph.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/7",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 4,
+     "description": "Ch4 recast as speech but for its first narrative paragraph.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/8",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 3,
+     "description": "Ch3 recast as speech but for its first two narrative paragraphs.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/9",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 3,
+     "description": "Ch3 recast as speech but for its first three narrative paragraphs.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/10",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 1,
+     "description": "Expected miss: ch1 recast as speech but for its long first paragraph, which leaves 73% of its words in quotes, inside the band.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "dialogue-ratio/11",
+     "ruleId": "metrics/dialogue-ratio",
+     "chapter": 5,
+     "description": "Expected miss: ch5 recast as speech; at 455 words it is under the 500 the rule needs to judge a chapter.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "metrics/sensory-detail",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "sensory-detail/1",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 1,
+     "description": "Ch1 with every colour, sound, smell and touch word replaced by a plain one.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/2",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 2,
+     "description": "Ch2 with every colour, sound, smell and touch word replaced by a plain one.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/3",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 3,
+     "description": "Ch3 with every colour, sound, smell and touch word replaced by a plain one.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/4",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 4,
+     "description": "Ch4 with every colour, sound, smell and touch word replaced by a plain one.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/5",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 1,
+     "description": "Ch1 with all but three of its sensory words replaced.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/6",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 2,
+     "description": "Ch2 with all but one of its sensory words replaced.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/7",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 3,
+     "description": "Ch3 with all but three of its sensory words replaced.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/8",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 4,
+     "description": "Ch4 with all but three of its sensory words replaced.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/9",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 3,
+     "description": "Ch3 with all but five of its sensory words replaced.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "sensory-detail/10",
+     "ruleId": "metrics/sensory-detail",
+     "chapter": 5,
+     "description": "Expected miss: ch5 with every sensory word replaced; at 455 words it is under the 500 the rule needs to judge a chapter.",
+     "caught": false,
+     "echoes": [],
+     "collateral": []
+    }
+   ]
+  },
+  {
+   "ruleId": "metrics/wall-of-text",
+   "mutants": 10,
+   "caught": 9,
+   "recall": 0.9,
+   "cleanFindings": [],
+   "cleanRate": 0,
+   "collateral": [],
+   "collateralRate": 0,
+   "outcomes": [
+    {
+     "id": "wall-of-text/1",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 1,
+     "description": "A 600-word paragraph of the Margery's history, early in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/2",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 1,
+     "description": "A 450-word paragraph of the Margery's history, late in ch1.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/3",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 2,
+     "description": "A 600-word paragraph of the Margery's history, early in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/4",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 2,
+     "description": "A 450-word paragraph of the Margery's history, late in ch2.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/5",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 3,
+     "description": "A 600-word paragraph of the Margery's history, early in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/6",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 3,
+     "description": "A 450-word paragraph of the Margery's history, late in ch3.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/7",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 4,
+     "description": "A 600-word paragraph of the Margery's history, early in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/8",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 4,
+     "description": "A 450-word paragraph of the Margery's history, late in ch4.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/9",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 5,
+     "description": "A 600-word paragraph of the Margery's history, early in ch5.",
+     "caught": true,
+     "echoes": [],
+     "collateral": []
+    },
+    {
+     "id": "wall-of-text/10",
+     "ruleId": "metrics/wall-of-text",
+     "chapter": 3,
+     "description": "Expected miss: a 330-word paragraph of history, just under the ceiling.",
+     "caught": false,
      "echoes": [],
      "collateral": []
     }
@@ -1445,6 +3752,176 @@
      "caughtStrict": 0,
      "recall": 0,
      "recallStrict": 0,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/unpaid-setup",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/unearned-payoff",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/cut-candidate",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/open-questions",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/subplot-balance",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/scene-turn",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/goal-conflict-outcome",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/protagonist-agency",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/tension-curve",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "structure/pov-discipline",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "style/invented-term-spelling",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "metrics/wall-of-text",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "metrics/sentence-rhythm",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "metrics/dialogue-ratio",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "metrics/sensory-detail",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "metrics/lexical-diversity",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
+     "topicalCleanRate": 0,
+     "collateralRate": 0
+    },
+    {
+     "ruleId": "metrics/repeated-phrase",
+     "mutants": 0,
+     "caught": 0,
+     "caughtStrict": 0,
+     "recall": null,
+     "recallStrict": null,
      "topicalCleanRate": 0,
      "collateralRate": 0
     }

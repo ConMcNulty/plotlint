@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "protagonist": "Nell Ashby",
+  "scenes": [
+    {
+      "id": "ch1.s1",
+      "chapter": 1,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "buy what Venn found at the sales",
+      "opposition": "Venn makes her wait while he threatens Margaret Lyle",
+      "outcome": "mixed",
+      "valueStart": { "axis": "love", "value": 0 },
+      "valueEnd": { "axis": "love", "value": 1 },
+      "turningPoint": {
+        "description": "Tom asks Nell to the harvest dance",
+        "causedBy": "other",
+        "by": "Tom Hale",
+        "evidence": "\"Would you come to it? With me, I mean.\""
+      },
+      "stakes": 2,
+      "evidence": {
+        "goal": "to see what he had bought at the sales",
+        "opposition": "That Tuesday he made her wait because he was quarrelling.",
+        "outcome": "\"Ask me again on Friday,\" she said"
+      },
+      "annotator": "author"
+    },
+    {
+      "id": "ch2.s1",
+      "chapter": 2,
+      "scene": 1,
+      "pov": "Tom Hale",
+      "goal": "find out who poisoned Silas Venn",
+      "opposition": "half the town had reason to, and the obvious suspect is the nephew",
+      "outcome": "mixed",
+      "valueStart": { "axis": "justice", "value": 0 },
+      "valueEnd": { "axis": "justice", "value": -1 },
+      "turningPoint": {
+        "description": "The doctor names foxglove poisoning",
+        "causedBy": "other",
+        "by": "Doctor Marsh",
+        "evidence": "\"Foxglove,\" he said."
+      },
+      "stakes": 5,
+      "evidence": {
+        "goal": "\"Who comes into his money?\" Tom asked.",
+        "opposition": "who knew the answer was half the town",
+        "outcome": "Tom wrote Peter Venn's name in his notebook and underlined it twice."
+      },
+      "annotator": "author"
+    },
+    {
+      "id": "ch3.s1",
+      "chapter": 3,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "see for herself what Margaret Lyle is hiding",
+      "opposition": "Margaret Lyle sends her away from the garden",
+      "outcome": "success",
+      "valueStart": { "axis": "justice", "value": -1 },
+      "valueEnd": { "axis": "justice", "value": 1 },
+      "turningPoint": {
+        "description": "Nell finds the foxglove border cut down and the bottle gone from the basket",
+        "causedBy": "protagonist",
+        "by": "Nell Ashby",
+        "evidence": "Now every stem was cut down to the ground, and the cuttings were gone."
+      },
+      "stakes": 6,
+      "evidence": {
+        "goal": "At three she walked up to the vicarage with the vicar's library book",
+        "opposition": "\"Leave it on the hall table,\" she said.",
+        "outcome": "one leaf for the heart, and two leaves for the grave"
+      },
+      "annotator": "author"
+    },
+    {
+      "id": "ch4.s1",
+      "chapter": 4,
+      "scene": 1,
+      "pov": "Nell Ashby",
+      "goal": "bring Margaret Lyle to confess, and give Tom her answer",
+      "opposition": "Margaret Lyle's composure, and Tom's doubts",
+      "outcome": "success",
+      "valueStart": { "axis": "love", "value": 1 },
+      "valueEnd": { "axis": "love", "value": 2 },
+      "turningPoint": {
+        "description": "Nell brings Tom to tea at the vicarage, where Margaret Lyle confesses",
+        "causedBy": "protagonist",
+        "by": "Nell Ashby",
+        "evidence": "\"Then come to tea at the vicarage,\" said Nell."
+      },
+      "stakes": 8,
+      "evidence": {
+        "goal": "Nell went to the police house on Thursday morning and told Tom Hale everything",
+        "opposition": "She did not offer them sugar.",
+        "outcome": "by morning they were engaged"
+      },
+      "annotator": "author"
+    }
+  ]
+}

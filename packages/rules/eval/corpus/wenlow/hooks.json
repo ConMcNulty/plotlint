@@ -1,0 +1,96 @@
+{
+  "hooks": [
+    {
+      "hookId": "letter-writer",
+      "startChapter": 1,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 3,
+      "expectedPayoff": "Who wrote the letter to the warden signed with Tobias Marrow's name",
+      "notes": "Thorne shows Elspeth the letter at the ferry landing (ch1); the boy at the Stavely post office was paid by an old man with a bad cough (ch2); Crane confesses he wrote it (ch3)."
+    },
+    {
+      "hookId": "margery-sinking",
+      "startChapter": 1,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 5,
+      "expectedPayoff": "Why the barge Margery went down on a clear night with Tobias Marrow aboard",
+      "notes": "Crane tells Elspeth and Jonas that Tobias was paid to sink the barge, refused, and was sunk with it (ch3); the ledger and Tobias's letter tell the same story (ch5)."
+    },
+    {
+      "hookId": "crane-ledger",
+      "startChapter": 1,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 5,
+      "expectedPayoff": "What Absalom Crane wrote in his ferry ledger about the night the Margery sailed",
+      "notes": "Crane keeps the ledger under his seat and will not let Thorne read it (ch1); he gives it to Elspeth (ch3); it names three men, one of them Alderman Pask (ch5).",
+      "dependsOn": ["margery-sinking"]
+    },
+    {
+      "hookId": "compass-east-of-true",
+      "startChapter": 1,
+      "type": "symbol",
+      "status": "resolved",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "What Tobias Marrow's silver compass, which points a little east of true, comes to mean",
+      "notes": "The compass's needle points east of true (ch1); Jonas steers by it on Gorse Hill: if you know how wrong a thing is, you can still steer by it (ch4)."
+    },
+    {
+      "hookId": "missing-strongbox",
+      "startChapter": 2,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "Where the strongbox of Wenlow parish money the Margery carried went",
+      "notes": "Thorne says the Margery carried sixty pounds of parish gold that was never found (ch2); Crane says it is under the third flagstone of the abbey chapel (ch3); Elspeth and Jonas dig it up (ch4)."
+    },
+    {
+      "hookId": "crane-illness",
+      "startChapter": 2,
+      "type": "suspense",
+      "status": "resolved",
+      "lastAdvancedChapter": 3,
+      "expectedPayoff": "Whether Absalom Crane lives long enough to tell what he knows",
+      "notes": "Word reaches Stavely that Crane may not see the week out (ch2); he tells them and dies before midnight (ch3)."
+    },
+    {
+      "hookId": "council-conspirator",
+      "startChapter": 3,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 5,
+      "expectedPayoff": "Which member of the parish council paid to sink the Margery",
+      "notes": "Crane says one of the men is still on the parish council (ch3); the ledger names Alderman Pask (ch5).",
+      "dependsOn": ["margery-sinking"]
+    },
+    {
+      "hookId": "crane-ferry",
+      "startChapter": 3,
+      "type": "character",
+      "status": "resolved",
+      "lastAdvancedChapter": 5,
+      "expectedPayoff": "Who will row Absalom Crane's ferry after him",
+      "notes": "Dying, Crane asks for his oar and Jonas says it is safe in the boat (ch3); Jonas takes the ferry across with Crane's oar (ch5)."
+    },
+    {
+      "hookId": "father-letter",
+      "startChapter": 4,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 5,
+      "expectedPayoff": "What Tobias Marrow's letter in the strongbox says",
+      "notes": "Elspeth finds the letter on top of the parish money and does not read it (ch4); she reads it, and it tells the ledger's story (ch5)."
+    },
+    {
+      "hookId": "cottage-break-in",
+      "startChapter": 4,
+      "type": "mystery",
+      "status": "progressing",
+      "lastAdvancedChapter": 5,
+      "expectedPayoff": "Who broke the window of the Marrows' cottage and left boot prints under the sill",
+      "notes": "Someone breaks a window at the cottage and takes nothing (ch4); the strongbox is locked in the vestry under guard and the ledger goes to the warden (ch5). Left open on purpose: the book ends before Pask is brought in."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "hooks": [
+    {
+      "hookId": "margaret-debt",
+      "startChapter": 1,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "What Margaret Lyle owes Silas Venn, and what he knows about the altar silver",
+      "notes": "Venn demands forty pounds and threatens to tell the vicar (ch1); Margaret explains the altar silver (ch4)."
+    },
+    {
+      "hookId": "harvest-dance",
+      "startChapter": 1,
+      "type": "romance",
+      "status": "resolved",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "Whether Nell Ashby will go to the harvest dance with Tom Hale",
+      "notes": "Tom asks; Nell says to ask again on Friday (ch1); she says yes, and they are engaged (ch4)."
+    },
+    {
+      "hookId": "who-poisoned-venn",
+      "startChapter": 2,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "Who poisoned Silas Venn",
+      "notes": "Venn is found dead of foxglove (ch2); Nell sees the cut border (ch3); Margaret Lyle confesses (ch4)."
+    },
+    {
+      "hookId": "green-bottle",
+      "startChapter": 2,
+      "type": "mystery",
+      "status": "resolved",
+      "lastAdvancedChapter": 4,
+      "expectedPayoff": "Whose is the green glass bottle broken in Venn's grate",
+      "notes": "Tom finds the pieces (ch2); Margaret's basket is without it (ch3); she says she carried the tincture in it (ch4)."
+    }
+  ]
+}
