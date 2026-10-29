@@ -156,3 +156,11 @@
 .ProseMirror .pl-scene-marker--error {
   background: var(--pl-marker-error, #c5221f);
 }
+
+/* Ghost text: a suggested continuation after the cursor, accepted with Tab. */
+.ProseMirror .pl-ghost {
+  color: var(--pl-ghost, currentColor);
+  opacity: 0.4;
+  pointer-events: none;
+  user-select: none;
+}

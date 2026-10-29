@@ -78,6 +78,8 @@ const strings = {
   "writing.scene": { zh: "场景", en: "Scene" },
   "writing.focus": { zh: "专注模式", en: "Focus" },
   "writing.focusHint": { zh: "淡化光标所在段落以外的文字", en: "Dim every paragraph but the one you are writing" },
+  "writing.ghost": { zh: "续写提示", en: "Ghost text" },
+  "writing.ghostHint": { zh: "停笔时在段尾用已配置的模型给出后续几个词，按 Tab 采纳、Esc 忽略", en: "When you pause at the end of a paragraph, the configured model suggests the next few words. Tab accepts, Esc dismisses" },
   "state.filter": { zh: "筛选", en: "Filter" },
   "state.none": { zh: "此处尚无已知事实", en: "Nothing is known at this point yet" },
   "state.noState": { zh: "尚无故事状态：写完并结算一章后才有", en: "No story state yet: it appears once a chapter is settled" },

@@ -64,7 +64,7 @@ describe("ManuscriptEditor writing aids", () => {
     document.body.append(container);
     root = createRoot(container);
     await act(async () => {
-      root!.render(React.createElement(ManuscriptEditor, { bookId: "b", chapterNumber: 3, initialText: TEXT, t, lint, navigation }));
+      root!.render(React.createElement(ManuscriptEditor, { bookId: "b", chapterNumber: 3, initialText: TEXT, t, lint, navigation, continuation: async () => null }));
     });
     expect(container.querySelector("[data-testid=chapter-words]")!.textContent).toBe("12 writing.words");
     expect(container.querySelector("[data-testid=scene-words]")!.textContent).toBe("writing.scene 1/2 · 8 writing.words");
@@ -81,5 +81,11 @@ describe("ManuscriptEditor writing aids", () => {
     expect(window.localStorage.getItem("plotlint.focusMode")).toBe("on");
     await act(async () => { toggle.click(); });
     expect(container.querySelector(".ProseMirror.pl-focus")).toBeNull();
+
+    const ghost = container.querySelector<HTMLButtonElement>("[data-testid=ghost-toggle]")!;
+    expect(ghost.getAttribute("aria-pressed")).toBe("false");
+    await act(async () => { ghost.click(); });
+    expect(ghost.getAttribute("aria-pressed")).toBe("true");
+    expect(window.localStorage.getItem("plotlint.ghostText")).toBe("on");
   });
 });
