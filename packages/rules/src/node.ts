@@ -8,6 +8,8 @@ import { HookOverlayFileSchema } from "./hook-overlay.js";
 import { InvariantsFileSchema } from "./invariants.js";
 import { SceneAnnotationsFileSchema } from "./scene-annotations.js";
 import { TravelFileSchema } from "./travel.js";
+import { loadRuntimeStateSnapshot } from "@actalk/inkos-core";
+import { seriesPrelude, SeriesFileSchema, type SeriesBook, type SeriesPrelude } from "./series.js";
 
 /** A book's plotlint folder, beside its story state: `works/<id>/source/story/plotlint/`. */
 export const plotlintDir = (bookDir: string) => join(bookDir, "story", "plotlint");
@@ -85,4 +87,27 @@ export async function writePlotlintFile<S extends z.ZodTypeAny>(bookDir: string,
   const path = join(plotlintDir(bookDir), name);
   await writeFile(path, `${JSON.stringify(parsed, null, 2)}\n`, "utf-8");
   return path;
+}
+
+/**
+ * The series prelude for a book: the end state of each book its `series.json` names,
+ * in order. `resolve` finds an earlier book's folder and title. A book that names
+ * itself, or an earlier book with no state yet, is an error rather than a silent gap.
+ */
+export async function loadSeriesPrelude(bookDir: string, bookId: string, resolve: (id: string) => Promise<{ bookDir: string; title: string }>): Promise<SeriesPrelude | undefined> {
+  const series = await readPlotlintFile(bookDir, "series.json", SeriesFileSchema);
+  if (!series?.after.length) return undefined;
+  const books: SeriesBook[] = [];
+  for (const id of series.after) {
+    if (id === bookId) throw new Error(`series.json: "${bookId}" lists itself among the books before it`);
+    const earlier = await resolve(id);
+    let snapshot;
+    try {
+      snapshot = await loadRuntimeStateSnapshot(earlier.bookDir);
+    } catch (error) {
+      throw new Error(`series.json: "${id}" has no story state to carry forward (${(error as Error).message})`);
+    }
+    books.push({ id, title: earlier.title, snapshot, rules: await loadBookRuleData(earlier.bookDir) });
+  }
+  return seriesPrelude(books);
 }

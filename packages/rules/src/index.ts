@@ -50,3 +50,5 @@ export type {
 } from "./evidence.js";
 export { endedAt, establishedAt, evidenceCoverage, findDefinitions, locateEvidence, stateAt } from "./evidence.js";
 export * from "./boards.js";
+export * from "./series.js";
+export * from "./branches.js";

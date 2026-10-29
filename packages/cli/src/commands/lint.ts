@@ -1,15 +1,15 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Command } from "commander";
-import { StateManager, chatCompletion, createLLMClient, loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
+import { StateManager, chatCompletion, createLLMClient, loadRuntimeStateSnapshot, loadWorkManifest, type RuntimeStateSnapshot } from "@actalk/inkos-core";
 import {
   builtinRegistry, checkSnapshot, RuleRegistry, checkText, compileInvariant, configureTextRules, evidenceCoverage, explainCheck, InvariantCheckSchema, InvariantIdSchema,
   InvariantsFileSchema, invariantSlug, lastChapter, type ChapterTexts, type EvidenceCoverage, type Invariant, type InvariantsFile, type TextRule,
 } from "@plotlint/rules";
 import {
-  annotateChapter, mergeSceneAnnotations, SceneAnnotationsFileSchema, staleSceneAnnotations, type ChapterAnnotation, type SceneAnnotationsFile,
+  annotateChapter, explainSeriesFindings, mergeSceneAnnotations, withSeries, SceneAnnotationsFileSchema, staleSceneAnnotations, type ChapterAnnotation, type SceneAnnotationsFile,
 } from "@plotlint/rules";
-import { loadAdaptiveOverlay, loadBookRuleData, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
+import { loadAdaptiveOverlay, loadBookRuleData, loadSeriesPrelude, plotlintDir, readPlotlintFile, writePlotlintFile } from "@plotlint/rules/node";
 import { createHarperRule, isMostlyCjk, projectDictionary } from "@plotlint/mechanics";
 import { createMetricRules, metricStateRules } from "@plotlint/metrics";
 import type { MetricBands } from "@plotlint/packs";
@@ -29,6 +29,9 @@ import { addPacksCommand, bookPacks, effectiveRules } from "./lint-packs.js";
 import { addHooksCommand } from "./lint-hooks.js";
 import { addLoopCommand } from "./lint-loop.js";
 import { addProvenanceCommand } from "./lint-provenance.js";
+import { addExportCommand } from "./lint-export.js";
+import { addSeriesCommand } from "./lint-series.js";
+import { addBranchCommand } from "./lint-branch.js";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
@@ -154,6 +157,19 @@ const emptySnapshot = (): RuntimeStateSnapshot => ({
   chapterSummaries: { rows: [] },
 });
 
+/** A book's title from its book.json or work manifest, else its id. */
+async function bookTitle(state: StateManager, id: string): Promise<string> {
+  try {
+    return (await state.loadBookConfig(id)).title;
+  } catch {
+    try {
+      return (await loadWorkManifest(findProjectRoot(), id)).title;
+    } catch {
+      return id;
+    }
+  }
+}
+
 /** Run the checks over one book's state and chapter text and split the findings by its saved suppressions. */
 export async function lintBook(state: StateManager, id: string, options: LintOptions): Promise<BookLint> {
   const bookDir = state.bookDir(id);
@@ -167,14 +183,17 @@ export async function lintBook(state: StateManager, id: string, options: LintOpt
   for (const id of builtinRegistry.unknownIds(loaded.config).filter((id) => !metricIds.has(id))) logError(`${id} in story/plotlint/rules.json is not a known rule`);
   // The book's packs set the rule config, then the checks its author keeps rejecting are lowered, then its own rules.json wins.
   const packs = bookPacks(bookDir, loaded, [await loadAdaptiveOverlay(bookDir)]);
-  const book = { ...loaded, config: packs.config };
+  // A book in a series is checked against the end state of the books before it (series.json).
+  const prelude = await loadSeriesPrelude(bookDir, id, async (other) => ({ bookDir: state.bookDir(other), title: await bookTitle(state, other) }));
+  const series = prelude ? withSeries(snapshot ?? emptySnapshot(), { ...loaded, config: packs.config }, prelude) : undefined;
+  const book = series?.rules ?? { ...loaded, config: packs.config };
   const texts = new Map([...await chapterTexts(bookDir), ...(options.drafts ?? [])]);
   // State rules run by their own layer: continuity rules under `continuity`, structural ones under `structure`.
   // Structure rules over scene annotations need no story state, so they run on an empty one.
   const stateRules = builtinRegistry.list().filter((rule) => options.layers.has(rule.layer));
-  const ruleState = snapshot ?? (book.scenes ? emptySnapshot() : undefined);
+  const ruleState = series?.snapshot ?? snapshot ?? (book.scenes ? emptySnapshot() : undefined);
   const diagnostics: LocatedDiagnostic[] = ruleState && stateRules.length > 0
-    ? checkSnapshot(ruleState, { rules: stateRules, chapters: texts, book }).filter(inScope).map((diagnostic) => {
+    ? explainSeriesFindings(checkSnapshot(ruleState, { rules: stateRules, chapters: texts, book }), series?.carried ?? []).filter(inScope).map((diagnostic) => {
       // Invariants over the chapter text point into the chapter file like text findings.
       const text = diagnostic.range && diagnostic.chapter !== undefined ? texts.get(diagnostic.chapter) : undefined;
       return text === undefined ? diagnostic : { ...diagnostic, location: locate(text, diagnostic.range!.start) };
@@ -689,6 +708,15 @@ addLoopCommand(lintCommand, { chapterFiles, lintBook, withBackoff, parseChapter 
 
 // `inkos lint provenance` and `provenance record` (lint-provenance.ts).
 addProvenanceCommand(lintCommand, { chapterTexts, parseChapter });
+
+// `inkos lint export manuscript` and `export submission` (lint-export.ts).
+addExportCommand(lintCommand, { chapterTexts, loadSnapshot, withBackoff });
+
+// `inkos lint series` (lint-series.ts).
+addSeriesCommand(lintCommand, { bookTitle });
+
+// `inkos lint branch create|list|diff|adopt` (lint-branch.ts).
+addBranchCommand(lintCommand, { chapterTexts, loadSnapshot });
 
 lintCommand
   .command("annotate")

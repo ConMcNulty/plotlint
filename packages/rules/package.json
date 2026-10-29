@@ -34,6 +34,7 @@
   "dependencies": {
     "@actalk/inkos-core": "workspace:*",
     "@plotlint/diagnostics": "workspace:*",
+    "diff": "^8.0.4",
     "zod": "^3.25.76"
   },
   "devDependencies": {

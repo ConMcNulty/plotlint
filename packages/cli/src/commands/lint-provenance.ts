@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import type { Command } from "commander";
 import { StateManager } from "@actalk/inkos-core";
-import { AuthorIdSchema, markdownReport, reconcile, spans, summarize, withChapter } from "@plotlint/provenance";
+import { AuthorIdSchema, markdownReport, reconcile, seedChapters, spans, summarize, withChapter } from "@plotlint/provenance";
 import { baselineAuthor, loadProvenance, saveProvenance } from "@plotlint/provenance/node";
 import { findProjectRoot, log, logError, resolveBookId } from "../utils.js";
 
@@ -27,8 +27,7 @@ async function load(bookIdArg: string | undefined, deps: ProvenanceCommandDeps) 
   const [file, texts, index] = await Promise.all([loadProvenance(bookDir), deps.chapterTexts(bookDir), state.loadChapterIndex(bookId).catch(() => [])]);
   const origin = new Map(index.map((entry) => [entry.number, baselineAuthor(entry.provenance)]));
   // A chapter with no record yet is attributed from InkOS's chapter index, as the recorders do.
-  const seeded = [...texts].reduce((acc, [chapter, text]) =>
-    acc.chapters.some((entry) => entry.chapter === chapter) ? acc : withChapter(acc, reconcile(undefined, chapter, text, undefined, origin.get(chapter) ?? "unknown")), file);
+  const seeded = seedChapters(file, texts, (chapter) => origin.get(chapter) ?? "unknown");
   return { bookId, bookDir, file, seeded, texts, origin };
 }
 
