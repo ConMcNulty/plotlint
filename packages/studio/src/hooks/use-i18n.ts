@@ -139,7 +139,7 @@ const strings = {
 
   // plotlint boards
   "book.boards": { zh: "伏笔与时间线", en: "Hooks & timeline" },
-  "boards.title": { zh: "伏笔与时间线", en: "Hooks and timeline" },
+  "boards.title": { zh: "故事看板", en: "Story boards" },
   "boards.noState": { zh: "这本书还没有故事状态。先结算一章，看板才有内容。", en: "This book has no story state yet. Settle a chapter to fill the boards." },
   "boards.hooks": { zh: "伏笔看板", en: "Hook board" },
   "boards.hooksHint": { zh: "伏笔账本里的每个承诺，以及读者已经等了多少章。点击卡片打开对应章节。", en: "Every promise in the hook ledger, and how many chapters the reader has waited. Click a card to open its chapter." },
@@ -153,6 +153,12 @@ const strings = {
   "boards.timelineHint": { zh: "按章节排列的故事时间：日期、经过的时间，以及与之冲突的连贯性问题。", en: "Story time chapter by chapter: dates, time passing, and the continuity findings that conflict with them." },
   "boards.backwards": { zh: "时间倒退", en: "goes backwards" },
   "boards.looksBack": { zh: "回忆", en: "looks back" },
+  "boards.cast": { zh: "人物看板", en: "Cast board" },
+  "boards.castHint": { zh: "故事状态里的每个人物：结尾时的状态、所在地点和关系，以及与之相关的问题。点击名字打开其首次出现的章节，点击关系跳到对方的卡片。", en: "Every character in the story state: where they stand at the end, where they are, how they relate, and the findings about them. Click a name to open their first chapter, or a relationship to jump to the other person's card." },
+  "boards.pov": { zh: "视角", en: "POV" },
+  "boards.tension": { zh: "张力曲线", en: "Tension curve" },
+  "boards.tensionHint": { zh: "每章场景中最高的风险评分（0 到 10，由标注模型判断），以及平淡段落和过早高潮的提示。", en: "Each chapter's highest scene stakes (0 to 10, judged by the annotator), with notes on flat runs and an early peak." },
+  "boards.noTension": { zh: "还没有场景标注。运行 inkos lint annotate 来生成张力曲线。", en: "No scene annotations yet. Run inkos lint annotate to draw the tension curve." },
 
   // plotlint exports and branches
   "book.publish": { zh: "导出与分支", en: "Export & branches" },

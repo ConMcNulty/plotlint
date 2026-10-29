@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { HookRecord } from "@actalk/inkos-core";
-import { checkSnapshot, hookBoard, openQuestions, timeline, timelineOrder, type ChapterTexts } from "../index.js";
+import { castBoard, checkSnapshot, hookBoard, openQuestions, tensionView, timeline, timelineOrder, type ChapterTexts, type SceneAnnotation } from "../index.js";
 import { fact, snapshot } from "./fixtures.js";
 
 const hook = (hookId: string, startChapter: number, status: HookRecord["status"], lastAdvancedChapter: number): HookRecord => ({
@@ -49,5 +49,48 @@ describe("timeline", () => {
     expect(byChapter.get(5)!.conflicts.map((d) => d.ruleId)).toEqual(["continuity/timeline-order"]);
     expect(byChapter.get(5)!.dates[0]!.label).toBe("story / date / 1 February 1891");
     expect(line.unplaced).toEqual([]);
+  });
+});
+
+const scene = (chapter: number, stakes: number, pov = "Nell"): SceneAnnotation => ({
+  id: `ch${chapter}.s1`, chapter, scene: 1, pov, goal: `get through ch${chapter}`, opposition: null, outcome: null,
+  valueStart: null, valueEnd: null, turningPoint: null, stakes, evidence: {}, annotator: "author",
+});
+
+describe("castBoard", () => {
+  it("lists characters with their standing status, place and relationships, leaving out objects and places", () => {
+    const state = snapshot([
+      fact("Nell", "status", "alive", 1),
+      fact("Nell", "location", "the mill", 1, 3),
+      fact("Nell", "location", "Fenwick", 4),
+      fact("Nell", "relationship", "sister of Pell", 2),
+      fact("Pell", "status", "alive", 1, 4),
+      fact("Pell", "status", "dead", 5),
+      fact("the lantern", "location", "the mill", 2),
+      fact("Fenwick", "location", "the fens", 1),
+    ], 6);
+    const cast = castBoard(state, [scene(6, 3, "Ada")], [
+      { ruleId: "continuity/dead-entity-acts", layer: "continuity", severity: "error", confidence: "extracted", code: "x", chapter: 6, summary: "Pell acts after dying.", evidence: [], facts: [fact("Pell", "status", "dead", 5)] },
+    ]);
+    expect(cast.map((member) => member.name)).toEqual(["Nell", "Pell", "Ada"]);
+    expect(cast[0]).toMatchObject({ status: "alive", location: "Fenwick", firstSeen: 1, lastSeen: 4, findings: [] });
+    expect(cast[0]!.relations).toEqual([{ predicate: "relationship", object: "sister of Pell", with: "Pell", since: 2 }]);
+    expect(cast[1]).toMatchObject({ status: "dead", lastSeen: 5 });
+    expect(cast[1]!.findings).toHaveLength(1);
+    expect(cast[2]).toMatchObject({ povChapters: [6], status: null });
+  });
+});
+
+describe("tensionView", () => {
+  it("draws each chapter's highest stakes and keeps the tension-curve findings", () => {
+    const view = tensionView([scene(2, 4), scene(1, 7), { ...scene(1, 2), id: "ch1.s2", scene: 2 }], [
+      { ruleId: "structure/tension-curve", layer: "structure", severity: "note", confidence: "judged", code: "x", summary: "flat", evidence: [] },
+      { ruleId: "structure/scene-turn", layer: "structure", severity: "note", confidence: "judged", code: "x", summary: "no turn", evidence: [] },
+    ]);
+    expect(view.points).toEqual([
+      { chapter: 1, stakes: 7, scene: "ch1.s1", pov: "Nell", goal: "get through ch1" },
+      { chapter: 2, stakes: 4, scene: "ch2.s1", pov: "Nell", goal: "get through ch2" },
+    ]);
+    expect(view.findings.map((finding) => finding.summary)).toEqual(["flat"]);
   });
 });
