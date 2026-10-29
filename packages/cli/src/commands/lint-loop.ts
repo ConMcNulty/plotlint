@@ -1,7 +1,7 @@
 import { mkdir, readdir, readFile, writeFile, appendFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import type { Command } from "commander";
-import { PipelineRunner, StateManager, chatCompletion, createLLMClient } from "@actalk/inkos-core";
+import { PipelineRunner, StateManager, archiveChapterVersion, chatCompletion, createLLMClient } from "@actalk/inkos-core";
 import { DiagnosticLayerSchema, formatDiagnostic, type Diagnostic, type DiagnosticLayer } from "@plotlint/diagnostics";
 import { loadBookRuleData, plotlintDir } from "@plotlint/rules/node";
 import {
@@ -283,6 +283,8 @@ export function addLoopCommand(lint: Command, deps: LoopCommandDeps): void {
         if (opts.resettle && !latest) say(`--resettle: InkOS settles only the latest chapter again; ch${run.chapter} is not, so its state stays as it was`);
         let applied = false;
         if (opts.apply && (!result.gate.needsHuman || (onlySettle && canResettle)) && result.text !== result.original) {
+          // Archived like InkOS's own agent edits, so Studio offers the change for review as tracked changes.
+          await archiveChapterVersion(run.bookDir, run.chapter, result.original, "agent");
           await writeFile(run.path, result.text, "utf-8");
           applied = true;
           // The loop's words are the author agent's; the rest keeps whoever wrote it.

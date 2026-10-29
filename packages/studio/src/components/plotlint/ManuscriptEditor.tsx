@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from "react";
 import { createPortal } from "react-dom";
-import { EyeOff, ListTree, SearchX, ThumbsDown, Wrench } from "lucide-react";
+import { Check, EyeOff, ListTree, SearchX, ThumbsDown, Undo2, Wrench } from "lucide-react";
 import type { Editor } from "@tiptap/core";
 import { confidenceLabel, OffsetMap, type DefinitionRequest, type DiagnosticEntry, type TextRange } from "@plotlint/editor";
 import "@plotlint/editor/styles.css";
@@ -51,6 +51,10 @@ export interface ManuscriptEditorProps {
   readonly selection?: TextRange;
   /** Open a passage in another chapter (an "established" link or a definition there). */
   readonly onOpenLocation?: (location: EvidenceLocation) => void;
+  /** Show the text as tracked changes against this earlier text (an agent's edit to review). */
+  readonly suggestFrom?: string;
+  /** Called with how many suggestions are still open. */
+  readonly onSuggestionsChange?: (open: number) => void;
   readonly className?: string;
 }
 
@@ -109,7 +113,7 @@ const readPanelPreference = () => {
  * Ctrl/Cmd+click goes to where the name under the cursor is first established.
  */
 export function ManuscriptEditor({
-  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, onVerdicts, selection, onOpenLocation, className,
+  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, onVerdicts, selection, onOpenLocation, suggestFrom, onSuggestionsChange, className,
 }: ManuscriptEditorProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<ChapterEditor | null>(null);
@@ -122,6 +126,10 @@ export function ManuscriptEditor({
   const [cursor, setCursor] = useState<CursorState>({ entities: null, loading: false, error: null, stateMissing: false });
   const [notice, setNotice] = useState<Notice | null>(null);
   const [references, setReferences] = useState<References | null>(null);
+  const [openSuggestions, setOpenSuggestions] = useState(0);
+  const suggestFromRef = useRef(suggestFrom);
+  const onSuggestionsChangeRef = useRef(onSuggestionsChange);
+  onSuggestionsChangeRef.current = onSuggestionsChange;
 
   const client = useMemo(() => navigation ?? chapterNavigation(bookId, chapterNumber), [navigation, bookId, chapterNumber]);
   // Read by the editor's callbacks, which are bound once per editor.
@@ -237,6 +245,12 @@ export function ManuscriptEditor({
       onGoToDefinition: (request) => void goToDefinitionRef.current(request),
       onFindReferences: (request) => void showReferencesRef.current(request),
       ...(initialSelectionRef.current ? { selection: initialSelectionRef.current } : {}),
+      ...(suggestFromRef.current !== undefined ? { suggestFrom: suggestFromRef.current } : {}),
+      suggestionLabels: { accept: t("suggest.accept"), reject: t("suggest.reject") },
+      onSuggestions: (open) => {
+        setOpenSuggestions(open.length);
+        onSuggestionsChangeRef.current?.(open.length);
+      },
       onHover: (entries, context) => {
         if (entries.length === 0 || !context.anchor) {
           hideSoon();
@@ -342,6 +356,32 @@ export function ManuscriptEditor({
           {t("state.toggle")}
         </button>
       </div>
+      {openSuggestions > 0 && (
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-3 py-2 text-xs" data-testid="suggestions-bar">
+          <span className="font-medium">{openSuggestions} {t("suggest.open")}</span>
+          <span className="text-muted-foreground">{t("suggest.hint")}</span>
+          <span className="ml-auto flex gap-1.5">
+            <button
+              type="button"
+              onClick={() => controllerRef.current?.editor.commands.acceptAllSuggestions()}
+              className="flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-1 font-medium text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400"
+              data-testid="suggestions-accept-all"
+            >
+              <Check size={11} />
+              {t("suggest.acceptAll")}
+            </button>
+            <button
+              type="button"
+              onClick={() => controllerRef.current?.editor.commands.rejectAllSuggestions()}
+              className="flex items-center gap-1 rounded-lg border border-border/60 px-2 py-1 font-medium text-muted-foreground hover:text-foreground"
+              data-testid="suggestions-reject-all"
+            >
+              <Undo2 size={11} />
+              {t("suggest.rejectAll")}
+            </button>
+          </span>
+        </div>
+      )}
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
         <div ref={mountRef} className="pl-manuscript min-w-0 flex-1" data-testid="manuscript-editor" />
         {showState && (

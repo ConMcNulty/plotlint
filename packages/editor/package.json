@@ -1,7 +1,7 @@
 {
   "name": "@plotlint/editor",
   "version": "0.1.0",
-  "description": "Tiptap extensions for plotlint: inline diagnostic decorations, quick fixes and change tracking for re-lint",
+  "description": "Tiptap extensions for plotlint: inline diagnostic decorations, quick fixes, change tracking for re-lint and agent suggestions as tracked changes",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,7 +34,8 @@
     "@plotlint/diagnostics": "workspace:*",
     "@tiptap/extension-document": "^3.32.0",
     "@tiptap/extension-paragraph": "^3.32.0",
-    "@tiptap/extension-text": "^3.32.0"
+    "@tiptap/extension-text": "^3.32.0",
+    "diff": "^8.0.4"
   },
   "peerDependencies": {
     "@tiptap/core": "^3.32.0",

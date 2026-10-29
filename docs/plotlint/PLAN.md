@@ -378,6 +378,12 @@ Still open for the gate: blind human readers, more chapters where the loop goes 
   - open any page of the book, or any other book.
   
   Typing a number opens that chapter.
+- **Agent edits as tracked changes** (`Suggestions` in `@plotlint/editor`, Studio's chapter page). InkOS writes an agent's revision straight to the chapter file and keeps the old text as a chapter version. Until the writer reviews that edit, the chapter page offers "Review changes". The editor then shows the revision against the old text:
+  - the agent's words are underlined;
+  - the words they replaced are struck through in front of them;
+  - each change has accept and reject buttons, and there are accept-all and reject-all buttons.
+  
+  The document always holds the text with every open change accepted, so linting and saving work as usual. "Finish review" saves the result and records the review in `story/plotlint/reviews.json`. `inkos lint loop --apply` now archives the text it replaces the same way, so its edits can be reviewed too. The diff is built with the MIT `diff` package, not Tiptap's paid add-on.
 - **Publish page** (Studio, `#/book/<id>/publish`). It downloads the manuscript (author, byline and contact are remembered in the browser), the outline and the provenance report. It also creates and lists branches and shows a branch's diff: chapters, end-of-book world state and hooks. Adopting a branch replaces the book, so it stays a command, and the page shows that command.
 - As with every phase 6 item, more depends on what writers ask for.
 

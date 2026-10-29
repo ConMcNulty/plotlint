@@ -19,12 +19,20 @@ import {
   Pencil,
   Save,
   Eye,
+  GitCompare,
 } from "lucide-react";
 
 interface ChapterData {
   readonly chapterNumber: number;
   readonly filename: string;
   readonly content: string;
+}
+
+interface PendingAgentEdit {
+  readonly versionId: string;
+  readonly source: string;
+  readonly createdAt: string;
+  readonly before: string;
 }
 
 interface TextRange {
@@ -60,6 +68,10 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
   const [workspaceRevision, setWorkspaceRevision] = useState(0);
   // A jump here opens the editor once, on the passage it points at.
   const [pendingSelect, setPendingSelect] = useState(select);
+  // An agent's edit not yet reviewed: the editor can show it as tracked changes against `before`.
+  const review = useApi<{ pending: PendingAgentEdit | null }>(`/plotlint/review/${encodeURIComponent(bookId)}/${chapterNumber}`);
+  const [reviewing, setReviewing] = useState<PendingAgentEdit | null>(null);
+  const [openSuggestions, setOpenSuggestions] = useState(0);
 
   useEffect(() => {
     if (!pendingSelect || !data || editing) return;
@@ -81,20 +93,44 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
     setEditing(true);
   };
 
+  const handleStartReview = () => {
+    if (!data || !review.data?.pending) return;
+    setEditContent(data.content);
+    setReviewing(review.data.pending);
+    setEditing(true);
+  };
+
   const handleCancelEdit = () => {
     setPendingSelect(undefined);
     setEditing(false);
     setEditContent("");
+    setReviewing(null);
+    setOpenSuggestions(0);
   };
 
   const handleSave = async () => {
+    if (reviewing && openSuggestions > 0 && !window.confirm(t("suggest.saveOpen"))) return;
     setSaving(true);
     try {
-      await fetchJson(`/books/${bookId}/chapters/${chapterNumber}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: editorRef.current?.getText() ?? editContent }),
-      });
+      const content = editorRef.current?.getText() ?? editContent;
+      // Keeping every change of a review leaves the file as the agent wrote it: nothing to save.
+      if (!reviewing || content !== data?.content) {
+        await fetchJson(`/books/${bookId}/chapters/${chapterNumber}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content }),
+        });
+      }
+      if (reviewing) {
+        await fetchJson(`/plotlint/review/${encodeURIComponent(bookId)}/${chapterNumber}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ versionId: reviewing.versionId }),
+        });
+        setReviewing(null);
+        setOpenSuggestions(0);
+        void review.refetch();
+      }
       setPendingSelect(undefined);
       setEditing(false);
       refetch();
@@ -170,7 +206,7 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
                 className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-primary text-primary-foreground rounded-xl hover:scale-105 active:scale-95 transition-all shadow-sm disabled:opacity-50"
               >
                 {saving ? <div className="w-3.5 h-3.5 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" /> : <Save size={14} />}
-                {saving ? t("book.saving") : t("book.save")}
+                {saving ? t("book.saving") : reviewing ? t("suggest.finish") : t("book.save")}
               </button>
               <button
                 onClick={handleCancelEdit}
@@ -193,12 +229,30 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
         </div>
       </div>
 
+      {!editing && review.data?.pending && (
+        <div className="flex flex-col gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 px-5 py-4 md:flex-row md:items-center md:justify-between" data-testid="agent-edit-banner">
+          <div className="text-sm">
+            <span className="font-semibold">{t("suggest.banner")}</span>
+            <span className="ml-2 text-xs text-muted-foreground">
+              {review.data.pending.source} · {new Date(review.data.pending.createdAt).toLocaleString()}
+            </span>
+          </div>
+          <button
+            onClick={handleStartReview}
+            className="flex items-center gap-2 self-start rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:scale-105 active:scale-95 md:self-auto"
+          >
+            <GitCompare size={14} />
+            {t("suggest.review")}
+          </button>
+        </div>
+      )}
+
       <ChapterWorkspacePanel
         key={`${chapterNumber}-${workspaceRevision}`}
         bookId={bookId}
         chapterNumber={chapterNumber}
         t={t}
-        onChapterChanged={refetch}
+        onChapterChanged={() => { refetch(); void review.refetch(); }}
         onChapterDeleted={() => nav.toBook(bookId)}
       />
 
@@ -234,6 +288,7 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
             t={t}
             selection={pendingSelect}
             onOpenLocation={openLocation}
+            {...(reviewing ? { suggestFrom: reviewing.before, onSuggestionsChange: setOpenSuggestions } : {})}
           />
         ) : (
           <article className="prose prose-zinc dark:prose-invert max-w-none">
