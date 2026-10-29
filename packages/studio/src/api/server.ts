@@ -177,6 +177,7 @@ import { branchDiff, branchesView, manuscriptFile, newBranch, outlineFile, prove
 import { parseVerdictBody as parsePlotlintVerdictBody, recordVerdicts, verdictReport } from "./plotlint-verdicts.js";
 import {
   definitionsOf,
+  referencesFor,
   parseDefinitionBody as parsePlotlintDefinitionBody,
   parseStateBody as parsePlotlintStateBody,
   stateAtCursor,
@@ -3355,6 +3356,14 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     const { bookId, ...request } = parsed;
     const bookDir = await plotlintBookDir(bookId);
     return c.json(await definitionsOf({ bookDir, ...request }));
+  });
+
+  app.post("/api/v1/plotlint/references", async (c) => {
+    const parsed = parsePlotlintDefinitionBody(await c.req.json().catch(() => null));
+    if (typeof parsed === "string") throw new ApiError(400, "INVALID_REFERENCES_REQUEST", parsed);
+    const { bookId, ...request } = parsed;
+    const bookDir = await plotlintBookDir(bookId);
+    return c.json(await referencesFor({ bookDir, ...request }));
   });
 
   // --- Truth files ---

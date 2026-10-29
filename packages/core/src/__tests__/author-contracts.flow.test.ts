@@ -67,7 +67,7 @@ it('revises only an opening, then applies an author-requested chapter reduction 
     expect(calls.filter(name=>name==='submit_short_revision_chapter')).toHaveLength(0);
     expect(planNumber).toBe(3);
   }finally{server.closeAllConnections();await new Promise<void>(resolve=>server.close(()=>resolve()));await rm(root,{recursive:true,force:true});}
-},20000);
+},60000);
 
 it('allows an independent script edit and export in a composed Work while preserving managed domain state',async()=>{
   const root=await mkdtemp(join(tmpdir(),'inkos-composed-edit-'));

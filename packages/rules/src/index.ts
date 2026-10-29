@@ -52,3 +52,4 @@ export { endedAt, establishedAt, evidenceCoverage, findDefinitions, locateEviden
 export * from "./boards.js";
 export * from "./series.js";
 export * from "./branches.js";
+export { findReferences, referenceNames, referencesOf, type ReferenceGroup, type ReferenceHit, type References } from "./references.js";

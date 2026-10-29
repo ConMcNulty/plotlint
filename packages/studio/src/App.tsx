@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useHashRoute } from "./hooks/use-hash-route";
 import type { HashRoute } from "./hooks/use-hash-route";
+import { CommandPalette } from "./components/CommandPalette";
 import { Sidebar } from "./components/Sidebar";
 import { Dashboard } from "./pages/Dashboard";
 import { WorkInspector } from "./pages/WorkInspector";
@@ -180,6 +181,7 @@ export function App() {
 
   return (
     <div className="h-screen bg-background text-foreground flex overflow-hidden font-sans">
+      <CommandPalette route={route} nav={nav} t={t} />
       {/* Left Sidebar */}
       <Sidebar nav={nav} activePage={activePage} sse={sse} t={t} />
 
