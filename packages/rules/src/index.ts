@@ -49,3 +49,4 @@ export type {
   ChapterTexts, CursorPosition, Definition, EntityAtCursor, EvidenceCoverage, EvidenceIssue, EvidenceLocation, EvidenceStatus, FactAtCursor,
 } from "./evidence.js";
 export { endedAt, establishedAt, evidenceCoverage, findDefinitions, locateEvidence, stateAt } from "./evidence.js";
+export * from "./boards.js";

@@ -102,6 +102,23 @@ describe("inkos lint loop", () => {
     expect(log.rounds[0].decisions.map((decision: { outcome: string }) => decision.outcome)).toEqual(["applied", "applied", "applied"]);
     expect(log.predictions[0].text).toBe("Nell will open the box.");
 
+    // The applied words are the loop author's; the rest keeps its origin (unknown: no chapter index entry).
+    const provenance = JSON.parse((await inkos("provenance", "fen", "--json")).stdout);
+    expect(provenance.byAuthor["agent:loop-author@mock"].words).toBeGreaterThan(0);
+    expect(provenance.chapters[0]).toMatchObject({ chapter: 1, current: true });
+    const spans = JSON.parse((await inkos("provenance", "fen", "--chapter", "1", "--json")).stdout).spans;
+    expect(spans.find((span: { text: string }) => span.text.includes("Suddenly"))).toMatchObject({ by: "agent:loop-author@mock" });
+    expect(spans.find((span: { text: string }) => span.text.includes("lamp went out"))).toMatchObject({ by: "unknown" });
+    // An edit in another editor is unknown until someone owns it.
+    await writeFile(join(bookDir, "chapters", "0001_one.md"), `${text}Nell laughed.\n`);
+    expect((await inkos("provenance", "fen", "--json")).stdout).toContain('"current": false');
+    expect((await inkos("provenance", "record", "fen", "--chapter", "1", "--by", "human:nell")).stdout).toContain("recorded ch1");
+    const owned = JSON.parse((await inkos("provenance", "fen", "--chapter", "1", "--json")).stdout).spans;
+    expect(owned.find((span: { text: string }) => span.text.includes("laughed"))).toMatchObject({ by: "human:nell", via: "cli" });
+    const reportPath = join(projectDir, "provenance.md");
+    expect((await inkos("provenance", "fen", "--report", reportPath)).code).toBe(0);
+    expect(await readFile(reportPath, "utf-8")).toContain("| human:nell |");
+
     const compare = await inkos("loop", "compare", "fen", "--chapter", "2", "--layers", "style", "--readers", "0", "--pair", "p1", "--json");
     expect(compare.code).toBe(0);
     expect(JSON.parse(compare.stdout)).toMatchObject({ pair: "p1", loop: { stop: { reason: "clean" } }, single: { rounds: 1 } });
@@ -114,5 +131,15 @@ describe("inkos lint loop", () => {
     const study = JSON.parse((await inkos("loop", "study", "fen", "--json")).stdout);
     expect(study).toMatchObject({ pairs: 1, preferences: { n: 1, call: "not enough data", proxy: { n: 1 } }, heldOutFellWhileVisibleRose: 0 });
     expect(study.runs).toHaveLength(2);
+  }, 90_000);
+
+  it("keeps an applied revision and says so when the chapter cannot be settled again", async () => {
+    const run = await inkos("loop", "fen", "--chapter", "2", "--layers", "style", "--readers", "0", "--no-held-out-reader", "--apply", "--resettle", "--json");
+    expect(run.code).toBe(1);
+    const result = JSON.parse(run.stdout);
+    expect(result).toMatchObject({ chapter: 2, applied: true });
+    expect(result.settleFailed).toBeTruthy();
+    expect(run.stderr).toContain("story state still reflects the old text");
+    expect(await readFile(join(bookDir, "chapters", "0002_two.md"), "utf-8")).toContain("Suddenly the lamp went out.");
   }, 90_000);
 });

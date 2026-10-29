@@ -1,6 +1,7 @@
 import type { Diagnostic } from "@plotlint/diagnostics";
 import { arbitrate, deferAllowed, judgeDefence, score, type ArbitrationLogEntry, type DefenceVerdict } from "./arbiter.js";
 import { detectGaming } from "./gaming.js";
+import { locateQuote } from "@actalk/inkos-core";
 import { applyEdits, changedScenes, editRegion, overlaps, placeEdit, shiftOffset, touches, type EditProblem, type PlacedEdit } from "./spans.js";
 import type { Author, AuthorResponse, Draft, EditScope, Editor, Finding, Score, Span } from "./types.js";
 import { voiceDistance, voiceProfile } from "./voice.js";
@@ -102,6 +103,11 @@ export interface LoopResult {
   readonly text: string;
   readonly rounds: ReadonlyArray<RoundLog>;
   readonly stop: { readonly reason: StopReason; readonly round: number; readonly detail?: string };
+  /**
+   * State findings whose evidence passages in this chapter the revision rewrote: the facts they
+   * rest on came from the old text, so only settling the chapter again can say whether they hold.
+   */
+  readonly pendingSettle: ReadonlyArray<Diagnostic>;
   /** Visible findings still open on the final draft, escalated ones included. */
   readonly open: ReadonlyArray<Diagnostic>;
   readonly deferred: ReadonlyArray<Decision>;
@@ -149,6 +155,19 @@ async function runEditors(
 const flatten = (byEditor: Map<string, Diagnostic[]>): Filed =>
   [...byEditor].flatMap(([editor, diagnostics]) => diagnostics.map((diagnostic) => ({ editor, diagnostic })));
 
+/**
+ * True when a continuity or structure finding cites facts established in this chapter and the
+ * revision has rewritten every one of their evidence passages: found in the starting text, not
+ * in the draft. Findings without such facts, or with a passage still in place, are unaffected.
+ */
+export function restsOnRewrittenText(diagnostic: Diagnostic, chapter: number, draft: string, original: string): boolean {
+  if (draft === original || (diagnostic.layer !== "continuity" && diagnostic.layer !== "structure")) return false;
+  const quotes = (diagnostic.facts ?? []).filter((fact) => fact.sourceChapter === chapter)
+    .flatMap((fact) => [fact.evidence?.quote, fact.endEvidence?.quote]).filter((quote): quote is string => Boolean(quote))
+    .filter((quote) => locateQuote(original, quote) !== null);
+  return quotes.length > 0 && quotes.every((quote) => locateQuote(draft, quote) === null);
+}
+
 /** Run the closed loop on one chapter. */
 export async function runLoop(options: LoopOptions): Promise<LoopResult> {
   const { chapter, author } = options;
@@ -189,12 +208,17 @@ export async function runLoop(options: LoopOptions): Promise<LoopResult> {
     const arbitration = arbitrate(visibleFiled, draft.text, priority);
     // Open: what the author still has to answer. Escalated findings wait for the human, so the author
     // is not asked again, but they still count: an agent's defence never makes a finding go away.
-    const open = arbitration.findings.filter((finding) => !settled.has(finding.key));
-    const waiting = arbitration.findings.filter((finding) => settled.get(finding.key)?.outcome === "escalated");
+    // A state finding whose every cited passage from this chapter the revision rewrote rests on facts
+    // the settler took from the old text: it is held for resettling, neither counted nor sent to the author.
+    const stale = arbitration.findings.filter((finding) => restsOnRewrittenText(finding.diagnostic, chapter, draft.text, options.text));
+    const isStale = new Set(stale);
+    const live = arbitration.findings.filter((finding) => !isStale.has(finding));
+    const open = live.filter((finding) => !settled.has(finding.key));
+    const waiting = live.filter((finding) => settled.get(finding.key)?.outcome === "escalated");
     const held = [...all.filter(({ diagnostic }) => isHeld(diagnostic)).map(({ diagnostic }) => diagnostic), ...gaming];
     const visible = score([...open, ...waiting].map((finding) => finding.diagnostic));
     const blocking = (list: ReadonlyArray<Finding>) => list.filter((finding) => finding.diagnostic.severity !== "note").length;
-    return { arbitration, open, waiting, blockingOpen: blocking(open), visible, held: score(held) };
+    return { arbitration, open, waiting, stale, blockingOpen: blocking(open), visible, held: score(held) };
   };
 
   for (let round = 1; ; round += 1) {
@@ -321,6 +345,7 @@ export async function runLoop(options: LoopOptions): Promise<LoopResult> {
   if (escalated.length) reasons.push(`${escalated.length} finding${escalated.length === 1 ? "" : "s"} escalated by the arbiter`);
   if (stop!.reason === "held-out") reasons.push("held-out checks fell while visible scores rose");
   if (final && final.end.weighted > final.start.weighted) reasons.push("the final held-out judges scored the revision worse than the start");
+  if (end.stale.length) reasons.push(`${end.stale.length} state finding${end.stale.length === 1 ? " rests" : "s rest"} on passages the revision rewrote; settle the chapter again to confirm`);
   if (end.visible.errors > 0) reasons.push(`${end.visible.errors} error${end.visible.errors === 1 ? "" : "s"} still open`);
   const needsHuman = gateMode === "end" ? true : gateMode === "none" ? false : reasons.length > 0;
 
@@ -331,6 +356,7 @@ export async function runLoop(options: LoopOptions): Promise<LoopResult> {
     rounds,
     stop: stop!,
     open: [...end.open, ...end.waiting].map((finding) => finding.diagnostic),
+    pendingSettle: end.stale.map((finding) => finding.diagnostic),
     deferred,
     escalated,
     defended,

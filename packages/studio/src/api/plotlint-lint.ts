@@ -10,7 +10,8 @@ import {
 import { addSuppression, loadSuppressions } from "@plotlint/diagnostics/node";
 import { checkParagraphs, paragraphRanges, projectDictionary } from "@plotlint/mechanics";
 import {
-  checkSnapshot, checkText, configureTextRules, establishedAt, readRuleSetting, RuleRegistry,
+  checkSnapshot, checkText, configureTextRules, establishedAt, hookBoard, readRuleSetting, RuleRegistry, timeline,
+  type HookBoard, type Timeline,
   type BookRuleData, type ChapterTexts, type EvidenceLocation, type RuleConfigFile, type RuleSetting, type TextDocument, type TextRule,
 } from "@plotlint/rules";
 import { loadAdaptiveOverlay, loadBookRuleData } from "@plotlint/rules/node";
@@ -86,6 +87,7 @@ const STATE_FILES = ["state/manifest.json", "state/current_state.json", "state/h
 // The book's rule config, frames, packs and verdicts (the adaptive overlay), which change what the rules report.
 const PLOTLINT_FILES = [
   "plotlint/rules.json", "plotlint/frames.json", "plotlint/packs.json", "plotlint/invariants.json", "plotlint/travel.json", "plotlint/verdicts.jsonl",
+  "plotlint/scenes.json", "plotlint/hooks.json",
 ];
 const bookStates = new Map<string, BookState>();
 
@@ -184,6 +186,29 @@ function establishedFor(diagnostic: Diagnostic, chapters: ChapterTexts): Evidenc
 /** The book's runtime state snapshot (cached like the lint's), or null when it has none yet. */
 export async function bookSnapshot(bookDir: string): Promise<RuntimeStateSnapshot | null> {
   return (await bookState(bookDir)).snapshot;
+}
+
+export interface BookBoards {
+  /** The book has no runtime state yet, so there is nothing to draw. */
+  readonly stateMissing: boolean;
+  readonly hooks: HookBoard | null;
+  readonly timeline: Timeline | null;
+}
+
+/**
+ * The hook board and the timeline, from the same state and findings as the problems
+ * panel (suppressions applied), so a board never shows what the editor hides.
+ */
+export async function bookBoards(bookDir: string): Promise<BookBoards> {
+  const state = await bookState(bookDir);
+  if (!state.snapshot) return { stateMissing: true, hooks: null, timeline: null };
+  const findings = applySuppressions(state.stateDiagnostics(), (await loadSuppressions(bookDir)).suppressions).kept;
+  const hemisphere = readRuleSetting(state.config.rules["continuity/timeline-order"]).options.hemisphere === "south" ? "south" : "north";
+  return {
+    stateMissing: false,
+    hooks: hookBoard(state.snapshot, state.book.hooks, state.chapters, findings),
+    timeline: timeline(state.snapshot, state.chapters, findings, hemisphere),
+  };
 }
 
 /** Expand ranges to the whole (blank-line separated) paragraphs they touch, merged and clamped. */

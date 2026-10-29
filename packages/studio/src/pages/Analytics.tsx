@@ -18,6 +18,18 @@ interface AnalyticsData {
   };
 }
 
+type Kind = "human" | "agent" | "import" | "unknown";
+interface Share { readonly words: number; readonly share: number }
+interface ProvenanceData {
+  readonly summary: {
+    readonly words: number;
+    readonly byKind: Readonly<Record<Kind, Share>>;
+    readonly byAuthor: Readonly<Record<string, Share>>;
+  };
+}
+const KINDS: ReadonlyArray<Kind> = ["human", "agent", "import", "unknown"];
+const pct = (share: number) => `${Math.round(share * 100)}%`;
+
 interface Nav {
   toBook: (id: string) => void;
   toDashboard: () => void;
@@ -26,6 +38,7 @@ interface Nav {
 export function Analytics({ bookId, nav, theme, t }: { bookId: string; nav: Nav; theme: Theme; t: TFunction }) {
   const c = useColors(theme);
   const { data, loading, error } = useApi<AnalyticsData>(`/books/${bookId}/analytics`);
+  const provenance = useApi<ProvenanceData>(`/plotlint/provenance/${encodeURIComponent(bookId)}`);
 
   if (loading) return <div className={c.muted}>{t("common.loading")}</div>;
   if (error) return <div className="text-red-400">{t("common.error")}: {error}</div>;
@@ -59,6 +72,23 @@ export function Analytics({ bookId, nav, theme, t }: { bookId: string; nav: Nav;
           <StatCard label={t("analytics.totalTokens")} value={(data.tokenStats?.totalTokens ?? 0).toLocaleString()} c={c} />
         </div>
       </div>
+
+      {provenance.data && provenance.data.summary.words > 0 && (
+        <div className={`border ${c.cardStatic} rounded-lg p-5`}>
+          <h2 className={`text-sm font-medium ${c.subtle} mb-1`}>{t("analytics.provenance")}</h2>
+          <p className={`text-xs ${c.muted} mb-4`}>{t("analytics.provenanceHint")}</p>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {KINDS.map((kind) => (
+              <StatCard key={kind} label={t(`analytics.provenance.${kind}` as const)} value={pct(provenance.data!.summary.byKind[kind]?.share ?? 0)} c={c} />
+            ))}
+          </div>
+          <ul className={`mt-4 space-y-1 text-sm ${c.muted}`}>
+            {Object.entries(provenance.data.summary.byAuthor).map(([author, share]) => (
+              <li key={author} className="flex justify-between gap-4"><span className="font-mono">{author}</span><span className="tabular-nums">{share.words.toLocaleString()} ({pct(share.share)})</span></li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

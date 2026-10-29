@@ -19,6 +19,8 @@ export default defineConfig({
       "@plotlint/diagnostics/node": resolve(__dirname, "../diagnostics/src/node.ts"),
       "@plotlint/diagnostics/verdicts": resolve(__dirname, "../diagnostics/src/verdicts.ts"),
       "@plotlint/diagnostics": resolve(__dirname, "../diagnostics/src/index.ts"),
+      "@plotlint/provenance/node": resolve(__dirname, "../provenance/src/node.ts"),
+      "@plotlint/provenance": resolve(__dirname, "../provenance/src/index.ts"),
       "@plotlint/rules/node": resolve(__dirname, "../rules/src/node.ts"),
       "@plotlint/rules": resolve(__dirname, "../rules/src/index.ts"),
       "@plotlint/mechanics": resolve(__dirname, "../mechanics/src/index.ts"),

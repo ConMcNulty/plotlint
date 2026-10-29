@@ -28,6 +28,7 @@ import { registerStudyCommands } from "./lint-study.js";
 import { addPacksCommand, bookPacks, effectiveRules } from "./lint-packs.js";
 import { addHooksCommand } from "./lint-hooks.js";
 import { addLoopCommand } from "./lint-loop.js";
+import { addProvenanceCommand } from "./lint-provenance.js";
 
 /** 1-based line and column (UTF-16 units, as most editors count) of a text finding's start in its chapter file. */
 interface Location { line: number; column: number }
@@ -685,6 +686,9 @@ addHooksCommand(lintCommand, { chapterTexts, loadSnapshot, withBackoff, parseCha
 
 // `inkos lint loop`, `compare`, `prefer` and `study` (lint-loop.ts).
 addLoopCommand(lintCommand, { chapterFiles, lintBook, withBackoff, parseChapter });
+
+// `inkos lint provenance` and `provenance record` (lint-provenance.ts).
+addProvenanceCommand(lintCommand, { chapterTexts, parseChapter });
 
 lintCommand
   .command("annotate")

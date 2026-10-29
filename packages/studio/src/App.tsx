@@ -8,6 +8,7 @@ import { ChatPage } from "./pages/ChatPage";
 import { BookDetail } from "./pages/BookDetail";
 import { ChapterReader } from "./pages/ChapterReader";
 import { Analytics } from "./pages/Analytics";
+import { Boards } from "./pages/Boards";
 import { ServiceListPage } from "./pages/ServiceListPage";
 import { ServiceDetailPage } from "./pages/ServiceDetailPage";
 import { ProjectSettings } from "./pages/ProjectSettings";
@@ -100,6 +101,7 @@ export function App() {
     toChapter: (bookId: string, chapterNumber: number, select?: { start: number; end: number }) =>
       setRoute({ page: "chapter", bookId, chapterNumber, ...(select ? { select } : {}) }),
     toAnalytics: (bookId: string) => setRoute({ page: "analytics", bookId }),
+    toBoards: (bookId: string) => setRoute({ page: "boards", bookId }),
     toServices: () => setRoute({ page: "services" }),
     toProjectSettings: () => setRoute({ page: "project-settings" }),
     toServiceDetail: (id: string) => setRoute({ page: "service-detail", serviceId: id }),
@@ -301,6 +303,11 @@ export function App() {
           {route.page === "analytics" && (
             <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 lg:py-16 fade-in">
               <Analytics bookId={route.bookId} nav={nav} theme={theme} t={t} />
+            </div>
+          )}
+          {route.page === "boards" && (
+            <div className="max-w-5xl mx-auto px-6 py-12 md:px-12 lg:py-16 fade-in">
+              <Boards bookId={route.bookId} nav={nav} theme={theme} t={t} />
             </div>
           )}
           {route.page === "services" && (

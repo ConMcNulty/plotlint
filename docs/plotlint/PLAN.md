@@ -346,7 +346,7 @@ Phase 4 follow-ups. The L2 bands are now measured: `pnpm --filter @plotlint/metr
   - Voice distance is function-word stylometry plus sentence and word length and dialogue share. It is compared with the starting draft, and the limit is half the book's median distance between two of its chapters. A round over the limit is not kept.
   - Escalated findings keep counting against the score: an agent's defence never makes a finding go away.
 
-`inkos lint loop <book> --chapter N` runs it and saves every run (original, draft and full log) under `story/plotlint/loop/runs/`. It writes the chapter only with `--apply`, and only when the human gate (`--gate escalations|end|none`) lets the result through. Story state is not resettled after a revision, so continuity findings rest on the last settlement. That is still open.
+`inkos lint loop <book> --chapter N` runs it and saves every run (original, draft and full log) under `story/plotlint/loop/runs/`. It writes the chapter only with `--apply`, and only when the human gate (`--gate escalations|end|none`) lets the result through. Story state is not resettled between rounds. Instead, a continuity or structure finding whose evidence quotes were all in passages the revision rewrote is held as "waits on a resettle": it still counts, and the gate names it. With `--apply --resettle` on the latest chapter (the only one InkOS can settle again), the chapter is written, settled again, and those findings are rechecked against the new state. If the settle fails, the revision stays on disk and the run says the state is behind it. `--warnings <n>` overrides the pack's `loop.warnings` for a run.
 
 For the gate: `loop compare` saves a single pass and a loop of the same chapter as a blind pair (A.md, B.md, with the key kept apart), `loop prefer` records a reader's choice, and `loop study` reports the loop's win rate with a Wilson interval and the runs where the held-out score rose. LLM proxies are reported apart and never counted.
 
@@ -355,7 +355,14 @@ A glm-4.5-flash pilot on six lessing-fen chapters is in the project files (`phas
 - The held-out checks caught gaming that the first version let through. The fix: they are now checked before clean.
 - A single-order LLM judge preferred whichever version it read second. Read in both orders it agreed with itself on 2 of 6 pairs.
 
-Still open for the gate: blind human readers, chapters where the loop goes past one round, and resettling state between rounds.
+A follow-up on ch13 with `--warnings 0` went to two rounds (score 17 → 15, warnings 3 → 1) and stopped on one escalated Harper finding. `--resettle` could not run on the corpus book, because it has no per-chapter state snapshots for InkOS to settle against.
+
+Still open for the gate: blind human readers, more chapters where the loop goes past one round, and a resettle test on a book InkOS wrote itself.
+
+**Phase 6 status.** Started on 2026-10-29, with the phase 4 and 5 human checks still pending. Its gate is user demand, so each piece ships behind its own command or page.
+- **Provenance per span** (`@plotlint/provenance`). Each chapter's record is its text cut into segments, each with who last wrote it: `human[:name]`, `agent:<name>[@model]`, `import[:source]` or `unknown`. A revision is diffed word by word, so kept words keep their author and new words take the reviser's. Text changed outside a recorder counts as unknown, never guessed. A chapter with no record starts from InkOS's chapter index (generated text is `agent:inkos-writer`, imported text is `import`). Studio records each save as the writer's, `inkos lint loop --apply` records the loop author and its model, and `inkos lint provenance record --by <author>` claims edits made elsewhere. `inkos lint provenance [--chapter N] [--report file.md]` and the Analytics page show the shares, and the report is meant to go with a submission.
+- **Hook board and timeline** (Studio, `#/book/<id>/boards`; `hookBoard` and `timeline` in `@plotlint/rules`). The hook board shows open, paid-off and dropped promises, open ones sorted by how many chapters the reader has waited, with the structure findings that name each hook and the open-questions curve. The timeline places each chapter by its earliest date, or by the time said to pass since the last known point, and keeps the clock still for chapters that look back. Timeline and travel findings sit on their chapters. Both use the problems panel's findings, with suppressions applied, and every card opens its chapter.
+- Next: what-if branches, the series bible and exports.
 
 ## Evaluation
 

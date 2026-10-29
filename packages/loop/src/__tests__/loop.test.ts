@@ -306,6 +306,25 @@ describe("runLoop", () => {
     expect((await runSinglePass({ chapter, text: TEXT, editors: layerEditors(heldLint), author: fixingAuthor })).text).not.toBe(TEXT);
   });
 
+  it("holds state findings whose evidence the revision rewrote for resettling", async () => {
+    const fact = { subject: "Mira", predicate: "status", object: "dead", validFromChapter: chapter, validUntilChapter: null, sourceChapter: chapter, evidence: { quote: "Mira felt that the tide was turning." } };
+    const stateLint = async (draft: Draft): Promise<Diagnostic[]> => [{
+      ruleId: "continuity/dead-entity-acts", layer: "continuity", severity: "error", confidence: "extracted", code: "dead-entity-acts",
+      summary: "Mira acts after she is dead", evidence: ["Mira · status · dead"], chapter, facts: [fact],
+    }, ...await lint(draft)];
+    const rewriter: Author = {
+      name: "fake",
+      async respond({ findings, draft }) {
+        return findings.filter((finding) => finding.span).map((finding) => ({ id: finding.id, action: "fix" as const, reason: "rewrite", edits: [{ find: draft.text.slice(finding.span!.start, finding.span!.end), replace: "sensed" }] }));
+      },
+    };
+    const result = await runLoop({ chapter, text: TEXT, editors: layerEditors(stateLint), author: rewriter, scope: "chapter" });
+    expect(result.stop.reason).toBe("clean");
+    expect(result.pendingSettle.map((d) => d.ruleId)).toEqual(["continuity/dead-entity-acts"]);
+    expect(result.gate.needsHuman).toBe(true);
+    expect(result.gate.reasons.join()).toContain("settle the chapter again");
+  });
+
   it("runs a single pass as one round", async () => {
     const result = await runSinglePass({ chapter, text: TEXT, editors: layerEditors(lint), author: fixingAuthor, warningThreshold: -1 });
     expect(result.rounds).toHaveLength(1);
