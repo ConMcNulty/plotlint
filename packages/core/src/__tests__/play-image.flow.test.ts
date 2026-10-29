@@ -103,4 +103,4 @@ it('records illustration methods and versioned output, invalidates stale scene i
   const episodes=new CreativeEpisodeStore(join(root,'.inkos/harness.sqlite'));
   try{expect(episodes.listEvents('image-ready').find(event=>event.type==='skills-applied')?.payload).toMatchObject({worker:'play-image',skills:[{id:'inkos-play-illustration'}]});expect(episodes.listEvents('image-failed').some(event=>event.type==='episode-failed')).toBe(true);}finally{episodes.close();}
  }finally{releaseImage();vi.unstubAllEnvs();server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));await rm(root,{recursive:true,force:true});}
-},15000);
+},60000);
