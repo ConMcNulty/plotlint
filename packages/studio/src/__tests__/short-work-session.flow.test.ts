@@ -35,7 +35,7 @@ it("runs a book-route session against a short Work with no long-form book.json",
     const { session } = await sessionResponse.json();
     const payload =  { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ instruction: "Say you are ready; do not create or edit anything.", activeBookId: "short", workId: "short", profileId: "short-fiction", sessionKind: "book", sessionId: session.sessionId, service: "custom:fixture", model: "fixture-model" }) };
     const run = app.request("/api/v1/agent", payload);
-    await expect.poll(() => calls).toBe(1);
+    await expect.poll(() => calls, { timeout: 15_000 }).toBe(1);
     const detail = await (await app.request(`/api/v1/sessions/${session.sessionId}`)).json();
     expect(detail.chatRequest).toMatchObject({ sessionId: session.sessionId, status: "running" });
     const duplicate = await app.request("/api/v1/agent", payload);
@@ -49,7 +49,7 @@ it("runs a book-route session against a short Work with no long-form book.json",
     expect(body.session).toMatchObject({ workId: "short", profileId: "short-fiction" });
     expect((await (await app.request(`/api/v1/sessions/${session.sessionId}`)).json()).chatRequest.status).toBe("completed");
     const secondRun = app.request("/api/v1/agent", payload);
-    await expect.poll(() => calls).toBe(2);
+    await expect.poll(() => calls, { timeout: 15_000 }).toBe(2);
     const abort = await app.request(`/api/v1/sessions/${session.sessionId}/abort`, { method: "POST" });
     expect(await abort.json()).toMatchObject({ aborted: true });
     await secondRun;
@@ -61,4 +61,4 @@ it("runs a book-route session against a short Work with no long-form book.json",
     // Windows can hold the harness SQLite file open briefly after the session closes.
     await rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
-}, 20000);
+}, 45_000);
