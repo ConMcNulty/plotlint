@@ -1,4 +1,4 @@
-import { findDefinitions, stateAt, type Definition, type EntityAtCursor } from "@plotlint/rules";
+import { findDefinitions, referencesOf, stateAt, type Definition, type EntityAtCursor, type References } from "@plotlint/rules";
 import { chapterTexts } from "./plotlint-chapters.js";
 import { bookSnapshot } from "./plotlint-lint.js";
 
@@ -54,6 +54,20 @@ export async function definitionsOf(request: { bookDir: string; name: string; ch
   const definitions = subjectsNamed(snapshot.currentState.facts.map((fact) => fact.subject), name)
     .flatMap((subject) => findDefinitions(snapshot, subject, chapters).filter((definition) => definition.role === "subject"));
   return { name, definitions, stateMissing: false };
+}
+
+/**
+ * Find all references: every appearance of the entity a name means, grouped by
+ * chapter. Without story state the name is searched for as written.
+ */
+export async function referencesFor(request: { bookDir: string; name: string; chapter?: number; text?: string }): Promise<References & { stateMissing: boolean }> {
+  const { bookDir, name, chapter, text } = request;
+  const [snapshot, chapters] = await Promise.all([
+    bookSnapshot(bookDir),
+    chapterTexts(bookDir, chapter === undefined || text === undefined ? undefined : { chapter, text }),
+  ]);
+  const subjects = snapshot?.currentState.facts.map((fact) => fact.subject) ?? [];
+  return { ...referencesOf(subjects, name, chapters), stateMissing: snapshot === null };
 }
 
 const nameWords = (value: string) => value.toLowerCase().split(/[\s\-‐–]+/u).filter(Boolean);

@@ -77,7 +77,7 @@ describe("plotlint navigation endpoints", () => {
     await rm(root, { recursive: true, force: true });
   });
 
-  const post = async (route: "state" | "definition", body: Record<string, unknown>) => {
+  const post = async (route: "state" | "definition" | "references", body: Record<string, unknown>) => {
     const app = createStudioServer({} as never, root);
     return app.request(`/api/v1/plotlint/${route}`, {
       method: "POST",
@@ -172,6 +172,19 @@ describe("plotlint navigation endpoints", () => {
     const state = await stateAt({ chapter: 1, offset: 0 });
     expect(state).toMatchObject({ stateMissing: true, entities: [] });
     expect(await definition({ name: "Mira Vale" })).toMatchObject({ stateMissing: true, definitions: [] });
+  });
+
+  it("finds every reference to the entity a name means, grouped by chapter", async () => {
+    await saveState();
+    const json = await (await post("references", { bookId: BOOK, name: "Harrow" })).json() as {
+      entity: string; names: string[]; total: number; groups: Array<{ chapter: number; hits: Array<{ text: string; start: number; line: number }> }>;
+    };
+    expect(json).toMatchObject({ entity: "Captain Harrow", names: ["Captain Harrow", "Harrow"], total: 2 });
+    expect(json.groups.map((group) => [group.chapter, group.hits.map((hit) => [hit.text, hit.line])])).toEqual([[1, [["Captain Harrow", 5]]], [2, [["Harrow", 7]]]]);
+    // The open chapter's unsaved text stands in for its file.
+    const edited = await (await post("references", { bookId: BOOK, name: "Mira", chapter: 2, text: "Mira, Mira Vale and Vale." })).json() as { groups: Array<{ chapter: number; hits: unknown[] }> };
+    expect(edited.groups.map((group) => [group.chapter, group.hits.length])).toEqual([[1, 1], [2, 3]]);
+    expect((await post("references", { bookId: BOOK, name: "" })).status).toBe(400);
   });
 
   it("rejects bad requests and unknown books", async () => {

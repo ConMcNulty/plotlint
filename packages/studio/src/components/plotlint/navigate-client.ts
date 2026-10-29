@@ -1,7 +1,7 @@
-import type { Definition, EntityAtCursor, EvidenceLocation } from "@plotlint/rules";
+import type { Definition, EntityAtCursor, EvidenceLocation, References } from "@plotlint/rules";
 import { fetchJson } from "../../hooks/use-api";
 
-export type { Definition, EntityAtCursor, EvidenceLocation };
+export type { Definition, EntityAtCursor, EvidenceLocation, References };
 
 export interface StateAtCursorResponse {
   readonly chapter: number;
@@ -42,6 +42,27 @@ export async function findDefinition(
       body: JSON.stringify({ bookId, name, chapter: open.chapter, text: open.text }),
     });
     if (result.definitions.length > 0) return { name, definitions: result.definitions };
+  }
+  return null;
+}
+
+/**
+ * Every appearance of the entity the first of `names` means, reading the open
+ * chapter's unsaved text. Names are tried in order until one is found in the text;
+ * null when none is.
+ */
+export async function findReferences(
+  bookId: string,
+  names: ReadonlyArray<string>,
+  open: { chapter: number; text: string },
+): Promise<References | null> {
+  for (const name of names) {
+    const result = await fetchJson<References>("/plotlint/references", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookId, name, chapter: open.chapter, text: open.text }),
+    });
+    if (result.total > 0) return result;
   }
   return null;
 }

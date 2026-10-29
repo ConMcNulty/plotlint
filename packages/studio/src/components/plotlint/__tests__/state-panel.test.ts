@@ -125,4 +125,30 @@ describe("state panel and go to definition", () => {
     await act(async () => { await vi.waitFor(() => expect(selected(handle)).toBe("Harrow lay dead")); });
     expect(definition).toHaveBeenLastCalledWith(["Harrow"], TEXT);
   });
+
+  it("lists every reference to the name at the cursor on Shift+F12 and opens each", async () => {
+    const at = TEXT.indexOf("Mira");
+    const references = vi.fn(async () => ({
+      entity: "Mira Vale", names: ["Mira Vale", "Mira", "Vale"], total: 2,
+      groups: [
+        { chapter: 1, hits: [{ start: 5, end: 9, text: "Mira", line: 3, context: "Mira at the pier." }] },
+        { chapter: 2, hits: [{ start: at, end: at + 9, text: "Mira Vale", line: 3, context: "Mira Vale climbed to the lantern house." }] },
+      ],
+    }));
+    const stateAt = vi.fn(async (offset: number) => ({ chapter: 2, offset, entities: [], stateMissing: false }));
+    const { container, handle, onOpenLocation } = await mount({ stateAt, definition: vi.fn(), references });
+
+    await act(async () => { handle.current!.revealRange({ start: at + 1, end: at + 1 }); });
+    await act(async () => {
+      handle.current!.editor()!.view.dom.dispatchEvent(new KeyboardEvent("keydown", { key: "F12", shiftKey: true, bubbles: true }));
+    });
+    await act(async () => { await vi.waitFor(() => expect(container.querySelector("[data-testid=references-panel]")).not.toBeNull()); });
+    expect(references).toHaveBeenCalledWith(["Mira Vale", "Mira"], TEXT);
+    const hits = container.querySelectorAll<HTMLButtonElement>("[data-testid=reference-hit]");
+    expect(hits).toHaveLength(2);
+    await act(async () => { hits[1]!.click(); });
+    expect(selected(handle)).toBe("Mira Vale");
+    await act(async () => { hits[0]!.click(); });
+    expect(onOpenLocation).toHaveBeenCalledWith({ chapter: 1, start: 5, end: 9, quote: "Mira" });
+  });
 });

@@ -7,8 +7,8 @@ import { docToText, OffsetMap, type TextRange } from "./text.js";
 /**
  * IDE-style navigation in plain-text offsets: the selection as a text range,
  * selecting a text range (an evidence span, a definition), the name under the
- * cursor, and a go-to-definition gesture (F12, or Ctrl/Cmd+click) that reports
- * what to look up. Looking it up is the host's job.
+ * cursor, a go-to-definition gesture (F12, or Ctrl/Cmd+click) and a find-all-references
+ * key (Shift+F12) that report what to look up. Looking it up is the host's job.
  */
 
 /** The selection as a plain-text range (empty at the cursor). */
@@ -100,6 +100,8 @@ export interface DefinitionRequest {
 export interface NavigationOptions {
   /** Called on F12, or Ctrl/Cmd+click, with the names under the selection or pointer. */
   readonly onGoToDefinition?: (request: DefinitionRequest) => void;
+  /** Called on Shift+F12 with the names under the selection or cursor. */
+  readonly onFindReferences?: (request: DefinitionRequest) => void;
 }
 
 export interface NavigationStorage {
@@ -137,7 +139,7 @@ function definitionRequest(state: EditorState, range: TextRange): DefinitionRequ
 
 const navigationPluginKey = new PluginKey("plotlintNavigation");
 
-/** Go to definition (F12, Ctrl/Cmd+click) and text-range selection for the plain-text editor. */
+/** Go to definition (F12, Ctrl/Cmd+click), find all references (Shift+F12) and text-range selection for the plain-text editor. */
 export const Navigation = Extension.create<NavigationOptions, NavigationStorage>({
   name: "navigation",
 
@@ -167,6 +169,12 @@ export const Navigation = Extension.create<NavigationOptions, NavigationStorage>
     return {
       F12: () => {
         const callback = this.options.onGoToDefinition;
+        if (!callback) return false;
+        callback(definitionRequest(this.editor.state, selectionTextRange(this.editor.state)));
+        return true;
+      },
+      "Shift-F12": () => {
+        const callback = this.options.onFindReferences;
         if (!callback) return false;
         callback(definitionRequest(this.editor.state, selectionTextRange(this.editor.state)));
         return true;

@@ -9,8 +9,9 @@ import type { TFunction } from "../../hooks/use-i18n";
 import { cn } from "../../lib/utils";
 import { createChapterEditor, type ChapterEditor, type ProblemsSnapshot } from "./chapter-editor";
 import { chapterLinter, chapterSourceId, suppressDiagnostic, type LintDiagnostic, type LintFunction } from "./lint-client";
-import { fetchStateAt, findDefinition, type Definition, type EntityAtCursor, type EvidenceLocation, type StateAtCursorResponse } from "./navigate-client";
+import { fetchStateAt, findDefinition, findReferences, type Definition, type EntityAtCursor, type EvidenceLocation, type References, type StateAtCursorResponse } from "./navigate-client";
 import { ProblemsPanel } from "./ProblemsPanel";
+import { ReferencesPanel } from "./ReferencesPanel";
 import { StatePanel } from "./StatePanel";
 import { problemRows, rowTarget, type ProblemRow } from "./problems-model";
 import { recordVerdicts, type VerdictEvent } from "./verdict-client";
@@ -24,11 +25,13 @@ export interface ManuscriptEditorHandle {
   revealRange(range: TextRange): void;
 }
 
-/** The state-at-cursor and go-to-definition lookups for the open chapter. */
+/** The state-at-cursor, go-to-definition and find-all-references lookups for the open chapter. */
 export interface NavigationClient {
   stateAt(offset: number, text: string): Promise<StateAtCursorResponse>;
   /** The first of `names` that resolves, with its definitions in reading order; null when none does. */
   definition(names: ReadonlyArray<string>, text: string): Promise<{ name: string; definitions: Definition[] } | null>;
+  /** Every appearance of the first of `names` found in the book; null when none is. */
+  references?(names: ReadonlyArray<string>, text: string): Promise<References | null>;
 }
 
 export interface ManuscriptEditorProps {
@@ -77,6 +80,7 @@ const EMPTY: ProblemsSnapshot = { ranged: [], unranged: [], suppressed: 0, linti
 const chapterNavigation = (bookId: string, chapter: number): NavigationClient => ({
   stateAt: (offset, text) => fetchStateAt(bookId, chapter, offset, text),
   definition: (names, text) => findDefinition(bookId, names, { chapter, text }),
+  references: (names, text) => findReferences(bookId, names, { chapter, text }),
 });
 
 /** Findings marked "Not useful" this session, per book, so they stay hidden when a chapter reopens. */
@@ -117,6 +121,7 @@ export function ManuscriptEditor({
   const [showState, setShowState] = useState(readPanelPreference);
   const [cursor, setCursor] = useState<CursorState>({ entities: null, loading: false, error: null, stateMissing: false });
   const [notice, setNotice] = useState<Notice | null>(null);
+  const [references, setReferences] = useState<References | null>(null);
 
   const client = useMemo(() => navigation ?? chapterNavigation(bookId, chapterNumber), [navigation, bookId, chapterNumber]);
   // Read by the editor's callbacks, which are bound once per editor.
@@ -203,6 +208,19 @@ export function ManuscriptEditor({
   const goToDefinitionRef = useRef(goToDefinition);
   goToDefinitionRef.current = goToDefinition;
 
+  const showReferences = useCallback(async (request: DefinitionRequest) => {
+    try {
+      const lookup = live.current.client.references;
+      const found = lookup && request.names.length > 0 ? await lookup(request.names, request.text) : null;
+      if (found) setReferences(found);
+      else showNotice(request.names[0] ? `${t("refs.none")}: ${request.names[0]}` : t("refs.none"), request.range);
+    } catch (error) {
+      showNotice(error instanceof Error ? error.message : String(error), request.range);
+    }
+  }, [showNotice, t]);
+  const showReferencesRef = useRef(showReferences);
+  showReferencesRef.current = showReferences;
+
   useEffect(() => {
     const element = mountRef.current;
     if (!element) return;
@@ -217,6 +235,7 @@ export function ManuscriptEditor({
       hidden: hiddenFor(bookId),
       onSelection: refreshStateSoon,
       onGoToDefinition: (request) => void goToDefinitionRef.current(request),
+      onFindReferences: (request) => void showReferencesRef.current(request),
       ...(initialSelectionRef.current ? { selection: initialSelectionRef.current } : {}),
       onHover: (entries, context) => {
         if (entries.length === 0 || !context.anchor) {
@@ -338,6 +357,15 @@ export function ManuscriptEditor({
           />
         )}
       </div>
+      {references && (
+        <ReferencesPanel
+          references={references}
+          chapter={chapterNumber}
+          t={t}
+          onOpen={openLocation}
+          onClose={() => setReferences(null)}
+        />
+      )}
       <ProblemsPanel
         rows={rows}
         suppressed={problems.suppressed}

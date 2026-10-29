@@ -65,6 +65,8 @@ export interface ChapterEditorOptions {
   readonly onSelection?: (selection: TextRange) => void;
   /** Called on F12 or Ctrl/Cmd+click with the names to look up. */
   readonly onGoToDefinition?: (request: DefinitionRequest) => void;
+  /** Shift+F12: find all references to the name under the cursor. */
+  readonly onFindReferences?: (request: DefinitionRequest) => void;
   /** Select this range once the editor opens (a jump from another chapter). */
   readonly selection?: TextRange;
   readonly editorClass?: string;
@@ -214,7 +216,7 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
         },
         onHover: options.onHover,
       }),
-      Navigation.configure({ onGoToDefinition: options.onGoToDefinition }),
+      Navigation.configure({ onGoToDefinition: options.onGoToDefinition, onFindReferences: options.onFindReferences }),
     ],
     content: textToDoc(options.text),
     editorProps: options.editorClass ? { attributes: { class: options.editorClass, spellcheck: "false" } } : { attributes: { spellcheck: "false" } },

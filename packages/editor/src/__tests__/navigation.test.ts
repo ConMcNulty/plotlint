@@ -92,6 +92,18 @@ describe("Navigation extension", () => {
     });
   });
 
+  it("asks for references on Shift+F12, and not for the definition", () => {
+    const onGoToDefinition = vi.fn();
+    const onFindReferences = vi.fn();
+    setup({ onGoToDefinition, onFindReferences });
+    const start = at("Harrow");
+    editor.commands.selectTextRange({ start: start + 1, end: start + 1 });
+    editor.view.dom.dispatchEvent(new KeyboardEvent("keydown", { key: "F12", shiftKey: true, bubbles: true }));
+    expect(onFindReferences).toHaveBeenCalledTimes(1);
+    expect(onFindReferences.mock.calls[0]![0]).toMatchObject({ names: ["Captain Aurel Harrow", "Harrow"] });
+    expect(onGoToDefinition).not.toHaveBeenCalled();
+  });
+
   it("leaves F12 alone without a handler", () => {
     setup();
     const event = new KeyboardEvent("keydown", { key: "F12", bubbles: true, cancelable: true });
