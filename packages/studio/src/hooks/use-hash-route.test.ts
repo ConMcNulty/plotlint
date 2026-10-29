@@ -19,6 +19,10 @@ describe("hash route", () => {
       expect(parseHash("#/book/my-novel")).toEqual({ page: "book", bookId: "my-novel" });
     });
 
+    it("parses the export and branches route", () => {
+      expect(parseHash("#/book/my-novel/publish")).toEqual({ page: "publish", bookId: "my-novel" });
+    });
+
     it("parses the hooks and timeline boards route", () => {
       expect(parseHash("#/book/my-novel/boards")).toEqual({ page: "boards", bookId: "my-novel" });
     });

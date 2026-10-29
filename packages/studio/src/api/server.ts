@@ -173,6 +173,7 @@ import {
 } from "./plotlint-lint.js";
 import { chapterFiles } from "./plotlint-chapters.js";
 import { provenanceView, recordStudioEdit } from "./plotlint-provenance.js";
+import { branchDiff, branchesView, manuscriptFile, newBranch, outlineFile, provenanceFile } from "./plotlint-publish.js";
 import { parseVerdictBody as parsePlotlintVerdictBody, recordVerdicts, verdictReport } from "./plotlint-verdicts.js";
 import {
   definitionsOf,
@@ -3257,6 +3258,56 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     const chapter = c.req.query("chapter");
     if (chapter !== undefined && !/^\d+$/u.test(chapter)) throw new ApiError(400, "INVALID_CHAPTER", `chapter must be a number; got "${chapter}"`);
     return c.json(await provenanceView(bookDir, chapter === undefined ? undefined : Number(chapter)));
+  });
+
+  // Branches and exports (plotlint-publish.ts). A bad branch name or a missing author is the caller's error.
+  const asBadRequest = async <T>(code: string, work: () => Promise<T>): Promise<T> => {
+    try {
+      return await work();
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(400, code, error instanceof Error ? error.message : String(error));
+    }
+  };
+  const download = (body: string | Uint8Array<ArrayBuffer>, fileName: string, contentType: string) =>
+    new Response(body, { headers: { "Content-Type": contentType, "Content-Disposition": `attachment; filename="${fileName}"` } });
+
+  app.get("/api/v1/plotlint/branches/:id", async (c) => {
+    await plotlintBookDir(c.req.param("id"));
+    return c.json(await branchesView(root, c.req.param("id")));
+  });
+
+  app.post("/api/v1/plotlint/branches/:id", async (c) => {
+    await plotlintBookDir(c.req.param("id"));
+    const body = await c.req.json().catch(() => null) as { name?: unknown } | null;
+    return c.json(await asBadRequest("INVALID_BRANCH", () => newBranch(root, c.req.param("id"), body?.name)));
+  });
+
+  app.get("/api/v1/plotlint/branches/:id/:name/diff", async (c) => {
+    await plotlintBookDir(c.req.param("id"));
+    return c.json(await asBadRequest("INVALID_BRANCH", () => branchDiff(root, state, c.req.param("id"), c.req.param("name"))));
+  });
+
+  app.get("/api/v1/plotlint/export/:id/manuscript", async (c) => {
+    await plotlintBookDir(c.req.param("id"));
+    const file = await asBadRequest("INVALID_EXPORT", () => manuscriptFile(state, c.req.param("id"), {
+      author: c.req.query("author") ?? "",
+      byline: c.req.query("byline"),
+      contact: c.req.queries("contact")?.filter((line) => line.trim()),
+    }));
+    return download(file.bytes, file.fileName, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+  });
+
+  app.get("/api/v1/plotlint/export/:id/outline", async (c) => {
+    await plotlintBookDir(c.req.param("id"));
+    const file = await outlineFile(state, c.req.param("id"));
+    return download(file.text, file.fileName, "text/markdown; charset=utf-8");
+  });
+
+  app.get("/api/v1/plotlint/export/:id/provenance", async (c) => {
+    await plotlintBookDir(c.req.param("id"));
+    const file = await provenanceFile(state, c.req.param("id"));
+    return download(file.text, file.fileName, "text/markdown; charset=utf-8");
   });
 
   app.get("/api/v1/plotlint/boards/:id", async (c) => c.json(await bookBoards(await plotlintBookDir(c.req.param("id")))));

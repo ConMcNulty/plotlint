@@ -38,6 +38,7 @@
     "@plotlint/mechanics": "workspace:*",
     "@plotlint/metrics": "workspace:*",
     "@plotlint/packs": "workspace:*",
+    "@plotlint/export": "workspace:*",
     "@plotlint/provenance": "workspace:*",
     "@plotlint/rules": "workspace:*",
     "@plotlint/style": "workspace:*",
