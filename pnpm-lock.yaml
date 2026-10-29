@@ -362,6 +362,9 @@ importers:
       '@plotlint/diagnostics':
         specifier: workspace:*
         version: link:../diagnostics
+      '@plotlint/export':
+        specifier: workspace:*
+        version: link:../export
       '@plotlint/mechanics':
         specifier: workspace:*
         version: link:../mechanics

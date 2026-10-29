@@ -111,3 +111,4 @@ export async function loadSeriesPrelude(bookDir: string, bookId: string, resolve
   }
   return seriesPrelude(books);
 }
+export * from "./branches-node.js";

@@ -12,6 +12,7 @@ import {
   FileText,
   BarChart2,
   Clock,
+  GitBranch,
   Download,
   Database,
   ShieldCheck,
@@ -57,6 +58,7 @@ interface Nav {
   toChapter: (bookId: string, num: number) => void;
   toAnalytics: (bookId: string) => void;
   toBoards: (bookId: string) => void;
+  toPublish: (bookId: string) => void;
   toTruth: (bookId: string) => void;
 }
 
@@ -376,6 +378,13 @@ export function BookDetail({
           >
             <Clock size={14} />
             {t("book.boards")}
+          </button>
+          <button
+            onClick={() => nav.toPublish(bookId)}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-secondary/50 text-muted-foreground rounded-lg hover:text-foreground hover:bg-secondary transition-all border border-border/50"
+          >
+            <GitBranch size={14} />
+            {t("book.publish")}
           </button>
           <button
             onClick={handleReviseFoundation}

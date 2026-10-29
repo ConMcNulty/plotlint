@@ -371,7 +371,8 @@ Still open for the gate: blind human readers, more chapters where the loop goes 
   InkOS's own `inkos export` still does txt, md and EPUB.
 - **Series bible** (`story/plotlint/series.json`, `inkos lint series --after <books>`). The earlier books' end-of-book state is carried into this book as facts valid from chapter 0. A carried fact ends where this book records the same thing again. With those facts in place, every continuity rule checks across books. For example, a character who died in book one and acts in book three is flagged, and the finding names the earlier book. Approved invariants and travel times from earlier books apply too. The same applies in `inkos lint` and Studio.
 - **What-if branches** (`inkos lint branch create|list|diff|adopt`). A branch is a copy of the book as its own book (`<book>--<name>`), so InkOS writes, settles and audits it and plotlint lints it like any book. `diff` shows changed chapters with words added and removed, how the end-of-book world state differs, and hooks whose status differs. `adopt --yes` makes a branch the main line and keeps the old main line as a branch.
-- Not done yet: a Studio view for branch diffs and exports. As with every phase 6 item, more depends on what writers ask for.
+- **Publish page** (Studio, `#/book/<id>/publish`). It downloads the manuscript (author, byline and contact are remembered in the browser), the outline and the provenance report. It also creates and lists branches and shows a branch's diff: chapters, end-of-book world state and hooks. Adopting a branch replaces the book, so it stays a command, and the page shows that command.
+- As with every phase 6 item, more depends on what writers ask for.
 
 ## Evaluation
 

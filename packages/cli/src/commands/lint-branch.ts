@@ -1,8 +1,9 @@
-import { cp, mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, rename, rm } from "node:fs/promises";
 import { join } from "node:path";
 import type { Command } from "commander";
-import { StateManager, WorkManifestSchema, workDirectory, workManifestPath, type RuntimeStateSnapshot } from "@actalk/inkos-core";
+import { StateManager, workDirectory, type RuntimeStateSnapshot } from "@actalk/inkos-core";
 import { diffBranches, type BranchDiff } from "@plotlint/rules";
+import { branchId, copyWork, createBranch, listBranches, parseBranchName, workExists } from "@plotlint/rules/node";
 import { findProjectRoot, log, logError, resolveBookId } from "../utils.js";
 
 // `inkos lint branch`: what-if branches. A branch is a copy of the book as a book of
@@ -15,58 +16,7 @@ export interface BranchCommandDeps {
   readonly loadSnapshot: (bookDir: string) => Promise<RuntimeStateSnapshot | undefined>;
 }
 
-const BRANCH_NAME = /^[a-z0-9][a-z0-9-]{0,39}$/u;
-const branchId = (bookId: string, name: string) => `${bookId}--${name}`;
 const wantsJson = (command: Command) => command.optsWithGlobals<{ json?: boolean }>().json === true;
-
-function parseName(name: string): string {
-  if (!BRANCH_NAME.test(name)) throw new Error(`branch names are lowercase letters, digits and dashes (up to 40); got "${name}"`);
-  return name;
-}
-
-async function readJson(path: string): Promise<Record<string, unknown> | undefined> {
-  try {
-    return JSON.parse(await readFile(path, "utf-8")) as Record<string, unknown>;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
-    throw error;
-  }
-}
-
-/** Copy a work to a new id and give the copy its own id and title, in work.json and book.json. */
-async function copyWork(root: string, from: string, to: string, title: (old: string) => string, metadata: Record<string, unknown>): Promise<void> {
-  const target = workDirectory(root, to);
-  if (await readJson(workManifestPath(root, to))) throw new Error(`"${to}" already exists`);
-  await cp(workDirectory(root, from), target, { recursive: true, errorOnExist: true });
-  const now = new Date().toISOString();
-  const manifest = WorkManifestSchema.parse(await readJson(workManifestPath(root, to)));
-  await writeFile(workManifestPath(root, to), `${JSON.stringify({
-    ...manifest, id: to, title: title(manifest.title), updatedAt: now,
-    lineage: [...manifest.lineage.filter((entry) => entry.sourceWorkId !== from), { relation: "derived-from", sourceWorkId: from }],
-    metadata: { ...manifest.metadata, ...metadata },
-  }, null, 2)}\n`, "utf-8");
-  const bookJson = join(target, "source", "book.json");
-  const book = await readJson(bookJson);
-  if (book) await writeFile(bookJson, `${JSON.stringify({ ...book, id: to, title: title(String(book.title ?? manifest.title)), updatedAt: now }, null, 2)}\n`, "utf-8");
-}
-
-async function branchesOf(root: string, bookId: string): Promise<Array<{ name: string; id: string; title: string; createdAt: string }>> {
-  let ids: string[];
-  try {
-    ids = await readdir(join(root, "works"));
-  } catch {
-    return [];
-  }
-  const out = [];
-  for (const id of ids) {
-    const manifest = await readJson(workManifestPath(root, id)).catch(() => undefined);
-    const meta = (manifest?.metadata ?? {}) as Record<string, unknown>;
-    if (meta.plotlintBranchOf === bookId && typeof meta.plotlintBranch === "string") {
-      out.push({ name: meta.plotlintBranch, id, title: String(manifest!.title), createdAt: String(meta.plotlintBranchedAt ?? manifest!.createdAt) });
-    }
-  }
-  return out.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-}
 
 function formatDiff(diff: BranchDiff, name: string): string[] {
   const lines: string[] = [];
@@ -97,11 +47,9 @@ export function addBranchCommand(lint: Command, deps: BranchCommandDeps): void {
     .argument("[book-id]", "Book ID (auto-detected if only one book)")
     .action(async (nameArg: string, bookIdArg: string | undefined) => {
       try {
-        const name = parseName(nameArg);
         const root = findProjectRoot();
         const bookId = await resolveBookId(bookIdArg, root);
-        const id = branchId(bookId, name);
-        await copyWork(root, bookId, id, (title) => `${title} (${name})`, { plotlintBranchOf: bookId, plotlintBranch: name, plotlintBranchedAt: new Date().toISOString() });
+        const id = await createBranch(root, bookId, nameArg);
         log(`branched ${bookId} as ${id}; write and revise it with any command, e.g. inkos write next ${id}`);
       } catch (e) {
         logError(`Branch failed: ${e}`);
@@ -118,7 +66,7 @@ export function addBranchCommand(lint: Command, deps: BranchCommandDeps): void {
       try {
         const root = findProjectRoot();
         const bookId = await resolveBookId(bookIdArg, root);
-        const branches = await branchesOf(root, bookId);
+        const branches = await listBranches(root, bookId);
         if (wantsJson(command)) log(JSON.stringify({ bookId, branches }, null, 2));
         else if (!branches.length) log(`${bookId} has no branches (inkos lint branch create <name>)`);
         else for (const entry of branches) log(`  ${entry.name.padEnd(20)} ${entry.id}  since ${entry.createdAt.slice(0, 10)}`);
@@ -136,12 +84,12 @@ export function addBranchCommand(lint: Command, deps: BranchCommandDeps): void {
     .option("--json", "Output JSON")
     .action(async (nameArg: string, bookIdArg: string | undefined, _opts: unknown, command: Command) => {
       try {
-        const name = parseName(nameArg);
+        const name = parseBranchName(nameArg);
         const root = findProjectRoot();
         const bookId = await resolveBookId(bookIdArg, root);
         const state = new StateManager(root);
         const id = branchId(bookId, name);
-        if (!await readJson(workManifestPath(root, id))) throw new Error(`"${bookId}" has no branch "${name}"`);
+        if (!await workExists(root, id)) throw new Error(`"${bookId}" has no branch "${name}"`);
         const side = async (book: string) => {
           const snapshot = await deps.loadSnapshot(state.bookDir(book));
           return { texts: await deps.chapterTexts(state.bookDir(book)), ...(snapshot ? { snapshot } : {}) };
@@ -166,11 +114,11 @@ export function addBranchCommand(lint: Command, deps: BranchCommandDeps): void {
     .option("--yes", "Confirm: the book's chapters and state are replaced (the old ones are kept as a branch)")
     .action(async (nameArg: string, bookIdArg: string | undefined, opts: { yes?: boolean }) => {
       try {
-        const name = parseName(nameArg);
+        const name = parseBranchName(nameArg);
         const root = findProjectRoot();
         const bookId = await resolveBookId(bookIdArg, root);
         const id = branchId(bookId, name);
-        if (!await readJson(workManifestPath(root, id))) throw new Error(`"${bookId}" has no branch "${name}"`);
+        if (!await workExists(root, id)) throw new Error(`"${bookId}" has no branch "${name}"`);
         if (!opts.yes) throw new Error(`this replaces ${bookId}'s chapters and story state with ${id}'s; pass --yes to go ahead`);
         const keep = `before-${name}-${new Date().toISOString().slice(0, 19).replace(/[-:T]/gu, "").toLowerCase()}`;
         await copyWork(root, bookId, branchId(bookId, keep), (title) => `${title} (${keep})`, { plotlintBranchOf: bookId, plotlintBranch: keep, plotlintBranchedAt: new Date().toISOString() });
