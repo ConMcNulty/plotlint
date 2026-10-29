@@ -3,9 +3,10 @@ import type { Theme } from "../hooks/use-theme";
 import type { TFunction } from "../hooks/use-i18n";
 import { useColors } from "../hooks/use-colors";
 
-// The hook board and the timeline (PLAN, "Views beyond the page"): open promises and
-// how long the reader has waited, and story time across chapters with the continuity
-// findings that break it. Every card opens its chapter.
+// Views beyond the page (PLAN): the hook board (open promises and how long the reader
+// has waited), the timeline (story time with the continuity findings that break it),
+// the cast board (who stands where at the end, and how they relate) and the tension
+// curve (judged stakes per chapter). Every card opens its chapter.
 
 interface Finding {
   readonly ruleId: string;
@@ -38,10 +39,25 @@ interface TimelineChapter {
   readonly conflicts: Finding[];
 }
 
+interface CastMember {
+  readonly name: string;
+  readonly firstSeen: number;
+  readonly lastSeen: number;
+  readonly status: string | null;
+  readonly location: string | null;
+  readonly povChapters: number[];
+  readonly relations: ReadonlyArray<{ predicate: string; object: string; with: string | null; since: number }>;
+  readonly findings: Finding[];
+}
+
+interface TensionPoint { readonly chapter: number; readonly stakes: number; readonly scene: string; readonly pov: string | null; readonly goal: string | null }
+
 interface BoardsData {
   readonly stateMissing: boolean;
   readonly hooks: { readonly end: number; readonly cards: HookCard[]; readonly openPerChapter: number[] } | null;
   readonly timeline: { readonly chapters: TimelineChapter[]; readonly unplaced: Finding[] } | null;
+  readonly cast: CastMember[] | null;
+  readonly tension: { readonly points: TensionPoint[]; readonly findings: Finding[] } | null;
 }
 
 interface Nav {
@@ -154,6 +170,71 @@ export function Boards({ bookId, nav, theme, t }: { bookId: string; nav: Nav; th
           ))}
         </section>
       )}
+
+      {data.cast && data.cast.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold">{t("boards.cast")}</h2>
+          <p className={`text-sm ${c.muted}`}>{t("boards.castHint")}</p>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {data.cast.map((member) => (
+              <div key={member.name} id={castAnchor(member.name)} className={`border rounded-lg p-3 text-sm space-y-1 ${member.findings.some((f) => f.severity === "error") ? "border-red-500/60" : "border-border/50"}`}>
+                <div className="flex justify-between gap-2">
+                  <button onClick={() => open(member.firstSeen || 1)} className="font-medium text-left hover:underline">{member.name}</button>
+                  <span className={`text-xs tabular-nums ${c.muted}`}>{member.firstSeen ? `ch${member.firstSeen}–ch${member.lastSeen}` : ""}</span>
+                </div>
+                <div className={`flex flex-wrap gap-2 text-xs ${c.subtle}`}>
+                  {member.status && <span className={member.status.toLowerCase() === "dead" ? "text-red-500" : ""}>{member.status}</span>}
+                  {member.location && <span>@ {member.location}</span>}
+                  {member.povChapters.length > 0 && <span>{t("boards.pov")} ×{member.povChapters.length}</span>}
+                </div>
+                {member.relations.map((relation, i) => (
+                  <div key={i} className="text-xs">
+                    {relation.with
+                      ? <a href={`#${castAnchor(relation.with)}`} onClick={(e) => { e.preventDefault(); document.getElementById(castAnchor(relation.with!))?.scrollIntoView({ behavior: "smooth", block: "center" }); }} className={c.link}>{relation.object}</a>
+                      : relation.object}
+                    <span className={c.muted}> · ch{relation.since}</span>
+                  </div>
+                ))}
+                {member.findings.map((finding, i) => (
+                  <button key={i} onClick={() => finding.chapter && open(finding.chapter)} className="block text-left text-xs text-red-500">{finding.summary}</button>
+                ))}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {data.tension && (
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold">{t("boards.tension")}</h2>
+          <p className={`text-sm ${c.muted}`}>{t("boards.tensionHint")}</p>
+          {data.tension.points.length === 0
+            ? <p className={`text-sm ${c.muted}`}>{t("boards.noTension")}</p>
+            : <TensionCurve points={data.tension.points} onOpen={open} t={t} />}
+          {data.tension.findings.map((finding, i) => (
+            <button key={i} onClick={() => finding.chapter && open(finding.chapter)} className="block text-left text-xs text-amber-500">{finding.summary}</button>
+          ))}
+        </section>
+      )}
+    </div>
+  );
+}
+
+/** The element id of a cast card, so a relationship can point to the card of the person it names. */
+export const castAnchor = (name: string) => `cast-${name.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-")}`;
+
+function TensionCurve({ points, onOpen, t }: { points: ReadonlyArray<TensionPoint>; onOpen: (chapter: number) => void; t: TFunction }) {
+  return (
+    <div className="flex items-end gap-0.5 h-24" role="img" aria-label={t("boards.tension")}>
+      {points.map((point) => (
+        <button
+          key={point.chapter}
+          title={`ch${point.chapter}: ${point.stakes}/10${point.pov ? ` · ${point.pov}` : ""}${point.goal ? `: ${point.goal}` : ""}`}
+          onClick={() => onOpen(point.chapter)}
+          className="flex-1 min-w-[3px] rounded-t bg-primary/60 hover:bg-primary"
+          style={{ height: `${Math.max(4, point.stakes * 10)}%` }}
+        />
+      ))}
     </div>
   );
 }

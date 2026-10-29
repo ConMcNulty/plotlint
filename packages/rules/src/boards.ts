@@ -1,13 +1,18 @@
-import type { CurrentStateFact, RuntimeStateSnapshot } from "@actalk/inkos-core";
+import type { CurrentStateFact, FactKind, RuntimeStateSnapshot } from "@actalk/inkos-core";
 import type { Diagnostic } from "@plotlint/diagnostics";
 import { hookStatusRows, type HookOverlayFile, type HookStatusRow } from "./hook-overlay.js";
+import { factKind } from "./predicates.js";
+import { normalize } from "./rules/facts.js";
+import { tensionCurve } from "./rules/tension-curve.js";
+import type { SceneAnnotation } from "./scene-annotations.js";
 import { bookEnd, hookStart } from "./rules/structure/common.js";
 import { chapterTimes, type Hemisphere } from "./time.js";
 import type { ChapterTexts } from "./evidence.js";
 
 // Views beyond the page (PLAN, "Views beyond the page"): the hook board (open
-// promises and their age) and the timeline (story time across chapters, with the
-// continuity findings that break it). Both are built from the settled state and the
+// promises and their age), the timeline (story time across chapters, with the
+// continuity findings that break it), the cast board (characters, where they stand
+// and how they relate) and the tension curve (judged stakes per chapter). Both are built from the settled state and the
 // findings the rules already report, so a board never disagrees with the problems
 // panel; every card names the chapter to open. Browser-safe.
 
@@ -130,4 +135,102 @@ export function timeline(snapshot: RuntimeStateSnapshot, chapters: ChapterTexts,
     };
   });
   return { chapters: out, unplaced: conflicts.filter((diagnostic) => diagnostic.chapter === undefined || !numbers.includes(diagnostic.chapter)) };
+}
+
+/** A relationship standing at the end of the book. */
+export interface CastRelation {
+  readonly predicate: string;
+  readonly object: string;
+  /** The cast member the relationship names, when it names one. */
+  readonly with: string | null;
+  readonly since: number;
+}
+
+export interface CastMember {
+  readonly name: string;
+  /** The first and last chapters with a fact about them or a scene from their viewpoint. */
+  readonly firstSeen: number;
+  readonly lastSeen: number;
+  /** Their standing status ("alive", "dead") and location at the end, when recorded. */
+  readonly status: string | null;
+  readonly location: string | null;
+  readonly povChapters: number[];
+  readonly relations: CastRelation[];
+  /** How many facts the settler recorded about them, which orders the board. */
+  readonly facts: number;
+  /** Findings that cite a fact about them. */
+  readonly findings: Diagnostic[];
+}
+
+// Kinds only a character has; a subject with nothing but a place or a holder is an object or a setting.
+const PERSON_KINDS = new Set<FactKind>(["status", "age", "relationship", "goal", "trait", "knowledge", "identity"]);
+
+const latestStanding = (facts: ReadonlyArray<CurrentStateFact>, kind: FactKind) =>
+  facts.filter((fact) => fact.validUntilChapter === null && factKind(fact) === kind).sort((a, b) => b.validFromChapter - a.validFromChapter)[0]?.object ?? null;
+
+const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+
+/**
+ * The cast: every subject the settler recorded something only a character has, plus
+ * every viewpoint character in the scene annotations, with their standing status,
+ * location and relationships at the end, and the findings about them.
+ */
+export function castBoard(snapshot: RuntimeStateSnapshot, scenes: ReadonlyArray<SceneAnnotation> = [], diagnostics: ReadonlyArray<Diagnostic> = []): CastMember[] {
+  const bySubject = new Map<string, { name: string; facts: CurrentStateFact[]; pov: Set<number> }>();
+  const entry = (name: string) => {
+    const key = normalize(name);
+    const found = bySubject.get(key) ?? { name: name.trim(), facts: [], pov: new Set<number>() };
+    bySubject.set(key, found);
+    return found;
+  };
+  for (const fact of snapshot.currentState.facts) if (fact.subject.trim()) entry(fact.subject).facts.push(fact);
+  for (const scene of scenes) if (scene.pov?.trim()) entry(scene.pov).pov.add(scene.chapter);
+  const cast = [...bySubject.entries()].filter(([, { facts, pov }]) => pov.size > 0 || facts.some((fact) => PERSON_KINDS.has(factKind(fact))));
+  const names = cast.map(([key, { name }]) => ({ key, name, pattern: new RegExp(`(^|[^\\p{L}\\p{N}])${escape(name)}($|[^\\p{L}\\p{N}])`, "iu") }));
+  return cast.map(([key, { name, facts, pov }]): CastMember => {
+    const seen = [...facts.flatMap((fact) => [fact.validFromChapter, fact.sourceChapter]), ...pov].filter((chapter) => chapter > 0);
+    const relations = facts
+      .filter((fact) => fact.validUntilChapter === null && factKind(fact) === "relationship")
+      .map((fact): CastRelation => ({
+        predicate: fact.predicate,
+        object: fact.object,
+        with: names.find((other) => other.key !== key && other.pattern.test(fact.object))?.name ?? null,
+        since: fact.validFromChapter,
+      }));
+    return {
+      name,
+      firstSeen: seen.length ? Math.min(...seen) : 0,
+      lastSeen: seen.length ? Math.max(...seen) : 0,
+      status: latestStanding(facts, "status"),
+      location: latestStanding(facts, "location"),
+      povChapters: [...pov].sort((a, b) => a - b),
+      relations,
+      facts: facts.length,
+      findings: diagnostics.filter((diagnostic) => (diagnostic.facts ?? []).some((fact) => normalize(fact.subject) === key)),
+    };
+  }).sort((a, b) => b.facts + b.povChapters.length - (a.facts + a.povChapters.length) || a.firstSeen - b.firstSeen || a.name.localeCompare(b.name));
+}
+
+export interface TensionPoint {
+  readonly chapter: number;
+  /** The highest judged stakes among the chapter's scenes, 0 to 10. */
+  readonly stakes: number;
+  /** The scene with those stakes, and what its viewpoint character wants there. */
+  readonly scene: string;
+  readonly pov: string | null;
+  readonly goal: string | null;
+}
+
+export interface TensionView {
+  readonly points: TensionPoint[];
+  /** The tension-curve findings: flat runs and an early peak. */
+  readonly findings: Diagnostic[];
+}
+
+/** The tension curve the `structure/tension-curve` check reads, for drawing. */
+export function tensionView(scenes: ReadonlyArray<SceneAnnotation>, diagnostics: ReadonlyArray<Diagnostic> = []): TensionView {
+  return {
+    points: tensionCurve(scenes).map(({ chapter, stakes, scene }) => ({ chapter, stakes, scene: scene.id, pov: scene.pov, goal: scene.goal })),
+    findings: diagnostics.filter((diagnostic) => diagnostic.ruleId === "structure/tension-curve"),
+  };
 }

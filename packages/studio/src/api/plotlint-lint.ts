@@ -10,8 +10,8 @@ import {
 import { addSuppression, loadSuppressions } from "@plotlint/diagnostics/node";
 import { checkParagraphs, paragraphRanges, projectDictionary } from "@plotlint/mechanics";
 import {
-  checkSnapshot, checkText, configureTextRules, establishedAt, explainSeriesFindings, hookBoard, readRuleSetting, RuleRegistry, SeriesFileSchema, timeline, withSeries,
-  type HookBoard, type Timeline,
+  castBoard, checkSnapshot, checkText, configureTextRules, establishedAt, explainSeriesFindings, hookBoard, readRuleSetting, RuleRegistry, SeriesFileSchema, tensionView, timeline, withSeries,
+  type CastMember, type HookBoard, type TensionView, type Timeline,
   type BookRuleData, type ChapterTexts, type EvidenceLocation, type RuleConfigFile, type RuleSetting, type TextDocument, type TextRule,
 } from "@plotlint/rules";
 import { loadAdaptiveOverlay, loadBookRuleData, loadSeriesPrelude, readPlotlintFile } from "@plotlint/rules/node";
@@ -222,6 +222,8 @@ export interface BookBoards {
   readonly stateMissing: boolean;
   readonly hooks: HookBoard | null;
   readonly timeline: Timeline | null;
+  readonly cast: CastMember[] | null;
+  readonly tension: TensionView | null;
 }
 
 /**
@@ -230,13 +232,15 @@ export interface BookBoards {
  */
 export async function bookBoards(bookDir: string): Promise<BookBoards> {
   const state = await bookState(bookDir);
-  if (!state.snapshot) return { stateMissing: true, hooks: null, timeline: null };
+  if (!state.snapshot) return { stateMissing: true, hooks: null, timeline: null, cast: null, tension: null };
   const findings = applySuppressions(state.stateDiagnostics(), (await loadSuppressions(bookDir)).suppressions).kept;
   const hemisphere = readRuleSetting(state.config.rules["continuity/timeline-order"]).options.hemisphere === "south" ? "south" : "north";
   return {
     stateMissing: false,
     hooks: hookBoard(state.snapshot, state.book.hooks, state.chapters, findings),
     timeline: timeline(state.snapshot, state.chapters, findings, hemisphere),
+    cast: castBoard(state.snapshot, state.book.scenes?.scenes ?? [], findings),
+    tension: tensionView(state.book.scenes?.scenes ?? [], findings),
   };
 }
 

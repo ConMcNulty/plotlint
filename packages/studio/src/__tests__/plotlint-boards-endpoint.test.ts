@@ -30,13 +30,16 @@ describe("plotlint boards", () => {
   const get = () => createStudioServer({} as never, root).request(`/api/v1/plotlint/boards/${BOOK}`);
 
   it("says when the book has no state yet", async () => {
-    expect(await (await get()).json()).toEqual({ stateMissing: true, hooks: null, timeline: null });
+    expect(await (await get()).json()).toEqual({ stateMissing: true, hooks: null, timeline: null, cast: null, tension: null });
   });
 
   it("returns the hook board and the timeline with the date that goes backwards", async () => {
     await saveRuntimeStateSnapshot(bookDir, {
       manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 3, projectionVersion: 1 },
-      currentState: { chapter: 3, facts: [fact("story", "date", "12 March 1891", 1, 2), fact("story", "date", "2 February 1891", 3)] },
+      currentState: { chapter: 3, facts: [
+        fact("story", "date", "12 March 1891", 1, 2), fact("story", "date", "2 February 1891", 3),
+        fact("Nell", "status", "alive", 1), fact("Nell", "relationship", "owes Pell money", 2), fact("Pell", "age", "40", 1),
+      ] },
       hooks: { hooks: [hook("lantern", 1, "open", 1), hook("ring", 1, "resolved", 3)] },
       chapterSummaries: { rows: [] },
     });
@@ -46,5 +49,8 @@ describe("plotlint boards", () => {
       .toEqual([["lantern", "open", 2], ["ring", "resolved", null]]);
     const ch3 = boards.timeline.chapters.find((chapter: { chapter: number }) => chapter.chapter === 3);
     expect(ch3.conflicts.map((finding: { ruleId: string }) => finding.ruleId)).toEqual(["continuity/timeline-order"]);
+    expect(boards.cast.map((member: { name: string }) => member.name)).toEqual(["Nell", "Pell"]);
+    expect(boards.cast[0].relations[0]).toMatchObject({ object: "owes Pell money", with: "Pell" });
+    expect(boards.tension).toEqual({ points: [], findings: [] });
   });
 });
