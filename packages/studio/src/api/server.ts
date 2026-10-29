@@ -169,7 +169,10 @@ import {
   parseLintBody as parsePlotlintLintBody,
   parseSuppressionBody as parsePlotlintSuppressionBody,
   suppressFinding,
+  bookBoards,
 } from "./plotlint-lint.js";
+import { chapterFiles } from "./plotlint-chapters.js";
+import { provenanceView, recordStudioEdit } from "./plotlint-provenance.js";
 import { parseVerdictBody as parsePlotlintVerdictBody, recordVerdicts, verdictReport } from "./plotlint-verdicts.js";
 import {
   definitionsOf,
@@ -3214,6 +3217,8 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
 
     const releaseLock = await state.acquireBookLock(id);
     try {
+      // plotlint: what the file held before the save, so the edit can be attributed to the writer.
+      const before = (await chapterFiles(state.bookDir(id))).get(num);
       const result = await executeEditTransaction(
         {
           bookDir: (bookId) => state.bookDir(bookId),
@@ -3228,6 +3233,7 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
           versionSource: "manual",
         },
       );
+      await recordStudioEdit(state.bookDir(id), num, before, (await state.loadChapterIndex(id)).find((chapter) => chapter.number === num)?.provenance);
       return c.json({ ok: true, chapterNumber: num, result });
     } catch (e) {
       return c.json({ error: String(e) }, 500);
@@ -3245,6 +3251,15 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     if (!found) throw new ApiError(404, "BOOK_NOT_FOUND", `Book "${bookId}" not found`);
     return bookDir;
   };
+
+  app.get("/api/v1/plotlint/provenance/:id", async (c) => {
+    const bookDir = await plotlintBookDir(c.req.param("id"));
+    const chapter = c.req.query("chapter");
+    if (chapter !== undefined && !/^\d+$/u.test(chapter)) throw new ApiError(400, "INVALID_CHAPTER", `chapter must be a number; got "${chapter}"`);
+    return c.json(await provenanceView(bookDir, chapter === undefined ? undefined : Number(chapter)));
+  });
+
+  app.get("/api/v1/plotlint/boards/:id", async (c) => c.json(await bookBoards(await plotlintBookDir(c.req.param("id")))));
 
   app.post("/api/v1/plotlint/lint", async (c) => {
     const parsed = parsePlotlintLintBody(await c.req.json().catch(() => null));

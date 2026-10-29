@@ -13,6 +13,7 @@ export type HashRoute =
   | { page: "service-detail"; serviceId: string }
   | { page: "chapter"; bookId: string; chapterNumber: number; select?: { start: number; end: number } }
   | { page: "analytics"; bookId: string }
+  | { page: "boards"; bookId: string }
   | { page: "truth"; bookId: string }
   | { page: "daemon" }
   | { page: "logs" }
@@ -52,6 +53,9 @@ function parseHash(hash: string): HashRoute {
   const serviceMatch = path.match(/^services\/([^/]+)$/);
   if (serviceMatch) return { page: "service-detail", serviceId: decodeURIComponent(serviceMatch[1]) };
 
+  const boardsMatch = path.match(/^book\/([^/]+)\/boards$/);
+  if (boardsMatch) return { page: "boards", bookId: decodeURIComponent(boardsMatch[1]) };
+
   const bookSettingsMatch = path.match(/^book\/([^/]+)\/settings$/);
   if (bookSettingsMatch) return { page: "book-settings", bookId: decodeURIComponent(bookSettingsMatch[1]) };
 
@@ -82,6 +86,7 @@ function routeToHash(route: HashRoute): string {
     case "chat": return "#/chat";
     case "book": return `#/book/${encodeURIComponent(route.bookId)}`;
     case "book-settings": return `#/book/${encodeURIComponent(route.bookId)}/settings`;
+    case "boards": return `#/book/${encodeURIComponent(route.bookId)}/boards`;
     case "book-create": return "#/book/new";
     case "work": return `#/work/${encodeURIComponent(route.workId)}`;
     case "work-chat": return `#/work-chat/${encodeURIComponent(route.workId)}/${encodeURIComponent(route.profileId)}`;
@@ -101,7 +106,7 @@ function routeToHash(route: HashRoute): string {
 
 export { parseHash, routeToHash }; // for testing
 
-const HASH_PAGES = new Set(["dashboard", "chat", "book", "book-settings", "book-create", "work", "work-chat", "services", "project-settings", "service-detail", "translation", "import", "play", "film", "flow", "film-author", "film-studio"]);
+const HASH_PAGES = new Set(["dashboard", "chat", "book", "book-settings", "boards", "book-create", "work", "work-chat", "services", "project-settings", "service-detail", "translation", "import", "play", "film", "flow", "film-author", "film-studio"]);
 
 export function useHashRoute() {
   const [route, setRouteState] = useState<HashRoute>(() => parseHash(window.location.hash));

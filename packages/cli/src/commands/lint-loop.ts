@@ -1,7 +1,7 @@
 import { mkdir, readdir, readFile, writeFile, appendFile } from "node:fs/promises";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import type { Command } from "commander";
-import { StateManager, chatCompletion, createLLMClient } from "@actalk/inkos-core";
+import { PipelineRunner, StateManager, chatCompletion, createLLMClient } from "@actalk/inkos-core";
 import { DiagnosticLayerSchema, formatDiagnostic, type Diagnostic, type DiagnosticLayer } from "@plotlint/diagnostics";
 import { loadBookRuleData, plotlintDir } from "@plotlint/rules/node";
 import {
@@ -9,8 +9,10 @@ import {
   summarizePreferences, vocabularyOf, voiceLimit, type Complete, type EditScope, type Editor, type GateMode, type LoopOptions, type LoopResult,
   type PairKey, type Preference, type ReaderPersona, type RoundLog,
 } from "@plotlint/loop";
-import { findProjectRoot, loadConfig, log, logError, resolveBookId } from "../utils.js";
+import { buildPipelineConfig, findProjectRoot, loadConfig, log, logError, resolveBookId } from "../utils.js";
 import { bookPacks } from "./lint-packs.js";
+import { agentAuthor } from "@plotlint/provenance";
+import { baselineAuthor, recordChapterRevision } from "@plotlint/provenance/node";
 import type { LintOptions } from "./lint.js";
 
 // `inkos lint loop`: the closed loop of phase 5 over one chapter. The checks of
@@ -64,6 +66,7 @@ interface LoopFlags {
   gate?: string;
   voice?: string;
   tokenBudget?: string;
+  warnings?: string;
   layers?: string;
   heldOutReader?: boolean;
 }
@@ -145,7 +148,8 @@ async function prepare(bookIdArg: string | undefined, flags: LoopFlags, command:
       priority: loop.priority,
       scope: parseOne(flags.scope, "scope", SCOPES, "sentence"),
       maxRounds: parseCount(flags.rounds, "rounds", 4),
-      ...(loop.warnings === undefined ? {} : { warningThreshold: loop.warnings }),
+      ...(flags.warnings !== undefined ? { warningThreshold: parseCount(flags.warnings, "warnings", 0) }
+        : loop.warnings === undefined ? {} : { warningThreshold: loop.warnings }),
       ...(voiceSample ? { voiceSample } : {}),
       voiceLimit: limit,
       vocabulary: vocabularyOf([text, ...others]),
@@ -193,6 +197,7 @@ const summary = (result: LoopResult) => ({
   deferred: result.deferred.length,
   escalated: result.escalated.length,
   open: result.open.length,
+  pendingSettle: result.pendingSettle.length,
 });
 
 function report(result: LoopResult, dir: string): string[] {
@@ -206,6 +211,7 @@ function report(result: LoopResult, dir: string): string[] {
   ];
   for (const decision of result.escalated) lines.push(`  escalated: ${decision.ruleId}: ${decision.summary}\n    ${decision.action}: ${decision.reason}`);
   for (const diagnostic of result.open.filter((d) => d.severity !== "note")) lines.push(`  open: ${formatDiagnostic(diagnostic).split("\n")[0]}`);
+  for (const diagnostic of result.pendingSettle) lines.push(`  waits on a resettle: ${formatDiagnostic(diagnostic).split("\n")[0]}`);
   lines.push(result.gate.needsHuman ? `human gate: needs review (${result.gate.reasons.join("; ")})` : "human gate: passed");
   lines.push(`saved: ${dir}`);
   return lines;
@@ -248,6 +254,7 @@ function runOptions(command: Command): Command {
     .option("--no-held-out-reader", "Skip the held-out reader that compares the start and the final draft")
     .option("--voice <file>", "The author's voice sample (default the chapter as it is)")
     .option("--token-budget <n>", "Stop once the run has used about this many tokens")
+    .option("--warnings <n>", "Open warnings allowed when the loop stops clean (default the pack's loop.warnings)")
     .option("--layers <list>", "Only these layers' checks (default all)")
     .option("--json", "Output JSON");
 }
@@ -260,7 +267,8 @@ export function addLoopCommand(lint: Command, deps: LoopCommandDeps): void {
     .option("--gate <mode>", `When a human must look before --apply writes the chapter: ${GATES.join(", ")} (default escalations)`)
     .option("--single", "One round only: the single-pass baseline")
     .option("--apply", "Write the result to the chapter file when the human gate lets it through")
-    .action(async (bookIdArg: string | undefined, opts: LoopFlags & { single?: boolean; apply?: boolean }, command: Command) => {
+    .option("--resettle", "With --apply, settle the chapter's story state again from the new text (latest chapter only), then recheck it")
+    .action(async (bookIdArg: string | undefined, opts: LoopFlags & { single?: boolean; apply?: boolean; resettle?: boolean }, command: Command) => {
       try {
         const json = wantsJson(command);
         const say = (line: string) => (json ? process.stderr.write(`${line}\n`) : log(line));
@@ -268,19 +276,48 @@ export function addLoopCommand(lint: Command, deps: LoopCommandDeps): void {
         const result = await (opts.single ? runSinglePass : runLoop)(run.options);
         const dir = await saveRun(run.bookDir, `${stamp()}-ch${run.chapter}-${opts.single ? "single" : "loop"}`, result,
           { bookId: run.bookId, mode: opts.single ? "single" : "loop", author: `llm@${run.model}`, tokens: run.tokens(), predictions: run.predictions });
+        // Findings that only wait on a resettle do not hold the text back when --resettle will settle it.
+        const latest = Math.max(...(await deps.chapterFiles(run.bookDir)).keys()) === run.chapter;
+        const onlySettle = result.gate.mode === "escalations" && result.pendingSettle.length > 0 && result.gate.reasons.length === 1;
+        const canResettle = opts.resettle === true && latest;
+        if (opts.resettle && !latest) say(`--resettle: InkOS settles only the latest chapter again; ch${run.chapter} is not, so its state stays as it was`);
         let applied = false;
-        if (opts.apply && !result.gate.needsHuman && result.text !== result.original) {
+        if (opts.apply && (!result.gate.needsHuman || (onlySettle && canResettle)) && result.text !== result.original) {
           await writeFile(run.path, result.text, "utf-8");
           applied = true;
+          // The loop's words are the author agent's; the rest keeps whoever wrote it.
+          const indexed = (await new StateManager(findProjectRoot()).loadChapterIndex(run.bookId).catch(() => [])).find((entry) => entry.number === run.chapter);
+          await recordChapterRevision(run.bookDir, run.chapter, result.original, result.text,
+            { by: agentAuthor("loop-author", run.model), at: new Date().toISOString(), via: `loop:${basename(dir)}` }, baselineAuthor(indexed?.provenance));
+        }
+        let resettled: { open: string[] } | undefined;
+        let settleFailed: string | undefined;
+        if (applied && canResettle) {
+          say(`settling ch${run.chapter} again from the revised text…`);
+          const pipeline = new PipelineRunner(buildPipelineConfig(await loadConfig(), findProjectRoot(), {}));
+          try {
+            await pipeline.resyncChapterStateAndAudit(run.bookId, run.chapter);
+            // Recheck: which of the findings that waited on the resettle still hold on the new state?
+            const after = await deps.lintBook(new StateManager(findProjectRoot()), run.bookId, { layers: new Set(["continuity", "structure"]), chapter: run.chapter });
+            const still = new Set(after.diagnostics.map((diagnostic) => `${diagnostic.ruleId}\u0000${diagnostic.summary}`));
+            resettled = { open: result.pendingSettle.filter((diagnostic) => still.has(`${diagnostic.ruleId}\u0000${diagnostic.summary}`)).map((diagnostic) => `${diagnostic.ruleId}: ${diagnostic.summary}`) };
+          } catch (error) {
+            // The revision is on disk either way; only the state is behind it.
+            settleFailed = String(error);
+            say(`settling ch${run.chapter} again failed, so its story state still reflects the old text: ${settleFailed}`);
+          }
         }
         if (json) {
-          log(JSON.stringify({ bookId: run.bookId, chapter: run.chapter, dir, applied, tokens: run.tokens(), ...summary(result) }, null, 2));
+          log(JSON.stringify({ bookId: run.bookId, chapter: run.chapter, dir, applied, ...(resettled ? { resettled } : {}), ...(settleFailed ? { settleFailed } : {}), tokens: run.tokens(), ...summary(result) }, null, 2));
         } else {
           for (const line of report(result, dir)) log(line);
-          if (applied) log(`applied to ${run.path}; story state still reflects the old text until the chapter is settled again`);
+          if (resettled) {
+            log(`applied to ${run.path} and settled again; ${resettled.open.length} of ${result.pendingSettle.length} state finding${result.pendingSettle.length === 1 ? "" : "s"} that waited on it still hold`);
+            for (const line of resettled.open) log(`  open: ${line}`);
+          } else if (applied) log(`applied to ${run.path}; story state still reflects the old text until the chapter is settled again`);
           else if (opts.apply) log(result.text === result.original ? "nothing to apply: the text is unchanged" : "not applied: the human gate holds it (see the log)");
         }
-        if (result.gate.needsHuman) process.exitCode = 1;
+        if ((result.gate.needsHuman && !(onlySettle && resettled)) || (resettled?.open.length ?? 0) > 0 || settleFailed) process.exitCode = 1;
       } catch (e) {
         logError(`Loop failed: ${e}`);
         process.exit(1);

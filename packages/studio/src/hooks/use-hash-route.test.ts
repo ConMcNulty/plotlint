@@ -19,6 +19,10 @@ describe("hash route", () => {
       expect(parseHash("#/book/my-novel")).toEqual({ page: "book", bookId: "my-novel" });
     });
 
+    it("parses the hooks and timeline boards route", () => {
+      expect(parseHash("#/book/my-novel/boards")).toEqual({ page: "boards", bookId: "my-novel" });
+    });
+
     it("parses book settings route", () => {
       expect(parseHash("#/book/my-novel/settings")).toEqual({ page: "book-settings", bookId: "my-novel" });
     });
@@ -83,6 +87,10 @@ describe("hash route", () => {
 
     it("book -> #/book/{id}", () => {
       expect(routeToHash({ page: "book", bookId: "novel-1" })).toBe("#/book/novel-1");
+    });
+
+    it("boards -> #/book/{id}/boards", () => {
+      expect(routeToHash({ page: "boards", bookId: "novel-1" })).toBe("#/book/novel-1/boards");
     });
 
     it("book-settings -> #/book/{id}/settings", () => {
