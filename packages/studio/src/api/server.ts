@@ -173,6 +173,7 @@ import {
 } from "./plotlint-lint.js";
 import { chapterFiles } from "./plotlint-chapters.js";
 import { provenanceView, recordStudioEdit } from "./plotlint-provenance.js";
+import { markReviewed, pendingAgentEdit } from "./plotlint-review.js";
 import { branchDiff, branchesView, manuscriptFile, newBranch, outlineFile, provenanceFile } from "./plotlint-publish.js";
 import { parseVerdictBody as parsePlotlintVerdictBody, recordVerdicts, verdictReport } from "./plotlint-verdicts.js";
 import {
@@ -3309,6 +3310,25 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     await plotlintBookDir(c.req.param("id"));
     const file = await provenanceFile(state, c.req.param("id"));
     return download(file.text, file.fileName, "text/markdown; charset=utf-8");
+  });
+
+  const reviewChapter = (value: string) => {
+    const chapter = Number(value);
+    if (!Number.isInteger(chapter) || chapter < 1) throw new ApiError(400, "INVALID_CHAPTER", "chapter must be a positive integer");
+    return chapter;
+  };
+
+  app.get("/api/v1/plotlint/review/:id/:chapter", async (c) => {
+    const chapter = reviewChapter(c.req.param("chapter"));
+    return c.json({ pending: await pendingAgentEdit(await plotlintBookDir(c.req.param("id")), chapter) });
+  });
+
+  app.post("/api/v1/plotlint/review/:id/:chapter", async (c) => {
+    const chapter = reviewChapter(c.req.param("chapter"));
+    const bookDir = await plotlintBookDir(c.req.param("id"));
+    const body = await c.req.json<{ versionId?: unknown }>().catch(() => ({ versionId: undefined }));
+    await asBadRequest("INVALID_REVIEW", () => markReviewed(bookDir, chapter, body.versionId));
+    return c.json({ ok: true });
   });
 
   app.get("/api/v1/plotlint/boards/:id", async (c) => c.json(await bookBoards(await plotlintBookDir(c.req.param("id")))));

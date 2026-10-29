@@ -168,6 +168,9 @@ importers:
       '@tiptap/extension-text':
         specifier: ^3.32.0
         version: 3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))
+      diff:
+        specifier: ^8.0.4
+        version: 8.0.4
     devDependencies:
       '@tiptap/core':
         specifier: ^3.32.0

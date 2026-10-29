@@ -73,3 +73,52 @@
 .pl-diag-details__evidence { margin: 0.25rem 0; padding-left: 1.25rem; opacity: 0.85; }
 .pl-diag-details__stale { margin: 0.25rem 0; font-style: italic; opacity: 0.7; }
 .pl-diag-details__fixes { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem; }
+
+/*
+ * Agent suggestions as tracked changes: inserted words underlined, removed words
+ * struck through in front of them, with accept and reject buttons.
+ * Override --pl-suggest-insert / --pl-suggest-delete to theme.
+ */
+.ProseMirror .pl-suggestion-insert {
+  background: color-mix(in srgb, var(--pl-suggest-insert, #188038) 14%, transparent);
+  text-decoration: underline;
+  text-decoration-color: var(--pl-suggest-insert, #188038);
+  text-underline-offset: 3px;
+}
+
+.ProseMirror .pl-suggestion {
+  user-select: none;
+  white-space: pre-wrap;
+}
+
+.ProseMirror .pl-suggestion-delete {
+  color: var(--pl-suggest-delete, #c5221f);
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.ProseMirror .pl-suggestion button {
+  font: inherit;
+  font-size: 0.7em;
+  line-height: 1;
+  margin: 0 1px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  background: transparent;
+  cursor: pointer;
+  vertical-align: super;
+  opacity: 0.55;
+}
+
+.ProseMirror .pl-suggestion button:hover {
+  opacity: 1;
+}
+
+.ProseMirror .pl-suggestion-accept {
+  color: var(--pl-suggest-insert, #188038);
+}
+
+.ProseMirror .pl-suggestion-reject {
+  color: var(--pl-suggest-delete, #c5221f);
+}

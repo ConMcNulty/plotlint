@@ -5,6 +5,7 @@ import {
   diagnosticsPluginKey,
   Navigation,
   PlainTextDocument,
+  Suggestions,
   docToText,
   getDiagnosticsState,
   scrollSelectionToCenter,
@@ -12,6 +13,8 @@ import {
   type DefinitionRequest,
   type DiagnosticEntry,
   type HoverContext,
+  type Suggestion,
+  type SuggestionLabels,
   type TextRange,
 } from "@plotlint/editor";
 import { wholeChapterOnly, type LintDiagnostic, type LintFunction } from "./lint-client";
@@ -78,6 +81,11 @@ export interface ChapterEditorOptions {
   readonly onVerdicts?: (events: VerdictEvent[]) => void;
   /** Fingerprints hidden for this session ("Not useful"); shared so a reopened chapter keeps them hidden. */
   readonly hidden?: Set<string>;
+  /** Show `text` as tracked changes against this earlier text (an agent's edit to review). */
+  readonly suggestFrom?: string;
+  readonly suggestionLabels?: SuggestionLabels;
+  /** Called whenever the open suggestions change. */
+  readonly onSuggestions?: (suggestions: ReadonlyArray<Suggestion>) => void;
 }
 
 export interface ChapterEditor {
@@ -217,6 +225,10 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
         onHover: options.onHover,
       }),
       Navigation.configure({ onGoToDefinition: options.onGoToDefinition, onFindReferences: options.onFindReferences }),
+      Suggestions.configure({
+        ...(options.suggestionLabels ? { labels: options.suggestionLabels } : {}),
+        ...(options.onSuggestions ? { onChange: options.onSuggestions } : {}),
+      }),
     ],
     content: textToDoc(options.text),
     editorProps: options.editorClass ? { attributes: { class: options.editorClass, spellcheck: "false" } } : { attributes: { spellcheck: "false" } },
@@ -259,6 +271,7 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
     editor.chain().focus().selectTextRange(range).run();
     scrollSelectionToCenter(editor.view);
   };
+  if (options.suggestFrom !== undefined) editor.commands.suggestFromBase(options.suggestFrom);
   if (options.selection) revealRange(options.selection);
 
   return {

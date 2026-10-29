@@ -33,3 +33,13 @@ export {
   type NavigationOptions,
   type NavigationStorage,
 } from "./navigation.js";
+export {
+  Suggestions,
+  getSuggestions,
+  suggestionsBetween,
+  suggestionsPluginKey,
+  type Suggestion,
+  type SuggestionLabels,
+  type SuggestionsOptions,
+  type TextSuggestion,
+} from "./suggestions.js";
