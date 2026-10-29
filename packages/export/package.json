@@ -1,0 +1,37 @@
+{
+  "name": "@plotlint/export",
+  "version": "0.1.0",
+  "description": "Exports for plotlint: a standard manuscript (DOCX) and a submission package (outline, synopsis and query letter drafts) from the book's state",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/__tests__"
+  ],
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "build": "node ../../scripts/clean-package-dist.mjs && tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "docx": "9.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "jszip": "^3.10.1",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

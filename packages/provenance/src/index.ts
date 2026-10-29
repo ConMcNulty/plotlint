@@ -131,6 +131,15 @@ export function withChapter(file: ProvenanceFile, record: ChapterProvenance): Pr
   return { version: 1, chapters };
 }
 
+/** Add a record for each chapter that has none, its text written by `origin(chapter)` (default unknown). */
+export function seedChapters(file: ProvenanceFile, texts: ReadonlyMap<number, string>, origin: (chapter: number) => AuthorId = () => "unknown"): ProvenanceFile {
+  let next = file;
+  for (const [chapter, text] of texts) {
+    if (!next.chapters.some((entry) => entry.chapter === chapter)) next = withChapter(next, reconcile(undefined, chapter, text, undefined, origin(chapter)));
+  }
+  return next;
+}
+
 export interface AuthoredSpan {
   readonly start: number;
   readonly end: number;

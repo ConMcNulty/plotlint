@@ -36,7 +36,7 @@
     "directory": "packages/cli"
   },
   "scripts": {
-    "prepare:workspace-core": "pnpm --filter @actalk/inkos-core --filter @plotlint/diagnostics --filter @plotlint/rules --filter @plotlint/mechanics --filter @plotlint/metrics --filter @plotlint/style --filter @plotlint/packs --filter @plotlint/loop --filter @plotlint/provenance build",
+    "prepare:workspace-core": "pnpm --filter @actalk/inkos-core --filter @plotlint/diagnostics --filter @plotlint/rules --filter @plotlint/mechanics --filter @plotlint/metrics --filter @plotlint/style --filter @plotlint/packs --filter @plotlint/loop --filter @plotlint/provenance --filter @plotlint/export build",
     "prepack": "npm run build && node ../../scripts/prepare-package-for-publish.mjs",
     "postpack": "node ../../scripts/restore-package-json.mjs",
     "prepublishOnly": "node ../../scripts/verify-no-workspace-protocol.mjs .",
@@ -55,6 +55,7 @@
     "@actalk/inkos-studio": "workspace:*",
     "@plotlint/diagnostics": "workspace:*",
     "@plotlint/loop": "workspace:*",
+    "@plotlint/export": "workspace:*",
     "@plotlint/provenance": "workspace:*",
     "@plotlint/mechanics": "workspace:*",
     "@plotlint/metrics": "workspace:*",

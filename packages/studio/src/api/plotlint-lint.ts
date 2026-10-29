@@ -1,6 +1,6 @@
 import { readdir, stat } from "node:fs/promises";
-import { join } from "node:path";
-import { loadRuntimeStateSnapshot, type RuntimeStateSnapshot } from "@actalk/inkos-core";
+import { basename, dirname, join } from "node:path";
+import { StateManager, loadRuntimeStateSnapshot, loadWorkManifest, type RuntimeStateSnapshot } from "@actalk/inkos-core";
 import {
   applySuppressions,
   diagnosticFingerprint,
@@ -10,11 +10,11 @@ import {
 import { addSuppression, loadSuppressions } from "@plotlint/diagnostics/node";
 import { checkParagraphs, paragraphRanges, projectDictionary } from "@plotlint/mechanics";
 import {
-  checkSnapshot, checkText, configureTextRules, establishedAt, hookBoard, readRuleSetting, RuleRegistry, timeline,
+  checkSnapshot, checkText, configureTextRules, establishedAt, explainSeriesFindings, hookBoard, readRuleSetting, RuleRegistry, SeriesFileSchema, timeline, withSeries,
   type HookBoard, type Timeline,
   type BookRuleData, type ChapterTexts, type EvidenceLocation, type RuleConfigFile, type RuleSetting, type TextDocument, type TextRule,
 } from "@plotlint/rules";
-import { loadAdaptiveOverlay, loadBookRuleData } from "@plotlint/rules/node";
+import { loadAdaptiveOverlay, loadBookRuleData, loadSeriesPrelude, readPlotlintFile } from "@plotlint/rules/node";
 import { createMetricRules, metricStateRules } from "@plotlint/metrics";
 import { bookPacksDir, HARPER_RULE_ID, knownRuleIds, resolveBookPacks } from "@plotlint/packs/node";
 import { chapterFiles } from "./plotlint-chapters.js";
@@ -87,7 +87,7 @@ const STATE_FILES = ["state/manifest.json", "state/current_state.json", "state/h
 // The book's rule config, frames, packs and verdicts (the adaptive overlay), which change what the rules report.
 const PLOTLINT_FILES = [
   "plotlint/rules.json", "plotlint/frames.json", "plotlint/packs.json", "plotlint/invariants.json", "plotlint/travel.json", "plotlint/verdicts.jsonl",
-  "plotlint/scenes.json", "plotlint/hooks.json",
+  "plotlint/scenes.json", "plotlint/hooks.json", "plotlint/series.json",
 ];
 const bookStates = new Map<string, BookState>();
 
@@ -97,17 +97,20 @@ const bookStates = new Map<string, BookState>();
  * Rules read the saved chapter files (for frame markers), not the unsaved editor text.
  */
 async function bookState(bookDir: string): Promise<BookState> {
-  const storyDir = join(bookDir, "story");
   const chapters = await chapterFiles(bookDir);
-  const stamps = await Promise.all([...STATE_FILES, ...PLOTLINT_FILES].map(async (file) => {
+  const stampsOf = (dir: string, files: ReadonlyArray<string>) => Promise.all(files.map(async (file) => {
     try {
-      const info = await stat(join(storyDir, file));
+      const info = await stat(join(dir, "story", file));
       return `${info.mtimeMs}:${info.size}`;
     } catch {
       return "-";
     }
   }));
-  const key = [...stamps, ...await bookPackStamps(bookDir)].join("|");
+  const stamps = await stampsOf(bookDir, [...STATE_FILES, ...PLOTLINT_FILES]);
+  // A book in a series also changes when a book before it does.
+  const earlier = (await readPlotlintFile(bookDir, "series.json", SeriesFileSchema).catch(() => undefined))?.after ?? [];
+  const seriesStamps = (await Promise.all(earlier.map((id) => stampsOf(seriesBookDir(bookDir, id), [...STATE_FILES, "plotlint/invariants.json", "plotlint/travel.json"])))).flat();
+  const key = [...stamps, ...seriesStamps, ...await bookPackStamps(bookDir)].join("|");
   const cached = bookStates.get(bookDir);
   if (cached?.key === key && cached.chapters === chapters) return cached;
 
@@ -120,7 +123,11 @@ async function bookState(bookDir: string): Promise<BookState> {
   const loaded: BookRuleData = await loadBookRuleData(bookDir);
   // Like `inkos lint`: the packs, then the checks the author keeps rejecting lowered, then the book's own rules.json.
   const packs = resolveBookPacks(bookDir, loaded, knownRuleIds(), [await loadAdaptiveOverlay(bookDir)]);
-  const book: BookRuleData = { ...loaded, config: packs.config };
+  // Like `inkos lint`: a book in a series is checked against the end of the books before it.
+  const prelude = await loadSeriesPrelude(bookDir, basename(dirname(bookDir)), async (id) => ({ bookDir: seriesBookDir(bookDir, id), title: await seriesTitle(bookDir, id) }));
+  const series = prelude ? withSeries(snapshot ?? emptySnapshot(), { ...loaded, config: packs.config }, prelude) : undefined;
+  if (series) snapshot = series.snapshot;
+  const book: BookRuleData = series?.rules ?? { ...loaded, config: packs.config };
   const dictionary = snapshot ? projectDictionary(snapshot) : [];
   let checked: Diagnostic[] | undefined;
   const state: BookState = {
@@ -133,7 +140,7 @@ async function bookState(bookDir: string): Promise<BookState> {
     metricStateRules: new RuleRegistry(metricStateRules({ names: dictionary, bands: packs.metrics })).configure(packs.config).filter(({ enabled }) => enabled),
     book,
     config: packs.config,
-    stateDiagnostics: () => (checked ??= snapshot ? checkSnapshot(snapshot, { chapters, book }) : []),
+    stateDiagnostics: () => (checked ??= snapshot ? explainSeriesFindings(checkSnapshot(snapshot, { chapters, book }), series?.carried ?? []) : []),
   };
   bookStates.set(bookDir, state);
   return state;
@@ -182,6 +189,28 @@ function establishedFor(diagnostic: Diagnostic, chapters: ChapterTexts): Evidenc
   }
   return undefined;
 }
+
+// Books live at `<project>/works/<id>/source`, so the books before this one are its siblings.
+const seriesBookDir = (bookDir: string, id: string) => join(dirname(dirname(bookDir)), id, "source");
+
+async function seriesTitle(bookDir: string, id: string): Promise<string> {
+  try {
+    return (await new StateManager(dirname(dirname(dirname(bookDir)))).loadBookConfig(id)).title;
+  } catch {
+    try {
+      return (await loadWorkManifest(dirname(dirname(dirname(bookDir))), id)).title;
+    } catch {
+      return id;
+    }
+  }
+}
+
+const emptySnapshot = (): RuntimeStateSnapshot => ({
+  manifest: { schemaVersion: 2, language: "en", lastAppliedChapter: 0, projectionVersion: 1 },
+  currentState: { chapter: 0, facts: [] },
+  hooks: { hooks: [] },
+  chapterSummaries: { rows: [] },
+});
 
 /** The book's runtime state snapshot (cached like the lint's), or null when it has none yet. */
 export async function bookSnapshot(bookDir: string): Promise<RuntimeStateSnapshot | null> {
