@@ -1,7 +1,7 @@
 /* Studio's chapter editor: manuscript typography around @plotlint/editor's squiggles. */
 .pl-manuscript-editor {
   min-height: 60vh;
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 1.5rem 2.75rem;
   border: 1px solid color-mix(in srgb, var(--border, currentColor) 30%, transparent);
   border-radius: 0.5rem;
   white-space: pre-wrap;
@@ -35,3 +35,6 @@
 .pl-fact-kind--knowledge { --pl-kind: #8e44ad; }
 .pl-fact-kind--relationship { --pl-kind: #c2185b; }
 .pl-fact-kind--resource { --pl-kind: #188038; }
+
+/* A problems row a scene marker pointed at. */
+.pl-problem-flash { background: color-mix(in srgb, var(--primary, currentColor) 12%, transparent); transition: background 300ms; }

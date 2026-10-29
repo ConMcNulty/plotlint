@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from "react";
 import { createPortal } from "react-dom";
-import { Check, EyeOff, ListTree, SearchX, ThumbsDown, Undo2, Wrench } from "lucide-react";
+import { Check, EyeOff, Focus, ListTree, SearchX, ThumbsDown, Undo2, Wrench } from "lucide-react";
 import type { Editor } from "@tiptap/core";
 import { confidenceLabel, OffsetMap, type DefinitionRequest, type DiagnosticEntry, type TextRange } from "@plotlint/editor";
 import "@plotlint/editor/styles.css";
@@ -15,6 +15,7 @@ import { ReferencesPanel } from "./ReferencesPanel";
 import { StatePanel } from "./StatePanel";
 import { problemRows, rowTarget, type ProblemRow } from "./problems-model";
 import { recordVerdicts, type VerdictEvent } from "./verdict-client";
+import { sceneMarkers, sceneOf, writingStats, type WritingStats } from "./writing-model";
 
 export interface ManuscriptEditorHandle {
   /** The chapter text as edited, exactly as it will be saved. */
@@ -96,6 +97,9 @@ const hiddenFor = (bookId: string) => {
 };
 
 const STATE_PANEL_KEY = "plotlint.statePanel";
+const FOCUS_KEY = "plotlint.focusMode";
+/** Pause after typing before the word counts are recounted. */
+const COUNT_DEBOUNCE_MS = 250;
 /** Pause after the cursor moves before asking for the state there. */
 const STATE_DEBOUNCE_MS = 300;
 
@@ -104,6 +108,22 @@ const readPanelPreference = () => {
     return window.localStorage.getItem(STATE_PANEL_KEY) !== "hidden";
   } catch {
     return true;
+  }
+};
+
+const readFocusPreference = () => {
+  try {
+    return window.localStorage.getItem(FOCUS_KEY) === "on";
+  } catch {
+    return false;
+  }
+};
+
+const savePreference = (key: string, value: string) => {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Storage can be refused (a private window); the toggle still works on this page.
   }
 };
 
@@ -127,6 +147,10 @@ export function ManuscriptEditor({
   const [notice, setNotice] = useState<Notice | null>(null);
   const [references, setReferences] = useState<References | null>(null);
   const [openSuggestions, setOpenSuggestions] = useState(0);
+  const [focusMode, setFocusMode] = useState(readFocusPreference);
+  const [stats, setStats] = useState<WritingStats>(() => writingStats(initialText, chapterNumber));
+  const [cursorOffset, setCursorOffset] = useState(0);
+  const countTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const suggestFromRef = useRef(suggestFrom);
   const onSuggestionsChangeRef = useRef(onSuggestionsChange);
   onSuggestionsChangeRef.current = onSuggestionsChange;
@@ -241,7 +265,20 @@ export function ManuscriptEditor({
       onProblems: setProblems,
       onVerdicts: (events) => live.current.verdicts(events),
       hidden: hiddenFor(bookId),
-      onSelection: refreshStateSoon,
+      onSelection: (range) => {
+        setCursorOffset(range.end);
+        refreshStateSoon();
+      },
+      onChange: (text) => {
+        if (countTimer.current) clearTimeout(countTimer.current);
+        countTimer.current = setTimeout(() => { countTimer.current = undefined; setStats(writingStats(text, chapterNumber)); }, COUNT_DEBOUNCE_MS);
+      },
+      onSceneMarker: (id) => {
+        const row = document.querySelector<HTMLElement>(`[data-testid="problems-panel"] [data-scenes~="${CSS.escape(id)}"]`);
+        row?.scrollIntoView({ block: "center", behavior: "smooth" });
+        row?.classList.add("pl-problem-flash");
+        setTimeout(() => row?.classList.remove("pl-problem-flash"), 1500);
+      },
       onGoToDefinition: (request) => void goToDefinitionRef.current(request),
       onFindReferences: (request) => void showReferencesRef.current(request),
       ...(initialSelectionRef.current ? { selection: initialSelectionRef.current } : {}),
@@ -262,17 +299,24 @@ export function ManuscriptEditor({
       },
     });
     controllerRef.current = controller;
+    if (readFocusPreference()) controller.editor.commands.setFocusMode(true);
     setProblems(controller.problems());
     void refreshState(true);
     return () => {
       cancelHide();
       if (stateTimer.current) clearTimeout(stateTimer.current);
       if (noticeTimer.current) clearTimeout(noticeTimer.current);
+      if (countTimer.current) clearTimeout(countTimer.current);
       controller.destroy();
       controllerRef.current = null;
     };
     // The editor is created once per chapter; text edits live inside it.
   }, [bookId, chapterNumber, lint, refreshState, refreshStateSoon]);
+
+  // Margin markers for the scenes the unranged findings cite, moved as the scenes do.
+  useEffect(() => {
+    controllerRef.current?.editor.commands.setSceneMarkers(sceneMarkers(problems.unranged, stats, chapterNumber));
+  }, [problems.unranged, stats, chapterNumber]);
 
   // The card is fixed to where the word was; close it when the page scrolls.
   useEffect(() => {
@@ -292,13 +336,18 @@ export function ManuscriptEditor({
     const next = !showState;
     setShowState(next);
     live.current = { ...live.current, showState: next };
-    try {
-      window.localStorage.setItem(STATE_PANEL_KEY, next ? "shown" : "hidden");
-    } catch {
-      // Storage can be refused (a private window); the toggle still works on this page.
-    }
+    savePreference(STATE_PANEL_KEY, next ? "shown" : "hidden");
     if (next) void refreshState(true);
   };
+
+  const toggleFocus = () => {
+    const next = !focusMode;
+    setFocusMode(next);
+    controllerRef.current?.editor.commands.setFocusMode(next);
+    savePreference(FOCUS_KEY, next ? "on" : "off");
+  };
+
+  const scene = sceneOf(stats, cursorOffset);
 
   const markIntentional = useCallback(async (diagnostic: LintDiagnostic) => {
     const reason = window.prompt(t("problems.reasonPrompt"))?.trim();
@@ -340,8 +389,30 @@ export function ManuscriptEditor({
 
   return (
     <div className={cn("space-y-6", className)}>
-      <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-muted-foreground">
         <span>{t("state.gotoHint")}</span>
+        <span className="ml-auto flex items-center gap-3 tabular-nums" data-testid="word-counts">
+          <span data-testid="chapter-words">{stats.words.toLocaleString()} {t("writing.words")}</span>
+          {scene && stats.scenes.length > 1 && (
+            <span title={scene.heading} data-testid="scene-words">
+              {t("writing.scene")} {scene.index + 1}/{stats.scenes.length} · {scene.words.toLocaleString()} {t("writing.words")}
+            </span>
+          )}
+        </span>
+        <button
+          type="button"
+          aria-pressed={focusMode}
+          onClick={toggleFocus}
+          title={t("writing.focusHint")}
+          className={cn(
+            "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-medium transition-colors",
+            focusMode ? "border-primary/30 bg-primary/10 text-primary" : "border-border/50 hover:text-foreground",
+          )}
+          data-testid="focus-toggle"
+        >
+          <Focus size={12} />
+          {t("writing.focus")}
+        </button>
         <button
           type="button"
           aria-pressed={showState}
