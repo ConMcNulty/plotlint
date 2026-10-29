@@ -3,8 +3,10 @@ import { history, redo, undo } from "@tiptap/pm/history";
 import {
   Diagnostics,
   diagnosticsPluginKey,
+  FocusMode,
   Navigation,
   PlainTextDocument,
+  SceneMarkers,
   Suggestions,
   docToText,
   getDiagnosticsState,
@@ -86,6 +88,8 @@ export interface ChapterEditorOptions {
   readonly suggestionLabels?: SuggestionLabels;
   /** Called whenever the open suggestions change. */
   readonly onSuggestions?: (suggestions: ReadonlyArray<Suggestion>) => void;
+  /** Called when the writer clicks a scene's margin marker. */
+  readonly onSceneMarker?: (id: string) => void;
 }
 
 export interface ChapterEditor {
@@ -229,6 +233,8 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
         ...(options.suggestionLabels ? { labels: options.suggestionLabels } : {}),
         ...(options.onSuggestions ? { onChange: options.onSuggestions } : {}),
       }),
+      FocusMode,
+      SceneMarkers.configure(options.onSceneMarker ? { onSelect: options.onSceneMarker } : {}),
     ],
     content: textToDoc(options.text),
     editorProps: options.editorClass ? { attributes: { class: options.editorClass, spellcheck: "false" } } : { attributes: { spellcheck: "false" } },

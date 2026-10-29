@@ -43,3 +43,13 @@ export {
   type SuggestionsOptions,
   type TextSuggestion,
 } from "./suggestions.js";
+export {
+  FocusMode,
+  SceneMarkers,
+  focusPluginKey,
+  getSceneMarkers,
+  isFocusMode,
+  sceneMarkersPluginKey,
+  type SceneMarker,
+  type SceneMarkersOptions,
+} from "./writing.js";

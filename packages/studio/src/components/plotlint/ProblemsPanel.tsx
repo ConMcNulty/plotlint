@@ -3,6 +3,7 @@ import { AlertTriangle, CircleAlert, CornerDownRight, EyeOff, Info, Loader2, Thu
 import type { DiagnosticSeverity } from "@plotlint/diagnostics";
 import type { TFunction } from "../../hooks/use-i18n";
 import { cn } from "../../lib/utils";
+import { sceneIdsIn } from "./writing-model";
 import {
   ALL_PROBLEMS,
   CONFIDENCE_ORDER,
@@ -119,7 +120,7 @@ export function ProblemsPanel({ rows, suppressed, linting, error, stateMissing, 
           const target = rowTarget(row);
           const clickable = target !== null && onSelect !== undefined;
           return (
-            <li key={row.key} data-rule-id={diagnostic.ruleId} data-layer={diagnostic.layer} data-ranged={row.entryId !== null} className="group flex items-start">
+            <li key={row.key} data-scenes={sceneIdsIn(diagnostic).join(" ") || undefined} data-rule-id={diagnostic.ruleId} data-layer={diagnostic.layer} data-ranged={row.entryId !== null} className="group flex items-start">
               <button
                 type="button"
                 disabled={!clickable}

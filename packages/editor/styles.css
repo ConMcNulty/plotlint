@@ -122,3 +122,37 @@
 .ProseMirror .pl-suggestion-reject {
   color: var(--pl-suggest-delete, #c5221f);
 }
+
+/* Focus mode: every paragraph but the one with the cursor is dimmed. */
+.ProseMirror.pl-focus .pl-focus-dim {
+  opacity: var(--pl-focus-dim, 0.3);
+  transition: opacity 0.2s ease;
+}
+
+/* Scene markers sit in the left margin at the start of a scene with findings. */
+.ProseMirror p {
+  position: relative;
+}
+
+.ProseMirror .pl-scene-marker {
+  position: absolute;
+  left: -2.25rem;
+  top: 0.35em;
+  min-width: 1.4rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  font: 600 0.65rem/1.4 ui-sans-serif, system-ui, sans-serif;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  color: #fff;
+  background: var(--pl-marker-note, #5f6368);
+}
+
+.ProseMirror .pl-scene-marker--warning {
+  background: var(--pl-marker-warning, #b06000);
+}
+
+.ProseMirror .pl-scene-marker--error {
+  background: var(--pl-marker-error, #c5221f);
+}
