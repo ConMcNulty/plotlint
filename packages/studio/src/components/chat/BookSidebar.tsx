@@ -13,6 +13,7 @@ import { SummarySection } from "../sidebar/SummarySection";
 import { ChaptersSection } from "../sidebar/ChaptersSection";
 import { CharacterSection } from "../sidebar/CharacterSection";
 import { PendingHooksView } from "../sidebar/PendingHooksView";
+import { ManuscriptEditor, type ManuscriptEditorHandle } from "../plotlint/ManuscriptEditor";
 import {
   FOUNDATION_FILE_LABELS,
   presentCurrentState,
@@ -58,7 +59,7 @@ function renderTruthBody(
   return <Streamdown plugins={streamdownPlugins} mode="static">{content}</Streamdown>;
 }
 
-function ArtifactView({ bookId }: { readonly bookId: string }) {
+function ArtifactView({ bookId, t }: { readonly bookId: string; readonly t: TFunction }) {
   const artifactFile = useChatStore((s) => s.artifactFile);
   const artifactChapter = useChatStore((s) => s.artifactChapter);
   const closeArtifact = useChatStore((s) => s.closeArtifact);
@@ -67,6 +68,8 @@ function ArtifactView({ bookId }: { readonly bookId: string }) {
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
   const [saving, setSaving] = useState(false);
+  // A chapter is edited in plotlint's manuscript editor; this reads its text back for saving.
+  const editorRef = useRef<ManuscriptEditorHandle>(null);
 
   const isChapter = artifactChapter !== null;
   const label = isChapter
@@ -100,12 +103,13 @@ function ArtifactView({ bookId }: { readonly bookId: string }) {
 
   const handleSave = useCallback(async () => {
     setSaving(true);
+    const text = isChapter ? editorRef.current?.getText() ?? editContent : editContent;
     try {
       if (isChapter) {
         await fetchJson(`/books/${bookId}/chapters/${artifactChapter}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: editContent }),
+          body: JSON.stringify({ content: text }),
         });
       } else if (artifactFile) {
         await fetchJson(`/books/${bookId}/truth/${artifactFile}`, {
@@ -114,7 +118,7 @@ function ArtifactView({ bookId }: { readonly bookId: string }) {
           body: JSON.stringify({ content: editContent }),
         });
       }
-      setContent(editContent);
+      setContent(text);
       setEditing(false);
     } catch {
       // keep editing state on error
@@ -166,6 +170,15 @@ function ArtifactView({ bookId }: { readonly bookId: string }) {
           </div>
         ) : content === null ? (
           <p className="text-[14px] leading-6 text-muted-foreground/50 italic px-4 py-3">文件不存在</p>
+        ) : editing && isChapter ? (
+          <ManuscriptEditor
+            bookId={bookId}
+            chapterNumber={artifactChapter}
+            initialText={editContent}
+            handleRef={editorRef}
+            t={t}
+            className="px-4 py-3 text-[15px]"
+          />
         ) : editing ? (
           <textarea
             value={editContent}
@@ -271,7 +284,7 @@ export function BookSidebar({ bookId, theme, t, sse }: BookSidebarProps) {
         className="absolute left-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/20 active:bg-primary/30 transition-colors z-10"
       />
       {sidebarView === "artifact" ? (
-        <ArtifactView bookId={bookId} />
+        <ArtifactView bookId={bookId} t={t} />
       ) : (
         <PanelView bookId={bookId} theme={theme} t={t} sse={sse} />
       )}
@@ -306,7 +319,7 @@ export function BookSidebarToggle({ bookId, theme, t, sse }: BookSidebarProps) {
               </button>
             </div>
             {sidebarView === "artifact" ? (
-              <ArtifactView bookId={bookId} />
+              <ArtifactView bookId={bookId} t={t} />
             ) : (
               <PanelView bookId={bookId} theme={theme} t={t} sse={sse} />
             )}
