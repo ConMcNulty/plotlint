@@ -13,7 +13,7 @@ import type { InkosEndpoint } from "../types.js";
  */
 export const NEWAPI: InkosEndpoint = {
   id: "newapi",
-  label: "New API (中转网关)",
+  label: "New API (relay gateway)",
   group: "aggregator",
   api: "openai-completions",
   baseUrl: "",

@@ -1,6 +1,6 @@
 ---
 name: inkos-story-review
-description: 按题材、目标读者和用户标准审稿，展示具体问题并协作修订。Use for chapter or manuscript review with transparent criteria.
+description: Review against genre, target readers, and the user's standards, showing concrete issues and revising collaboratively. Use for chapter or manuscript review with transparent criteria.
 ---
 # Story review
 

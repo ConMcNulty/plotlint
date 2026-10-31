@@ -198,7 +198,7 @@ import {
 type StudioLanguage = "zh" | "en";
 
 function normalizeStudioLanguage(value: unknown): StudioLanguage {
-  return value === "en" ? "en" : "zh";
+  return value === "zh" ? "zh" : "en";
 }
 
 function pick(lang: StudioLanguage, zh: string, en: string): string {
@@ -996,7 +996,7 @@ function validateAgentActionExecution(args: {
   readonly collectedToolExecs: ReadonlyArray<CollectedToolExec>;
   readonly language?: StudioLanguage;
 }): string | undefined {
-  const lang = args.language ?? "zh";
+  const lang = args.language ?? "en";
   const binding = args.requestedIntent
     ? confirmedCapabilityBinding(args.requestedIntent)
     : undefined;
@@ -1152,7 +1152,7 @@ async function executeConfirmedProductionAction(args: {
   readonly actionResult: ActionResult;
   readonly binding: ConfirmedCapabilityBinding;
 }> {
-  const lang = args.language ?? "zh";
+  const lang = args.language ?? "en";
   const id = args.taskId;
   const actionPayload = args.actionPayload;
   const configuredSkills = await loadAvailableAgentSkills({ projectRoot: args.root });
@@ -2171,7 +2171,7 @@ function formatServiceProbeError(args: {
   readonly error: string;
   readonly language?: StudioLanguage;
 }): string {
-  const lang = args.language ?? "zh";
+  const lang = args.language ?? "en";
   const rawDetail = args.error
     .replace(/\n\s*\(baseUrl:[\s\S]*?\)$/m, "")
     .trim();
@@ -2319,7 +2319,7 @@ async function probeServiceCapabilities(args: {
   proxyUrl?: string;
   language?: StudioLanguage;
 }): Promise<ServiceProbeResult> {
-  const lang = args.language ?? "zh";
+  const lang = args.language ?? "en";
   const rawConfig = await loadRawConfig(args.root).catch(() => ({} as Record<string, unknown>));
   const llm = (rawConfig.llm as Record<string, unknown> | undefined) ?? {};
   const envConfig = await readEnvConfigStatus(args.root);
@@ -2701,7 +2701,7 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
 
   // Read the project language fresh from inkos.json on every call, so a language
   // switch takes effect on the next request instead of being frozen at startup.
-  // A missing/corrupt inkos.json means "no project language configured" -> zh.
+  // A missing/corrupt inkos.json means "no project language configured" -> en.
   async function currentProjectLanguage(): Promise<StudioLanguage> {
     const raw = await loadRawConfig(root).catch(() => ({} as Record<string, unknown>));
     return normalizeStudioLanguage(raw.language);
@@ -4743,7 +4743,10 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     if (!sessionId || confirmed) return next();
     const previous = chatRequests.get(sessionId);
     if (previous?.snapshot.status === "running") return c.json({
-      error: { code: "CHAT_REQUEST_ALREADY_RUNNING", message: "当前会话仍在运行，请等待完成或先停止。" },
+      error: {
+        code: "CHAT_REQUEST_ALREADY_RUNNING",
+        message: pick(await currentProjectLanguage(), "当前会话仍在运行，请等待完成或先停止。", "This session is still running. Wait for it to finish or stop it first."),
+      },
       chatRequest: previous.snapshot,
     }, 409);
     const request: NonNullable<ReturnType<typeof chatRequests.get>> = {

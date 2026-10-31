@@ -19,7 +19,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const VOLCENGINE_CODING_PLAN: InkosEndpoint = {
   id: "volcengineCodingPlan",
-  label: "火山 Coding Plan",
+  label: "Volcengine Coding Plan",
   group: "codingPlan",
   api: "openai-responses",
   baseUrl: "https://ark.cn-beijing.volces.com/api/coding/v3",

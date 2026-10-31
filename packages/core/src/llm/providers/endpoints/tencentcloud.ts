@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const TENCENTCLOUD: InkosEndpoint = {
   id: "tencentcloud",
-  label: "腾讯云 (lkeap)",
+  label: "Tencent Cloud (lkeap)",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://api.lkeap.cloud.tencent.com/v1",

@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const ZEROONE: InkosEndpoint = {
   id: "zeroone",
-  label: "零一万物 (01.AI)",
+  label: "01.AI",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://api.lingyiwanwu.com/v1",

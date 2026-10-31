@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const WENXIN: InkosEndpoint = {
   id: "wenxin",
-  label: "文心一言 (千帆)",
+  label: "Baidu ERNIE (Qianfan)",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://qianfan.baidubce.com/v2",

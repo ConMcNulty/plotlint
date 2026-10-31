@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const INTERNLM: InkosEndpoint = {
   id: "internlm",
-  label: "书生浦语 (InternLM)",
+  label: "InternLM",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://chat.intern-ai.org.cn/api/v1",

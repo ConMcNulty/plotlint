@@ -15,7 +15,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const ASTRON_CODING_PLAN: InkosEndpoint = {
   id: "astronCodingPlan",
-  label: "讯飞星辰 Astron Coding Plan",
+  label: "iFlytek Astron Coding Plan",
   group: "codingPlan",
   api: "anthropic-messages",
   baseUrl: "https://maas-coding-api.cn-huabei-1.xf-yun.com/anthropic",

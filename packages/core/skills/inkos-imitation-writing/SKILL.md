@@ -1,6 +1,6 @@
 ---
 name: inkos-imitation-writing
-description: 从参考文本提取可迁移的文体方法，为全新故事建立可执行风格指纹。
+description: Extract transferable style methods from a reference text and build an actionable style fingerprint for a brand-new story.
 ---
 # Style imitation
 

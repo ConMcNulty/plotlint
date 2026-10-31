@@ -11,7 +11,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const ZHIPU: InkosEndpoint = {
   id: "zhipu",
-  label: "智谱 GLM",
+  label: "Zhipu GLM",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://open.bigmodel.cn/api/paas/v4",

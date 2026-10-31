@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const LMSTUDIO: InkosEndpoint = {
   id: "lmstudio",
-  label: "LM Studio (本地)",
+  label: "LM Studio (local)",
   group: "local",
   api: "openai-completions",
   baseUrl: "http://localhost:1234/v1",

@@ -1,6 +1,6 @@
 ---
 name: inkos-play-world
-description: 品类中立的开放世界与分支互动推进方法。Used by InkOS Play workers for coherent action, state, time, and scene progression.
+description: Genre-neutral method for advancing open worlds and branching interaction. Used by InkOS Play workers for coherent action, state, time, and scene progression.
 ---
 # Interactive world play
 

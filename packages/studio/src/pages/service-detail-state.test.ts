@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { setAppLanguage } from "../lib/app-language";
 import {
   deleteServiceConfig,
   matchServiceConfigEntryForDetail,
@@ -7,6 +8,10 @@ import {
   resolveModelsToPersist,
   saveServiceConfig,
 } from "./service-detail-state";
+
+// These cases assert the Chinese UI copy; English is the default app language.
+beforeEach(() => setAppLanguage("zh"));
+afterEach(() => setAppLanguage("en"));
 
 describe("mergeServiceDetailModels", () => {
   it("keeps discovered and user-added models in one stable catalog", () => {
