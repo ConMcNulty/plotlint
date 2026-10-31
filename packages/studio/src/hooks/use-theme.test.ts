@@ -1,23 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { getTimeBasedThemeForHour, readStoredTheme, resolveThemePreference } from "./use-theme";
+import { readStoredTheme, resolveThemePreference } from "./use-theme";
 
 describe("resolveThemePreference", () => {
-  it("keeps a stored manual light theme during night hours", () => {
-    expect(resolveThemePreference({ hour: 23, storedTheme: "light" })).toBe("light");
+  it("keeps a stored manual theme", () => {
+    expect(resolveThemePreference({ storedTheme: "dark" })).toBe("dark");
+    expect(resolveThemePreference({ storedTheme: "light" })).toBe("light");
   });
 
-  it("falls back to the clock when no manual theme is stored", () => {
-    expect(resolveThemePreference({ hour: 23, storedTheme: null })).toBe("dark");
-    expect(resolveThemePreference({ hour: 9, storedTheme: null })).toBe("light");
-  });
-});
-
-describe("getTimeBasedThemeForHour", () => {
-  it("switches at 6:00 and 18:00", () => {
-    expect(getTimeBasedThemeForHour(5)).toBe("dark");
-    expect(getTimeBasedThemeForHour(6)).toBe("light");
-    expect(getTimeBasedThemeForHour(17)).toBe("light");
-    expect(getTimeBasedThemeForHour(18)).toBe("dark");
+  it("defaults to light when no manual theme is stored", () => {
+    expect(resolveThemePreference({ storedTheme: null })).toBe("light");
   });
 });
 

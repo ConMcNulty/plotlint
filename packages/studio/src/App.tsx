@@ -7,7 +7,6 @@ import { Dashboard } from "./pages/Dashboard";
 import { WorkInspector } from "./pages/WorkInspector";
 import { ChatPage } from "./pages/ChatPage";
 import { BookDetail } from "./pages/BookDetail";
-import { ChapterReader } from "./pages/ChapterReader";
 import { Analytics } from "./pages/Analytics";
 import { Boards } from "./pages/Boards";
 import { Publish } from "./pages/Publish";
@@ -27,7 +26,7 @@ import { StoryGraphTree } from "./pages/StoryGraphTree";
 const FlowView = lazy(() => import("./pages/FlowView"));
 const FilmWizard = lazy(() => import("./pages/FilmWizard"));
 import { LanguageSelector } from "./pages/LanguageSelector";
-import { BookSidebar, BookSidebarToggle } from "./components/chat/BookSidebar";
+import { BookWorkspace } from "./components/BookWorkspace";
 import { useSSE } from "./hooks/use-sse";
 import { useSessionEvents } from "./hooks/use-session-events";
 import { useTheme } from "./hooks/use-theme";
@@ -280,18 +279,7 @@ export function App() {
             </div>
           )}
           {route.page === "book" && (
-            <div className="absolute inset-0 flex min-w-0">
-              <ChatPage
-                activeBookId={route.bookId}
-                mode="book"
-                nav={nav}
-                theme={theme}
-                t={t}
-                sse={sse}
-              />
-              <BookSidebar bookId={route.bookId} theme={theme} t={t} sse={sse} />
-              <BookSidebarToggle bookId={route.bookId} theme={theme} t={t} sse={sse} />
-            </div>
+            <BookWorkspace bookId={route.bookId} nav={nav} theme={theme} t={t} sse={sse} />
           )}
           {route.page === "book-settings" && (
             <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 lg:py-16 fade-in">
@@ -299,10 +287,15 @@ export function App() {
             </div>
           )}
           {route.page === "chapter" && (
-            <div className="mx-auto w-full max-w-[1400px] px-4 py-12 sm:px-6 lg:px-10 lg:py-16 2xl:px-12 fade-in">
-              {/* Keyed so a jump to another chapter opens a fresh reader (and editor) on it. */}
-              <ChapterReader key={`${route.bookId}:${route.chapterNumber}`} bookId={route.bookId} chapterNumber={route.chapterNumber} select={route.select} nav={nav} theme={theme} t={t} />
-            </div>
+            <BookWorkspace
+              bookId={route.bookId}
+              chapterNumber={route.chapterNumber}
+              {...(route.select ? { select: route.select } : {})}
+              nav={nav}
+              theme={theme}
+              t={t}
+              sse={sse}
+            />
           )}
           {route.page === "analytics" && (
             <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 lg:py-16 fade-in">

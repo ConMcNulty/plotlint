@@ -60,6 +60,10 @@ function parseHash(hash: string): HashRoute {
   const boardsMatch = path.match(/^book\/([^/]+)\/boards$/);
   if (boardsMatch) return { page: "boards", bookId: decodeURIComponent(boardsMatch[1]) };
 
+  // A chapter open in the workspace, so a reload stays on it.
+  const chapterMatch = path.match(/^book\/([^/]+)\/chapter\/(\d+)$/);
+  if (chapterMatch) return { page: "chapter", bookId: decodeURIComponent(chapterMatch[1]), chapterNumber: Number(chapterMatch[2]) };
+
   const bookSettingsMatch = path.match(/^book\/([^/]+)\/settings$/);
   if (bookSettingsMatch) return { page: "book-settings", bookId: decodeURIComponent(bookSettingsMatch[1]) };
 
@@ -89,6 +93,7 @@ function routeToHash(route: HashRoute): string {
     case "dashboard": return "#/";
     case "chat": return "#/chat";
     case "book": return `#/book/${encodeURIComponent(route.bookId)}`;
+    case "chapter": return `#/book/${encodeURIComponent(route.bookId)}/chapter/${route.chapterNumber}`;
     case "book-settings": return `#/book/${encodeURIComponent(route.bookId)}/settings`;
     case "boards": return `#/book/${encodeURIComponent(route.bookId)}/boards`;
     case "publish": return `#/book/${encodeURIComponent(route.bookId)}/publish`;
@@ -111,7 +116,7 @@ function routeToHash(route: HashRoute): string {
 
 export { parseHash, routeToHash }; // for testing
 
-const HASH_PAGES = new Set(["dashboard", "chat", "book", "book-settings", "boards", "publish", "book-create", "work", "work-chat", "services", "project-settings", "service-detail", "translation", "import", "play", "film", "flow", "film-author", "film-studio"]);
+const HASH_PAGES = new Set(["dashboard", "chat", "book", "chapter", "book-settings", "boards", "publish", "book-create", "work", "work-chat", "services", "project-settings", "service-detail", "translation", "import", "play", "film", "flow", "film-author", "film-studio"]);
 
 export function useHashRoute() {
   const [route, setRouteState] = useState<HashRoute>(() => parseHash(window.location.hash));
