@@ -53,3 +53,11 @@ export {
   type SceneMarker,
   type SceneMarkersOptions,
 } from "./writing.js";
+export {
+  GhostText,
+  getGhostText,
+  ghostTextPluginKey,
+  isGhostTextEnabled,
+  type GhostRequest,
+  type GhostTextOptions,
+} from "./ghost.js";

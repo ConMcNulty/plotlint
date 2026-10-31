@@ -174,6 +174,7 @@ import {
 import { chapterFiles } from "./plotlint-chapters.js";
 import { provenanceView, recordStudioEdit } from "./plotlint-provenance.js";
 import { markReviewed, pendingAgentEdit } from "./plotlint-review.js";
+import { continueText, parseContinueBody } from "./plotlint-continue.js";
 import { branchDiff, branchesView, manuscriptFile, newBranch, outlineFile, provenanceFile } from "./plotlint-publish.js";
 import { parseVerdictBody as parsePlotlintVerdictBody, recordVerdicts, verdictReport } from "./plotlint-verdicts.js";
 import {
@@ -3384,6 +3385,18 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     const { bookId, ...request } = parsed;
     const bookDir = await plotlintBookDir(bookId);
     return c.json(await referencesFor({ bookDir, ...request }));
+  });
+
+  // Ghost text: a few words that could come next at the cursor, from the configured LLM.
+  app.post("/api/v1/plotlint/continue", async (c) => {
+    const parsed = parseContinueBody(await c.req.json().catch(() => null));
+    if (typeof parsed === "string") throw new ApiError(400, "INVALID_CONTINUE_REQUEST", parsed);
+    await plotlintBookDir(parsed.bookId);
+    const config = await loadCurrentProjectConfig({ requireApiKey: true });
+    const client = createLLMClient(config.llm);
+    const text = await continueText(parsed, async (messages) =>
+      (await chatCompletion(client, config.llm.model, [...messages], { temperature: 0.7, maxTokens: 200, retry: false })).content);
+    return c.json({ text });
   });
 
   // --- Truth files ---

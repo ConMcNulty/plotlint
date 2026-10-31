@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from "react";
 import { createPortal } from "react-dom";
-import { Check, EyeOff, Focus, ListTree, SearchX, ThumbsDown, Undo2, Wrench } from "lucide-react";
+import { Check, EyeOff, Focus, ListTree, SearchX, Sparkles, ThumbsDown, Undo2, Wrench } from "lucide-react";
 import type { Editor } from "@tiptap/core";
 import { confidenceLabel, OffsetMap, type DefinitionRequest, type DiagnosticEntry, type TextRange } from "@plotlint/editor";
 import "@plotlint/editor/styles.css";
@@ -8,6 +8,7 @@ import "./plotlint.css";
 import type { TFunction } from "../../hooks/use-i18n";
 import { cn } from "../../lib/utils";
 import { createChapterEditor, type ChapterEditor, type ProblemsSnapshot } from "./chapter-editor";
+import { fetchContinuation } from "./continue-client";
 import { chapterLinter, chapterSourceId, suppressDiagnostic, type LintDiagnostic, type LintFunction } from "./lint-client";
 import { fetchStateAt, findDefinition, findReferences, type Definition, type EntityAtCursor, type EvidenceLocation, type References, type StateAtCursorResponse } from "./navigate-client";
 import { ProblemsPanel } from "./ProblemsPanel";
@@ -46,6 +47,8 @@ export interface ManuscriptEditorProps {
   readonly lint?: LintFunction;
   /** Override the state and definition routes (tests). */
   readonly navigation?: NavigationClient;
+  /** Override the ghost-text route (tests). */
+  readonly continuation?: (text: string, offset: number) => Promise<string | null>;
   /** Override the verdict route (tests). */
   readonly onVerdicts?: (events: VerdictEvent[]) => void;
   /** Select this text range once the editor opens (a jump from another chapter). */
@@ -98,6 +101,7 @@ const hiddenFor = (bookId: string) => {
 
 const STATE_PANEL_KEY = "plotlint.statePanel";
 const FOCUS_KEY = "plotlint.focusMode";
+const GHOST_KEY = "plotlint.ghostText";
 /** Pause after typing before the word counts are recounted. */
 const COUNT_DEBOUNCE_MS = 250;
 /** Pause after the cursor moves before asking for the state there. */
@@ -111,9 +115,10 @@ const readPanelPreference = () => {
   }
 };
 
-const readFocusPreference = () => {
+/** Whether an opt-in setting was turned on; off when storage is refused. */
+const readOptIn = (key: string) => {
   try {
-    return window.localStorage.getItem(FOCUS_KEY) === "on";
+    return window.localStorage.getItem(key) === "on";
   } catch {
     return false;
   }
@@ -133,7 +138,7 @@ const savePreference = (key: string, value: string) => {
  * Ctrl/Cmd+click goes to where the name under the cursor is first established.
  */
 export function ManuscriptEditor({
-  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, onVerdicts, selection, onOpenLocation, suggestFrom, onSuggestionsChange, className,
+  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, continuation, onVerdicts, selection, onOpenLocation, suggestFrom, onSuggestionsChange, className,
 }: ManuscriptEditorProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<ChapterEditor | null>(null);
@@ -147,7 +152,10 @@ export function ManuscriptEditor({
   const [notice, setNotice] = useState<Notice | null>(null);
   const [references, setReferences] = useState<References | null>(null);
   const [openSuggestions, setOpenSuggestions] = useState(0);
-  const [focusMode, setFocusMode] = useState(readFocusPreference);
+  const [focusMode, setFocusMode] = useState(() => readOptIn(FOCUS_KEY));
+  const [ghostText, setGhostText] = useState(() => readOptIn(GHOST_KEY));
+  const continuationRef = useRef(continuation ?? ((text: string, offset: number) => fetchContinuation(bookId, text, offset)));
+  continuationRef.current = continuation ?? ((text: string, offset: number) => fetchContinuation(bookId, text, offset));
   const [stats, setStats] = useState<WritingStats>(() => writingStats(initialText, chapterNumber));
   const [cursorOffset, setCursorOffset] = useState(0);
   const countTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -273,6 +281,7 @@ export function ManuscriptEditor({
         if (countTimer.current) clearTimeout(countTimer.current);
         countTimer.current = setTimeout(() => { countTimer.current = undefined; setStats(writingStats(text, chapterNumber)); }, COUNT_DEBOUNCE_MS);
       },
+      suggestContinuation: ({ text, offset }) => continuationRef.current(text, offset),
       onSceneMarker: (id) => {
         const row = document.querySelector<HTMLElement>(`[data-testid="problems-panel"] [data-scenes~="${CSS.escape(id)}"]`);
         row?.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -299,7 +308,8 @@ export function ManuscriptEditor({
       },
     });
     controllerRef.current = controller;
-    if (readFocusPreference()) controller.editor.commands.setFocusMode(true);
+    if (readOptIn(FOCUS_KEY)) controller.editor.commands.setFocusMode(true);
+    if (readOptIn(GHOST_KEY)) controller.editor.commands.setGhostText(true);
     setProblems(controller.problems());
     void refreshState(true);
     return () => {
@@ -345,6 +355,13 @@ export function ManuscriptEditor({
     setFocusMode(next);
     controllerRef.current?.editor.commands.setFocusMode(next);
     savePreference(FOCUS_KEY, next ? "on" : "off");
+  };
+
+  const toggleGhost = () => {
+    const next = !ghostText;
+    setGhostText(next);
+    controllerRef.current?.editor.commands.setGhostText(next);
+    savePreference(GHOST_KEY, next ? "on" : "off");
   };
 
   const scene = sceneOf(stats, cursorOffset);
@@ -412,6 +429,20 @@ export function ManuscriptEditor({
         >
           <Focus size={12} />
           {t("writing.focus")}
+        </button>
+        <button
+          type="button"
+          aria-pressed={ghostText}
+          onClick={toggleGhost}
+          title={t("writing.ghostHint")}
+          className={cn(
+            "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-medium transition-colors",
+            ghostText ? "border-primary/30 bg-primary/10 text-primary" : "border-border/50 hover:text-foreground",
+          )}
+          data-testid="ghost-toggle"
+        >
+          <Sparkles size={12} />
+          {t("writing.ghost")}
         </button>
         <button
           type="button"

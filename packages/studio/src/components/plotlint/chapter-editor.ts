@@ -4,6 +4,7 @@ import {
   Diagnostics,
   diagnosticsPluginKey,
   FocusMode,
+  GhostText,
   Navigation,
   PlainTextDocument,
   SceneMarkers,
@@ -14,6 +15,7 @@ import {
   textToDoc,
   type DefinitionRequest,
   type DiagnosticEntry,
+  type GhostRequest,
   type HoverContext,
   type Suggestion,
   type SuggestionLabels,
@@ -90,6 +92,8 @@ export interface ChapterEditorOptions {
   readonly onSuggestions?: (suggestions: ReadonlyArray<Suggestion>) => void;
   /** Called when the writer clicks a scene's margin marker. */
   readonly onSceneMarker?: (id: string) => void;
+  /** Words that could come next at the cursor, for ghost text (off until `setGhostText(true)`). */
+  readonly suggestContinuation?: (request: GhostRequest) => Promise<string | null>;
 }
 
 export interface ChapterEditor {
@@ -234,6 +238,7 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
         ...(options.onSuggestions ? { onChange: options.onSuggestions } : {}),
       }),
       FocusMode,
+      GhostText.configure(options.suggestContinuation ? { suggest: options.suggestContinuation } : {}),
       SceneMarkers.configure(options.onSceneMarker ? { onSelect: options.onSceneMarker } : {}),
     ],
     content: textToDoc(options.text),
