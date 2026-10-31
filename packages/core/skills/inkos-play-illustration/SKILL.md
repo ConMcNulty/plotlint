@@ -1,6 +1,6 @@
 ---
 name: inkos-play-illustration
-description: 互动世界场景和实体的插画方法，保持画面与当前事实一致，避免把游戏规则画成虚构界面。
+description: Illustration method for interactive-world scenes and entities that keeps images consistent with current facts and never draw game rules as an invented interface.
 ---
 # Interactive-world illustration
 

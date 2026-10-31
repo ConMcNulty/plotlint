@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const SENSENOVA: InkosEndpoint = {
   id: "sensenova",
-  label: "商汤日日新",
+  label: "SenseTime SenseNova",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://api.sensenova.cn/compatible-mode/v1",

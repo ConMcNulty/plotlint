@@ -1,6 +1,6 @@
 ---
 name: inkos-storyboard
-description: 剧本与叙事文本到可拍、可画、可生图分镜的视觉拆解方法。Used for storyboard and image-prompt production.
+description: Visual breakdown of scripts and narrative text into shootable, drawable, image-generation-ready storyboards. Used for storyboard and image-prompt production.
 ---
 # Storyboard creation
 

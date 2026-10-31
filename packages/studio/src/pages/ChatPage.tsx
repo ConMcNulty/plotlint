@@ -69,6 +69,7 @@ import {
   toggleSelectedSkillIds,
   type StudioSkill,
 } from "./skill-ui-state";
+import { tr } from "../lib/app-language";
 
 // -- Types --
 
@@ -1322,7 +1323,7 @@ function ModelPickerContent({
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="搜索模型..."
+          placeholder={tr("搜索模型...", "Search models...")}
           className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/40"
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
@@ -1353,13 +1354,13 @@ function ModelPickerContent({
         ))}
         {filtered.length === 0 && (
           <div className="px-3 py-4 text-xs text-muted-foreground/50 text-center italic">
-            无匹配模型
+            {tr("无匹配模型", "No matching models")}
           </div>
         )}
       </div>
       <div className="border-t border-border/30">
         <DropdownMenuItem onClick={onManage} className="text-primary">
-          管理服务商
+          {tr("管理服务商", "Manage providers")}
         </DropdownMenuItem>
       </div>
     </DropdownMenuContent>

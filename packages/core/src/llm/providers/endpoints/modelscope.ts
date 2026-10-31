@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const MODELSCOPE: InkosEndpoint = {
   id: "modelscope",
-  label: "魔搭社区 ModelScope",
+  label: "ModelScope",
   group: "aggregator",
   api: "openai-completions",
   baseUrl: "https://api-inference.modelscope.cn/v1",

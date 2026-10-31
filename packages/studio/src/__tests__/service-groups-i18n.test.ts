@@ -1,15 +1,18 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, afterEach, beforeEach } from "vitest";
 import { setAppLanguage } from "../lib/app-language";
 import { getGroupDescription, getGroupLabel, getGroupShortLabel } from "../constants/service-groups";
 import { getServiceQuickLinks } from "../components/ServiceQuickLinks";
 
-// 每条用例结束后恢复默认语言，避免污染其他测试。
-afterEach(() => {
+// 每条用例从中文开始，结束后恢复默认语言（英文），避免污染其他测试。
+beforeEach(() => {
   setAppLanguage("zh");
+});
+afterEach(() => {
+  setAppLanguage("en");
 });
 
 describe("service-groups i18n", () => {
-  it("默认（zh）返回中文标签", () => {
+  it("zh 返回中文标签", () => {
     expect(getGroupLabel("overseas")).toBe("海外原厂");
     expect(getGroupShortLabel("aggregator")).toBe("聚合");
     expect(getGroupDescription("aggregator")).toContain("聚合国内外主流模型");

@@ -187,7 +187,7 @@ function BranchCard({
         <div className="mt-3 space-y-3">
           <ChangeList
             title={zh ? "人物决定" : "Character decisions"}
-            items={branch.characterDecisions.map((item) => `${item.character}：${item.decision}`)}
+            items={branch.characterDecisions.map((item) => `${item.character}${zh ? "：" : ": "}${item.decision}`)}
           />
           <ChangeList title={zh ? "人物变化" : "Character changes"} items={branch.projectedChanges.characters} />
           <ChangeList title={zh ? "关系变化" : "Relationship changes"} items={branch.projectedChanges.relationships} />

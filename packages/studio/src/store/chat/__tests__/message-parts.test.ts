@@ -1,6 +1,10 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, afterEach, beforeEach } from "vitest";
 import { buildPartsFromEvents, type StreamEvent } from "../parts-builder";
 import { setAppLanguage } from "../../../lib/app-language";
+
+// These cases assert the Chinese UI copy; English is the default app language.
+beforeEach(() => setAppLanguage("zh"));
+afterEach(() => setAppLanguage("en"));
 
 describe("buildPartsFromEvents", () => {
   it("produces thinking → text parts from basic conversation", () => {

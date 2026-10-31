@@ -1,6 +1,6 @@
 ---
 name: inkos-short-writing
-description: 商业短篇的构思、一次写完、整篇审改与包装。Use for confirmed standalone short-fiction production.
+description: Concept, single-pass drafting, full-story revision, and packaging for commercial short fiction. Use for confirmed standalone short-fiction production.
 ---
 # Short-fiction writing
 

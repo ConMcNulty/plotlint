@@ -1,6 +1,6 @@
 ---
 name: inkos-translation
-description: 长文任意语言互译、术语一致性、分段续跑与章节审校方法。Used by InkOS translation workers.
+description: Long-form translation between any languages, with terminology consistency, resumable segmented runs, and chapter review. Used by InkOS translation workers.
 ---
 # Long-form translation
 

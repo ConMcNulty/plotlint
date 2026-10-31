@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setAppLanguage } from "./app-language";
 import {
   firstParagraph,
@@ -9,7 +9,8 @@ import {
 } from "./truth-display";
 
 describe("truth artifact presentation", () => {
-  afterEach(() => setAppLanguage("zh"));
+  beforeEach(() => setAppLanguage("zh"));
+  afterEach(() => setAppLanguage("en"));
 
   it("presents canonical foundation and role paths without old layout aliases", () => {
     expect(foundationFileLabel("outline/story_frame.md")).toBe("故事基石");

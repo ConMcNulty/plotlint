@@ -5,6 +5,7 @@ import type { Theme } from "../hooks/use-theme";
 import type { TFunction } from "../hooks/use-i18n";
 import { visibleChoices, visibleDialogue, applyEffects, initVarState, type VarState } from "@actalk/inkos-core/interactive-film/evaluator";
 import type { StoryGraph, Choice } from "@actalk/inkos-core/interactive-film/graph-schema";
+import { tr } from "../lib/app-language";
 
 interface Nav { toDashboard: () => void }
 
@@ -54,13 +55,13 @@ export function StoryPlayer({
           onClick={reset}
           data-testid="player-start"
           className={`px-6 py-3 rounded-lg ${c.btnPrimary}`}
-        >开始游玩</button>
+        >{tr("开始游玩", "Start")}</button>
       </div>
     );
   }
 
   const node = graph.nodes.find((n) => n.id === currentId);
-  if (!node) return <div className="text-destructive">节点缺失：{currentId}</div>;
+  if (!node) return <div className="text-destructive">{tr("节点缺失：", "Missing node: ")}{currentId}</div>;
 
   const isEnding = node.type === "ending";
   const choices = visibleChoices(node, vars);
@@ -112,10 +113,10 @@ export function StoryPlayer({
             {graph.endings.find((e) => e.nodeId === node.id)?.title ?? node.title}
           </div>
           <div className={c.muted} data-testid="player-unlocked">
-            已解锁结局 {unlocked.length} / {graph.endings.length}
+            {tr("已解锁结局", "Endings unlocked")} {unlocked.length} / {graph.endings.length}
           </div>
           <button onClick={reset} data-testid="player-restart" className={`px-5 py-2 rounded ${c.btnSecondary}`}>
-            重新开始
+            {tr("重新开始", "Restart")}
           </button>
         </div>
       ) : (
@@ -130,7 +131,7 @@ export function StoryPlayer({
               {choice.text}
             </button>
           ))}
-          {choices.length === 0 && <div className="text-destructive" data-testid="player-deadend">此路不通</div>}
+          {choices.length === 0 && <div className="text-destructive" data-testid="player-deadend">{tr("此路不通", "Dead end")}</div>}
         </div>
       )}
 

@@ -138,13 +138,11 @@ export function App() {
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="max-w-md w-full rounded-2xl border border-destructive/30 bg-destructive/5 p-6 space-y-4">
           <div>
-            <h1 className="text-lg font-semibold text-destructive">无法加载项目配置 / Failed to load project config</h1>
+            <h1 className="text-lg font-semibold text-destructive">Failed to load project config</h1>
             <p className="mt-2 text-sm text-muted-foreground break-all">{projectError}</p>
           </div>
-          {/* 项目配置没加载出来，语言未知，所以这屏中英双语并排展示。 */}
+          {/* 项目配置没加载出来，语言未知；plotlint 默认英文。 */}
           <p className="text-sm text-muted-foreground">
-            请检查项目根目录下的 inkos.json 是否存在且为合法 JSON，然后重试。
-            <br />
             Check that inkos.json in the project root exists and is valid JSON, then retry.
           </p>
           <button
@@ -152,7 +150,7 @@ export function App() {
             onClick={() => refetchProject()}
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >
-            重试 / Retry
+            Retry
           </button>
         </div>
       </div>
@@ -210,7 +208,7 @@ export function App() {
                 }}
                 className={`px-2.5 py-1 text-[16px] font-medium rounded-md ${currentLang === "zh" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
               >
-                中
+                ZH
               </button>
               <button
                 onClick={async () => {

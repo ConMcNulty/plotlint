@@ -19,6 +19,7 @@ import {
   presentCurrentState,
   roleFromPath,
 } from "../../lib/truth-display";
+import { tr } from "../../lib/app-language";
 
 export interface BookSidebarProps {
   readonly bookId: string;
@@ -50,7 +51,7 @@ function renderTruthBody(
     const { isEmpty, body: stateBody } = presentCurrentState(content);
     return isEmpty ? (
       <p className="text-[14px] leading-6 text-muted-foreground/60 italic">
-        还没有运行状态。开始写作后，每写完一章这里会自动记录最新的故事进展。
+        {tr("还没有运行状态。开始写作后，每写完一章这里会自动记录最新的故事进展。", "No runtime state yet. Once you start writing, the latest story progress is recorded here after each chapter.")}
       </p>
     ) : (
       <Streamdown plugins={streamdownPlugins} mode="static">{stateBody}</Streamdown>
@@ -73,7 +74,7 @@ function ArtifactView({ bookId, t }: { readonly bookId: string; readonly t: TFun
 
   const isChapter = artifactChapter !== null;
   const label = isChapter
-    ? `第 ${artifactChapter} 章`
+    ? tr(`第 ${artifactChapter} 章`, `Chapter ${artifactChapter}`)
     : artifactFile ? artifactLabel(artifactFile) : "";
 
   useEffect(() => {
@@ -169,7 +170,7 @@ function ArtifactView({ bookId, t }: { readonly bookId: string; readonly t: TFun
             <Loader2 size={16} className="text-muted-foreground animate-spin" />
           </div>
         ) : content === null ? (
-          <p className="text-[14px] leading-6 text-muted-foreground/50 italic px-4 py-3">文件不存在</p>
+          <p className="text-[14px] leading-6 text-muted-foreground/50 italic px-4 py-3">{tr("文件不存在", "File not found")}</p>
         ) : editing && isChapter ? (
           <ManuscriptEditor
             bookId={bookId}
@@ -313,7 +314,7 @@ export function BookSidebarToggle({ bookId, theme, t, sse }: BookSidebarProps) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-3 py-2 border-b border-border/20">
-              <span className="text-[15px] leading-6 font-medium text-muted-foreground">书籍信息</span>
+              <span className="text-[15px] leading-6 font-medium text-muted-foreground">{tr("书籍信息", "Book info")}</span>
               <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">
                 <PanelRightClose size={14} />
               </button>

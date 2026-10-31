@@ -1,6 +1,6 @@
 ---
 name: inkos-spinoff-writing
-description: 从既有 Work 正典派生番外，保持母本事实同时建立独立的侧篇弧线。
+description: Derive a spin-off from an existing Work's canon, preserving the parent's facts while building an independent side arc.
 ---
 # Spinoff writing
 

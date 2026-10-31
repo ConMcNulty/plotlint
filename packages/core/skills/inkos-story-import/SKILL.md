@@ -1,6 +1,6 @@
 ---
 name: inkos-story-import
-description: 导入已有小说、逆向重建设定与续写工程，并区分母本参考。Use for importing manuscripts or attaching external canon safely.
+description: Import an existing novel, reverse-engineer its setting and continuation project, and keep the source reference separate. Use for importing manuscripts or attaching external canon safely.
 ---
 # Story import and reconstruction
 
