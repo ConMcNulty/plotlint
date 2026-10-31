@@ -37,3 +37,6 @@ translations/
 inkos.json
 CLAUDE.md
 .claude/worktrees/
+
+# Test project made by scripts/demo-book.mjs
+.plotlint-demo/
