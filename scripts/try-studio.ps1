@@ -18,15 +18,14 @@ function Step([string]$title, [scriptblock]$command) {
   if ($LASTEXITCODE -ne 0) { throw "$title failed (exit code $LASTEXITCODE)" }
 }
 
-if (-not (Get-Command pnpm -ErrorAction SilentlyContinue)) {
-  Step "Install pnpm" { npm install -g pnpm@9 }
-}
+# The lockfile is pnpm 9's (as in CI); pnpm 10 refuses it, so run that version whatever is installed.
+function pnpm9 { npx -y pnpm@9.15.9 @args }
 
 if (-not $SkipPull) {
   Step "Switch to master" { git switch master }
   Step "Pull the latest master" { git pull --ff-only origin master }
 }
-Step "Install dependencies" { pnpm install --frozen-lockfile }
-Step "Build" { pnpm build }
+Step "Install dependencies" { pnpm9 install --frozen-lockfile }
+Step "Build" { pnpm9 build }
 Step "Make the test book" { node scripts/demo-book.mjs $Project }
 Step "Open Studio (Ctrl+C to stop)" { node packages/cli/dist/index.js studio --project $Project --port $Port }
