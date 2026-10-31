@@ -14,9 +14,11 @@ interface ChapterMeta {
 interface ChaptersSectionProps {
   readonly bookId: string;
   readonly isZh: boolean;
+  /** Open a chapter in the editor; without this a click shows it in the side panel. */
+  readonly onOpenChapter?: (chapterNumber: number) => void;
 }
 
-export function ChaptersSection({ bookId, isZh }: ChaptersSectionProps) {
+export function ChaptersSection({ bookId, isZh, onOpenChapter }: ChaptersSectionProps) {
   const [chapters, setChapters] = useState<ReadonlyArray<ChapterMeta>>([]);
   const bookDataVersion = useChatStore((s) => s.bookDataVersion);
 
@@ -41,7 +43,7 @@ export function ChaptersSection({ bookId, isZh }: ChaptersSectionProps) {
             return (
               <li
                 key={`${ch.number}-${ch.title ?? ""}`}
-                onClick={() => useChatStore.getState().openChapterArtifact(ch.number)}
+                onClick={() => onOpenChapter ? onOpenChapter(ch.number) : useChatStore.getState().openChapterArtifact(ch.number)}
                 className="flex items-center gap-2 py-1 text-[15px] leading-6 text-muted-foreground cursor-pointer hover:text-foreground transition-colors rounded px-1 -mx-1 hover:bg-secondary/50">
                 <span className={cn("text-[13px] shrink-0", ind.color)}>{ind.symbol}</span>
                 <span className="truncate flex-1">

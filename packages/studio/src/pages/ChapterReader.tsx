@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import { fetchJson, useApi } from "../hooks/use-api";
 import type { Theme } from "../hooks/use-theme";
 import type { TFunction } from "../hooks/use-i18n";
@@ -7,19 +7,15 @@ import { ChapterWorkspacePanel } from "../components/ChapterWorkspacePanel";
 import { ManuscriptEditor, type ManuscriptEditorHandle } from "../components/plotlint/ManuscriptEditor";
 import type { EvidenceLocation } from "../components/plotlint/navigate-client";
 import {
-  ChevronLeft,
-  Check,
-  X,
-  List,
-  RotateCcw,
   BookOpen,
-  Hash,
+  ChevronDown,
   Type,
   Clock,
   Pencil,
   Save,
   Eye,
   GitCompare,
+  SlidersHorizontal,
 } from "lucide-react";
 
 interface ChapterData {
@@ -47,7 +43,7 @@ interface Nav {
   toChapter?: (bookId: string, chapterNumber: number, select?: TextRange) => void;
 }
 
-export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: {
+export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, canLeaveRef }: {
   bookId: string;
   chapterNumber: number;
   /** Open in the editor with this range of the chapter file's text selected (a jump from another chapter). */
@@ -55,14 +51,20 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
   nav: Nav;
   theme: Theme;
   t: TFunction;
+  /** Set to a check the workspace runs before leaving this chapter: false if the writer chose to stay with unsaved edits. */
+  canLeaveRef?: MutableRefObject<(() => boolean) | null>;
 }) {
-  const c = useColors(theme);
+  useColors(theme);
   const { data, loading, error, refetch } = useApi<ChapterData>(
     `/books/${bookId}/chapters/${chapterNumber}`,
   );
-  const [editing, setEditing] = useState(false);
-  // The text being edited lives in the editor; `editorRef` reads it back exactly for saving.
-  const [editContent, setEditContent] = useState("");
+  // The chapter opens in the editor: this is a word processor first, and the reading view is a preview.
+  const [editing, setEditing] = useState(true);
+  // The text the editor opened with (null: the chapter as loaded). The text being edited lives in
+  // the editor; `editorRef` reads it back exactly for saving.
+  const [editContent, setEditContent] = useState<string | null>(null);
+  // Bumped to reopen the editor on the saved text, e.g. once a review of an agent's edit is done.
+  const [editorRevision, setEditorRevision] = useState(0);
   const editorRef = useRef<ManuscriptEditorHandle>(null);
   const [saving, setSaving] = useState(false);
   const [workspaceRevision, setWorkspaceRevision] = useState(0);
@@ -79,11 +81,42 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
     setEditing(true);
   }, [pendingSelect, data, editing]);
 
+  const isDirty = () => Boolean(editing && data && editorRef.current && editorRef.current.getText() !== data.content);
+  const confirmLeave = () => !isDirty() || window.confirm(t("state.leaveUnsaved"));
+
+  useEffect(() => {
+    if (!canLeaveRef) return;
+    canLeaveRef.current = confirmLeave;
+    return () => { canLeaveRef.current = null; };
+  });
+
+  // Closing or reloading the tab with unsaved edits asks first.
+  useEffect(() => {
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!isDirty()) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  });
+
+  // Ctrl/Cmd+S saves, as in any editor.
+  const saveRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey || event.key.toLowerCase() !== "s") return;
+      event.preventDefault();
+      saveRef.current();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   /** Go to a passage in another chapter, after confirming that unsaved edits here may be left behind. */
   const openLocation = (location: EvidenceLocation) => {
     if (!nav.toChapter) return;
-    const dirty = editing && data && editorRef.current && editorRef.current.getText() !== data.content;
-    if (dirty && !window.confirm(t("state.leaveUnsaved"))) return;
+    if (!confirmLeave()) return;
     nav.toChapter(bookId, location.chapter, { start: location.start, end: location.end });
   };
 
@@ -95,24 +128,28 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
 
   const handleStartReview = () => {
     if (!data || !review.data?.pending) return;
+    if (isDirty() && !window.confirm(t("reader.discardEdits"))) return;
     setEditContent(data.content);
     setReviewing(review.data.pending);
     setEditing(true);
+    setEditorRevision((revision) => revision + 1);
   };
 
   const handleCancelEdit = () => {
+    if (isDirty() && !window.confirm(t("reader.discardEdits"))) return;
     setPendingSelect(undefined);
     setEditing(false);
-    setEditContent("");
+    setEditContent(null);
     setReviewing(null);
     setOpenSuggestions(0);
   };
 
   const handleSave = async () => {
+    if (!editing || saving) return;
     if (reviewing && openSuggestions > 0 && !window.confirm(t("suggest.saveOpen"))) return;
     setSaving(true);
     try {
-      const content = editorRef.current?.getText() ?? editContent;
+      const content = editorRef.current?.getText() ?? editContent ?? data?.content ?? "";
       // Keeping every change of a review leaves the file as the agent wrote it: nothing to save.
       if (!reviewing || content !== data?.content) {
         await fetchJson(`/books/${bookId}/chapters/${chapterNumber}`, {
@@ -130,9 +167,12 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
         setReviewing(null);
         setOpenSuggestions(0);
         void review.refetch();
+        // Reopen on the saved text, without the tracked changes.
+        setEditContent(content);
+        setEditorRevision((revision) => revision + 1);
       }
+      // Saving keeps the editor open where the writer is.
       setPendingSelect(undefined);
-      setEditing(false);
       refetch();
       setWorkspaceRevision((revision) => revision + 1);
     } catch (e) {
@@ -141,6 +181,7 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
       setSaving(false);
     }
   };
+  saveRef.current = () => { void handleSave(); };
 
   if (loading && !data) return (
     <div className="flex flex-col items-center justify-center py-32 space-y-4">
@@ -164,39 +205,46 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
   const paragraphs = body.split(/\n\n+/).filter(Boolean);
 
   return (
-    <div className="w-full space-y-10 fade-in">
-      {/* Navigation & Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <nav className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
+    <div className="w-full space-y-6 fade-in">
+      {!reviewing && review.data?.pending && (
+        <div className="flex flex-col gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 px-5 py-4 md:flex-row md:items-center md:justify-between" data-testid="agent-edit-banner">
+          <div className="text-sm">
+            <span className="font-semibold">{t("suggest.banner")}</span>
+            <span className="ml-2 text-xs text-muted-foreground">
+              {review.data.pending.source} · {new Date(review.data.pending.createdAt).toLocaleString()}
+            </span>
+          </div>
           <button
-            onClick={nav.toDashboard}
-            className="hover:text-primary transition-colors flex items-center gap-1"
+            onClick={handleStartReview}
+            className="flex items-center gap-2 self-start rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:scale-105 active:scale-95 md:self-auto"
           >
-            {t("bread.books")}
+            <GitCompare size={14} />
+            {t("suggest.review")}
           </button>
-          <span className="text-border">/</span>
-          <button
-            onClick={() => nav.toBook(bookId)}
-            className="hover:text-primary transition-colors truncate max-w-[120px]"
-          >
-            {bookId}
-          </button>
-          <span className="text-border">/</span>
-          <span className="text-foreground flex items-center gap-1">
-            <Hash size={12} />
-            {chapterNumber}
-          </span>
-        </nav>
+        </div>
+      )}
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => nav.toBook(bookId)}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-secondary text-muted-foreground rounded-xl hover:text-foreground hover:bg-secondary/80 transition-all border border-border/50"
-          >
-            <List size={14} />
-            {t("reader.backToList")}
-          </button>
-
+      {/* One row above the text: the chapter's tools, folded away until wanted, and save/preview. */}
+      <div className="flex items-start gap-3">
+        {/* The brief, rewrite and version tools. */}
+        <details className="group min-w-0 flex-1 rounded-2xl border border-border/50 bg-card/50" data-testid="chapter-tools">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-5 py-3 text-xs font-bold text-muted-foreground hover:text-foreground">
+            <SlidersHorizontal size={14} />
+            {t("reader.chapterTools")}
+            <ChevronDown size={14} className="ml-auto transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="px-3 pb-3">
+            <ChapterWorkspacePanel
+              key={`${chapterNumber}-${workspaceRevision}`}
+              bookId={bookId}
+              chapterNumber={chapterNumber}
+              t={t}
+              onChapterChanged={() => { refetch(); void review.refetch(); }}
+              onChapterDeleted={() => nav.toBook(bookId)}
+            />
+          </div>
+        </details>
+        <div className="flex shrink-0 gap-2">
           {/* Edit / Preview toggle */}
           {editing ? (
             <>
@@ -229,50 +277,23 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
         </div>
       </div>
 
-      {!editing && review.data?.pending && (
-        <div className="flex flex-col gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 px-5 py-4 md:flex-row md:items-center md:justify-between" data-testid="agent-edit-banner">
-          <div className="text-sm">
-            <span className="font-semibold">{t("suggest.banner")}</span>
-            <span className="ml-2 text-xs text-muted-foreground">
-              {review.data.pending.source} · {new Date(review.data.pending.createdAt).toLocaleString()}
-            </span>
-          </div>
-          <button
-            onClick={handleStartReview}
-            className="flex items-center gap-2 self-start rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:scale-105 active:scale-95 md:self-auto"
-          >
-            <GitCompare size={14} />
-            {t("suggest.review")}
-          </button>
-        </div>
-      )}
-
-      <ChapterWorkspacePanel
-        key={`${chapterNumber}-${workspaceRevision}`}
-        bookId={bookId}
-        chapterNumber={chapterNumber}
-        t={t}
-        onChapterChanged={() => { refetch(); void review.refetch(); }}
-        onChapterDeleted={() => nav.toBook(bookId)}
-      />
-
       {/* Manuscript Sheet */}
       {/* overflow-clip, not hidden: hidden makes a scroll container, which would stop the state panel sticking. */}
-      <div className="paper-sheet rounded-2xl p-8 md:p-16 lg:p-24 shadow-2xl shadow-primary/5 min-h-[80vh] relative overflow-clip">
+      <div className="paper-sheet rounded-2xl p-6 md:p-10 xl:p-14 shadow-2xl shadow-primary/5 min-h-[80vh] relative overflow-clip">
         {/* Physical Paper Details */}
         <div className="absolute top-0 left-8 w-px h-full bg-primary/5 hidden md:block" />
         <div className="absolute top-0 right-8 w-px h-full bg-primary/5 hidden md:block" />
 
-        <header className="mb-16 text-center">
-          <div className="flex items-center justify-center gap-2 text-muted-foreground/30 mb-8 select-none">
+        <header className={`${editing ? "mb-8" : "mb-16"} text-center`}>
+          <div className={`${editing ? "hidden" : "flex"} items-center justify-center gap-2 text-muted-foreground/30 mb-8 select-none`}>
             <div className="h-px w-12 bg-border/40" />
             <BookOpen size={20} />
             <div className="h-px w-12 bg-border/40" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-serif font-medium italic text-foreground tracking-tight leading-tight">
+          <h1 className="text-3xl md:text-4xl font-serif font-medium italic text-foreground tracking-tight leading-tight">
             {title}
           </h1>
-          <div className="mt-8 flex items-center justify-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
+          <div className={`${editing ? "mt-3" : "mt-8"} flex items-center justify-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60`}>
             <span>{t("reader.manuscriptPage")}</span>
             <span className="text-border">·</span>
             <span>{chapterNumber.toString().padStart(2, '0')}</span>
@@ -281,9 +302,10 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
 
         {editing ? (
           <ManuscriptEditor
+            key={editorRevision}
             bookId={bookId}
             chapterNumber={chapterNumber}
-            initialText={editContent}
+            initialText={editContent ?? data.content}
             handleRef={editorRef}
             t={t}
             selection={pendingSelect}
@@ -315,20 +337,6 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t }: 
         </footer>
       </div>
 
-      {/* Footer Navigation */}
-      <div className="flex justify-between items-center py-8">
-        {chapterNumber > 1 ? (
-          <button
-            onClick={() => nav.toBook(bookId)}
-            className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-all group"
-          >
-            <RotateCcw size={16} className="group-hover:-rotate-45 transition-transform" />
-            {t("reader.chapterList")}
-          </button>
-        ) : (
-          <div />
-        )}
-      </div>
     </div>
   );
 }
