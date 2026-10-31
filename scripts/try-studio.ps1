@@ -19,7 +19,8 @@ function Step([string]$title, [scriptblock]$command) {
 }
 
 # The lockfile is pnpm 9's (as in CI); pnpm 10 refuses it, so run that version whatever is installed.
-function pnpm9 { npx -y pnpm@9.15.9 @args }
+# npx.cmd, not npx: npm's npx.ps1 rebuilds its arguments from the calling line, which loses @args.
+function pnpm9 { npx.cmd -y pnpm@9.15.9 @args }
 
 if (-not $SkipPull) {
   Step "Switch to master" { git switch master }
