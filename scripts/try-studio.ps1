@@ -25,7 +25,9 @@ if (-not $SkipPull) {
   Step "Switch to master" { git switch master }
   Step "Pull the latest master" { git pull --ff-only origin master }
 }
-Step "Install dependencies" { pnpm9 install --frozen-lockfile }
+# CI=true lets pnpm replace a node_modules folder made by another pnpm version
+# without asking, which it cannot do from a script.
+Step "Install dependencies" { $env:CI = "true"; pnpm9 install --frozen-lockfile; $code = $LASTEXITCODE; Remove-Item Env:CI; $global:LASTEXITCODE = $code }
 Step "Build" { pnpm9 build }
 Step "Make the test book" { node scripts/demo-book.mjs $Project }
 Step "Open Studio (Ctrl+C to stop)" { node packages/cli/dist/index.js studio --project $Project --port $Port }
