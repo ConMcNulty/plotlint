@@ -1,6 +1,6 @@
 ---
 name: inkos-long-writing
-description: 长篇小说的场景构造、人物因果、信息释放与连载节奏。Used by InkOS long-form workers as their shared craft method.
+description: Scene construction, character causality, information release, and serial pacing for long-form novels. Used by InkOS long-form workers as their shared craft method.
 ---
 # Long-form narrative craft
 

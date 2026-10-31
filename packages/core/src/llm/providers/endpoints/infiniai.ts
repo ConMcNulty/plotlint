@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const INFINIAI: InkosEndpoint = {
   id: "infiniai",
-  label: "无问芯穹 InfiniAI",
+  label: "InfiniAI",
   group: "aggregator",
   api: "openai-completions",
   baseUrl: "https://cloud.infini-ai.com/maas/v1",

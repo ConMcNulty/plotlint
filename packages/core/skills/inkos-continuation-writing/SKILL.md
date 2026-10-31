@@ -1,6 +1,6 @@
 ---
 name: inkos-continuation-writing
-description: 从导入正文重建正典与运行时状态，并在原续写或系列新作边界内继续创作。
+description: Rebuild canon and runtime state from an imported manuscript, then keep writing within the original continuation or a new book in the series.
 ---
 # Continuation writing
 

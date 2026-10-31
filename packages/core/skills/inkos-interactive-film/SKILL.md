@@ -1,6 +1,6 @@
 ---
 name: inkos-interactive-film
-description: 互动影游的剧情树、变量旗标、可拍节点、多结局与资产连续性方法。Used for creation and authoring of interactive-film projects.
+description: Story trees, variable flags, shootable nodes, multiple endings, and asset continuity for interactive films. Used for creation and authoring of interactive-film projects.
 ---
 # Interactive film creation
 

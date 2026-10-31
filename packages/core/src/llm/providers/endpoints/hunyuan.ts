@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const HUNYUAN: InkosEndpoint = {
   id: "hunyuan",
-  label: "腾讯混元",
+  label: "Tencent Hunyuan",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://api.hunyuan.cloud.tencent.com/v1",

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { setAppLanguage } from "../../../../lib/app-language";
 import { createStore } from "zustand/vanilla";
 import type { ChatStore, SessionMessage } from "../../types";
 import { initialChatState } from "../../initialState";
@@ -44,6 +45,10 @@ function createTestStore() {
     ...createCreateSlice(...args),
   }));
 }
+
+// These cases assert the Chinese UI copy; English is the default app language.
+beforeEach(() => setAppLanguage("zh"));
+afterEach(() => setAppLanguage("en"));
 
 describe("chat message actions", () => {
   const originalEventSource = globalThis.EventSource;

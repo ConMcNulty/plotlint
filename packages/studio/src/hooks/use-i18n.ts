@@ -511,7 +511,7 @@ export type TFunction = (key: StringKey) => string;
 
 export function useI18n() {
   const { data } = useApi<{ language: string }>("/project");
-  const lang: Lang = data?.language === "en" ? "en" : "zh";
+  const lang: Lang = data?.language === "zh" ? "zh" : "en";
 
   function t(key: StringKey): string {
     return strings[key][lang];

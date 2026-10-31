@@ -1,6 +1,6 @@
 ---
 name: inkos-fanfic-writing
-description: 基于外部正典创作同人作品，管理正典边界、角色声音与允许偏离。
+description: Write fan fiction from external canon while managing canon boundaries, character voice, and permitted divergence.
 ---
 # Fan-fiction writing
 

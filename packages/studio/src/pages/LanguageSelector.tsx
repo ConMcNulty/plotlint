@@ -35,12 +35,12 @@ export function LanguageSelector({ onSelect }: { onSelect: (lang: "zh" | "en") =
                 : "border-border bg-card/50"
           }`}
         >
-          <div className="font-serif text-3xl mb-4 text-foreground">中文创作</div>
+          <div className="font-serif text-3xl italic mb-4 text-foreground">Chinese Writing</div>
           <div className="text-base text-foreground/70 leading-relaxed mb-6">
-            玄幻 · 仙侠 · 都市 · 恐怖 · 通用
+            Xuanhuan · Xianxia · Urban · Horror · General
           </div>
           <div className="text-sm text-muted-foreground">
-            番茄小说 · 起点中文网 · 飞卢
+            Tomato · Qidian · Feilu
           </div>
         </button>
 
@@ -67,7 +67,7 @@ export function LanguageSelector({ onSelect }: { onSelect: (lang: "zh" | "en") =
       </div>
 
       <div className="text-sm text-muted-foreground">
-        可在设置中更改 · Can be changed in Settings
+        Can be changed in Settings
       </div>
     </div>
   );

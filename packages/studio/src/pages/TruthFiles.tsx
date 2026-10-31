@@ -4,6 +4,7 @@ import type { Theme } from "../hooks/use-theme";
 import type { TFunction } from "../hooks/use-i18n";
 import { useColors } from "../hooks/use-colors";
 import { Pencil, Save, X } from "lucide-react";
+import { tr } from "../lib/app-language";
 
 interface TruthFile {
   readonly name: string;
@@ -121,9 +122,9 @@ export function TruthFiles({ bookId, nav, theme, t }: { bookId: string; nav: Nav
                   data-testid="runtime-diagnostic-warning"
                   className="mb-3 px-3 py-2 rounded-md border border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300 text-xs leading-relaxed"
                 >
-                  <div className="font-medium">运行时诊断文件 / Runtime diagnostic</div>
+                  <div className="font-medium">{tr("运行时诊断文件", "Runtime diagnostic")}</div>
                   <div className="mt-1">
-                    这里展示本章写作时的上下文选择、保护层、可压缩层和预算 trace。它只用于追溯系统看了什么，不作为可编辑设定。
+                    {tr("这里展示本章写作时的上下文选择、保护层、可压缩层和预算 trace。它只用于追溯系统看了什么，不作为可编辑设定。", "This shows the context selection, protected and compressible layers, and budget trace used when writing this chapter. It only records what the system looked at; it is not an editable setting.")}
                   </div>
                 </div>
               )}

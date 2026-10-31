@@ -9,7 +9,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const BAICHUAN: InkosEndpoint = {
   id: "baichuan",
-  label: "百川智能",
+  label: "Baichuan AI",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://api.baichuan-ai.com/v1",

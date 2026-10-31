@@ -1,6 +1,6 @@
 ---
 name: inkos-script-writing
-description: 小说、创意与大纲到可演剧本的改编方法。Used for script and short-drama production.
+description: Adapting fiction, ideas, and outlines into performable scripts. Used for script and short-drama production.
 ---
 # Script writing
 

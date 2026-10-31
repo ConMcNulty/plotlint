@@ -1,5 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
+import { setAppLanguage } from "../../../lib/app-language";
 import { buildAutoImageRequests, buildView } from "../PlayHud";
+
+// These cases assert the Chinese UI copy; English is the default app language.
+beforeEach(() => setAppLanguage("zh"));
+afterEach(() => setAppLanguage("en"));
 
 describe("PlayHud buildView", () => {
   it("classifies held inventory from canonical graph edge roles, not status words", () => {

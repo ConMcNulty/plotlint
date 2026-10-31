@@ -15,7 +15,7 @@ import type { InkosEndpoint } from "../types.js";
  */
 export const CUSTOM: InkosEndpoint = {
   id: "custom",
-  label: "自定义端点",
+  label: "Custom endpoint",
   api: "openai-completions",
   baseUrl: "",
   models: [],

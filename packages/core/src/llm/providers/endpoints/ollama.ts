@@ -11,7 +11,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const OLLAMA: InkosEndpoint = {
   id: "ollama",
-  label: "Ollama (本地)",
+  label: "Ollama (local)",
   group: "local",
   api: "openai-completions",
   baseUrl: "http://localhost:11434/v1",

@@ -11,7 +11,7 @@ import type { InkosEndpoint } from "../types.js";
 
 export const XIAOMI_MIMO: InkosEndpoint = {
   id: "xiaomimimo",
-  label: "小米 MiMo",
+  label: "Xiaomi MiMo",
   group: "china",
   api: "openai-completions",
   baseUrl: "https://api.xiaomimimo.com/v1",
