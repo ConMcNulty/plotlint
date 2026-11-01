@@ -50,6 +50,14 @@ jobs:
           node scripts/demo-book.mjs "$env:RUNNER_TEMP\demo"
           node desktop/scripts/smoke.mjs "$env:RUNNER_TEMP\demo"
 
+      - name: Diagnose Harper in the packaged app
+        if: failure()
+        run: |
+          $env:ELECTRON_RUN_AS_NODE = "1"
+          & "desktop/release/win-unpacked/plotlint Studio.exe" desktop/scripts/diag-harper.mjs "desktop/release/win-unpacked/resources/server" "$env:RUNNER_TEMP\diag.txt" | Out-Null
+          Start-Sleep -Seconds 20
+          Get-Content "$env:RUNNER_TEMP\diag.txt"
+
       - uses: actions/upload-artifact@v4
         with:
           name: plotlint-Studio-windows
