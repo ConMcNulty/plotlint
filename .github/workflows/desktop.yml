@@ -2,7 +2,9 @@ name: Desktop app
 
 # Builds the plotlint Studio Windows installer and portable exe, checks that
 # the packaged app opens a book and lints, and uploads both exes as the
-# "plotlint-Studio-windows" artifact of the run.
+# "plotlint-Studio-windows" artifact of the run. On master (push or a manual
+# run) it then publishes them as a GitHub Release, tagged studio-v<version>,
+# where the version is desktop/package.json's major.minor plus the run number.
 on:
   push:
     branches: [master]
@@ -15,9 +17,19 @@ on:
       - ".github/workflows/desktop.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+# One release at a time, in push order.
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   windows:
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -41,6 +53,16 @@ jobs:
         working-directory: desktop
         run: npm test
 
+      - name: Set the app version
+        id: version
+        working-directory: desktop
+        shell: bash
+        run: |
+          base=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')")
+          version="$base.${{ github.run_number }}"
+          npm version "$version" --no-git-tag-version --allow-same-version
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
       - name: Build installer and portable exe
         working-directory: desktop
         run: npm run dist
@@ -56,3 +78,25 @@ jobs:
           path: desktop/release/*.exe
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish the GitHub Release
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          cat > "$RUNNER_TEMP/notes.md" <<EOF
+          Windows build of plotlint Studio from ${GITHUB_SHA::7}.
+
+          - **plotlint-Studio-Setup-$VERSION.exe** installs it for your user (no admin needed).
+          - **plotlint-Studio-$VERSION-portable.exe** runs without installing.
+
+          The exes are not code-signed, so Windows SmartScreen warns the first time: choose **More info → Run anyway**.
+          EOF
+          gh release create "studio-v$VERSION" desktop/release/*.exe \
+            --target "$GITHUB_SHA" \
+            --title "plotlint Studio $VERSION" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            --generate-notes \
+            --latest
