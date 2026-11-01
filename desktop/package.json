@@ -16,7 +16,8 @@
   },
   "devDependencies": {
     "electron": "44.10.1",
-    "electron-builder": "26.0.12"
+    "electron-builder": "26.0.12",
+    "esbuild": "0.25.12"
   },
   "build": {
     "appId": "com.plotlint.studio",
@@ -45,7 +46,8 @@
       "artifactName": "plotlint-Studio-Setup-${version}.${ext}"
     },
     "portable": {
-      "artifactName": "plotlint-Studio-${version}-portable.${ext}"
+      "artifactName": "plotlint-Studio-${version}-portable.${ext}",
+      "splashImage": "build-resources/portable-splash.bmp"
     },
     "linux": {
       "target": [

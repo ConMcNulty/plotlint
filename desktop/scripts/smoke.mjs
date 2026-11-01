@@ -19,6 +19,7 @@ if (!existsSync(exe)) throw new Error(`No packaged app at ${exe}`);
 const debugPort = 9333;
 const args = [`--remote-debugging-port=${debugPort}`, "--project", project];
 if (process.platform === "linux") args.unshift("--no-sandbox");
+const startedAt = Date.now();
 const app = spawn(exe, args, { stdio: "inherit" });
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -40,7 +41,7 @@ async function studioOrigin() {
 let failed = false;
 try {
   const origin = await studioOrigin();
-  console.log(`Studio loaded at ${origin}`);
+  console.log(`Studio loaded at ${origin} ${((Date.now() - startedAt) / 1000).toFixed(1)}s after launch`);
   const books = await (await fetch(`${origin}/api/v1/books`)).json();
   console.log(`Books: ${JSON.stringify(books).slice(0, 200)}`);
   const response = await fetch(`${origin}/api/v1/plotlint/lint`, {
