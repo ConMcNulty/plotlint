@@ -4,7 +4,6 @@
 // loading ~20,000 separate files made the app slow to start on Windows.
 //
 //   plotlint-server.mjs <projectRoot>   (port from INKOS_STUDIO_PORT)
-import { existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ensureProjectDirectoryInitialized } from "@actalk/inkos/dist/project-bootstrap.js";
