@@ -1,0 +1,58 @@
+name: Desktop app
+
+# Builds the plotlint Studio Windows installer and portable exe, checks that
+# the packaged app opens a book and lints, and uploads both exes as the
+# "plotlint-Studio-windows" artifact of the run.
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+    paths:
+      - "desktop/**"
+      - "packages/studio/**"
+      - "packages/cli/**"
+      - ".github/workflows/desktop.yml"
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Install desktop tools
+        working-directory: desktop
+        run: npm ci
+
+      - name: Test desktop helpers
+        working-directory: desktop
+        run: npm test
+
+      - name: Build installer and portable exe
+        working-directory: desktop
+        run: npm run dist
+
+      - name: Smoke test the packaged app
+        run: |
+          node scripts/demo-book.mjs "$env:RUNNER_TEMP\demo"
+          node desktop/scripts/smoke.mjs "$env:RUNNER_TEMP\demo"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plotlint-Studio-windows
+          path: desktop/release/*.exe
+          if-no-files-found: error
+          retention-days: 30
