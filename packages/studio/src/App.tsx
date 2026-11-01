@@ -32,7 +32,9 @@ import { useSessionEvents } from "./hooks/use-session-events";
 import { useTheme } from "./hooks/use-theme";
 import { useI18n } from "./hooks/use-i18n";
 import { setAppLanguage, tr } from "./lib/app-language";
-import { postApi, putApi, useApi } from "./hooks/use-api";
+import { fetchJson, postApi, putApi, useApi } from "./hooks/use-api";
+import { ConfirmDialog } from "./components/ConfirmDialog";
+import { shouldPromptModelSetup, type ModelServiceStatus } from "./lib/model-setup-prompt";
 import { Sun, Moon } from "lucide-react";
 import { House } from "lucide-react";
 
@@ -88,6 +90,25 @@ export function App() {
       setReady(true);
     }
   }, [project]);
+
+  // First run: if no AI model provider is connected yet, offer to open the
+  // model settings. Checked once per launch, after the language step.
+  const [modelServices, setModelServices] = useState<ReadonlyArray<ModelServiceStatus> | null>(null);
+  const [modelPromptDismissed, setModelPromptDismissed] = useState(false);
+  const modelCheckReady = ready && !showLanguageSelector;
+  useEffect(() => {
+    if (!modelCheckReady) return;
+    let cancelled = false;
+    fetchJson<{ services?: ReadonlyArray<ModelServiceStatus> }>("/services")
+      .then((data) => { if (!cancelled) setModelServices(data.services ?? []); })
+      .catch(() => { /* leave null: never prompt on a failed check */ });
+    return () => { cancelled = true; };
+  }, [modelCheckReady]);
+  const showModelSetupPrompt = shouldPromptModelSetup({
+    services: modelServices,
+    dismissed: modelPromptDismissed,
+    route,
+  });
 
   useSessionEvents(sse, route, setRoute);
 
@@ -179,6 +200,21 @@ export function App() {
   return (
     <div className="h-screen bg-background text-foreground flex overflow-hidden font-sans">
       <CommandPalette route={route} nav={nav} t={t} />
+      <ConfirmDialog
+        open={showModelSetupPrompt}
+        title={tr("设置 AI 模型", "Set up an AI model")}
+        message={tr(
+          "还没有连接任何 AI 模型。写作、审稿和修订都需要一个模型服务商。现在去设置里添加一个 API Key 吧。",
+          "No AI model is connected yet. Writing, review and revision all need a model provider. Open the model settings to add one with your API key.",
+        )}
+        confirmLabel={tr("打开模型设置", "Open model settings")}
+        cancelLabel={tr("稍后", "Not now")}
+        onConfirm={() => {
+          setModelPromptDismissed(true);
+          nav.toServices();
+        }}
+        onCancel={() => setModelPromptDismissed(true)}
+      />
       {/* Left Sidebar */}
       <Sidebar nav={nav} activePage={activePage} sse={sse} t={t} />
 
