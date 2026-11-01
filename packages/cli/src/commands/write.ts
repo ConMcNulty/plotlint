@@ -61,6 +61,8 @@ writeCommand
       const wordCount = opts.words ? parseInt(opts.words, 10) : undefined;
 
       if (!opts.json) log(formatWriteNextProgress(language, 1, count, bookId));
+      // write_chapters requires the range's first chapter; the CLI always continues the book.
+      const startChapterNumber = await state.getNextChapterNumber(bookId);
       const action = await executeExplicitCapabilityTool({
         projectRoot: root,
         binding: { capabilityId: "longform", actionId: "write_chapters", profileId: "longform-novel", risk: "recoverable-write" },
@@ -69,6 +71,7 @@ writeCommand
         parameters: {
           instruction: context || "Write the requested consecutive chapters for the active Work.",
           bookId,
+          startChapterNumber,
           chapterCount: count,
           ...(wordCount ? { chapterWordCount: wordCount } : {}),
         },
@@ -235,6 +238,7 @@ writeCommand
         parameters: {
           instruction: opts.brief?.trim() || `Rewrite chapter ${chapter}.`,
           bookId,
+          startChapterNumber: chapter,
           chapterCount: 1,
           ...(wordCount ? { chapterWordCount: wordCount } : {}),
         },
