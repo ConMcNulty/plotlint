@@ -1,10 +1,13 @@
 // Runs inside the desktop app's server process (Electron's own Node, started
-// with ELECTRON_RUN_AS_NODE). prepare-server.mjs copies this file next to the
-// deployed CLI, so the imports below resolve to the deployed packages.
+// with ELECTRON_RUN_AS_NODE). prepare-server.mjs bundles this file and
+// everything it imports into one file, server/plotlint-server.mjs, because
+// loading ~20,000 separate files made the app slow to start on Windows.
 //
 //   plotlint-server.mjs <projectRoot>   (port from INKOS_STUDIO_PORT)
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
+import { ensureProjectDirectoryInitialized } from "@actalk/inkos/dist/project-bootstrap.js";
+import { startStudioServer } from "@actalk/inkos-studio/dist/api/server.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(process.argv[2] ?? process.cwd());
@@ -14,16 +17,11 @@ const port = Number.parseInt(process.env.INKOS_STUDIO_PORT ?? "4567", 10);
 // stop instead of leaving a server running.
 process.on("disconnect", () => process.exit(0));
 
-const load = (path) => import(pathToFileURL(join(here, path)).href);
-
-const { ensureProjectDirectoryInitialized } = await load("dist/project-bootstrap.js");
-const { startStudioServer } = await load("node_modules/@actalk/inkos-studio/dist/api/server.js");
-
 const initialized = await ensureProjectDirectoryInitialized(root, { language: "en" });
 if (initialized) console.log(`Started a new plotlint project in ${root}`);
 process.send?.({ type: "initialized", initialized });
 
 await startStudioServer(root, port, {
-  staticDir: join(here, "node_modules", "@actalk", "inkos-studio", "dist"),
+  staticDir: join(here, "web"),
   hostname: "127.0.0.1",
 });

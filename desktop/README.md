@@ -38,7 +38,12 @@ To build on your own PC instead (Node 22+ and git):
 - `server-entry.mjs` — runs in the server process; creates the project if the
   folder is empty and starts the Studio server.
 - `scripts/prepare-server.mjs` — `pnpm deploy`s the built CLI (with Studio and
-  every plotlint package) into `build/server` with a flat `node_modules`.
+  every plotlint package), then bundles `server-entry.mjs` and all it imports
+  into one file with esbuild. `build/server` ends up with about 450 files
+  instead of 23,000, which is what made the app slow to start on Windows.
+  Packages that read data files next to their code (core skills, style packs,
+  check packs) are pointed at copies under `build/server/resources`; harper.js
+  stays a separate package because it loads its WebAssembly from its folder.
 - `scripts/after-pack.cjs` — copies `build/server` into the app's resources
   (electron-builder drops `node_modules` from `extraResources`).
 - `scripts/smoke.mjs` — launches the packaged app on a project and checks
