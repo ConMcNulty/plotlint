@@ -47,13 +47,28 @@ async function chooseProjectFolder(firstRun) {
   return result.canceled || !result.filePaths[0] ? undefined : result.filePaths[0];
 }
 
-function loadingPage(root) {
+function statusPage(message, detail = "") {
   const html = `<!doctype html><meta charset="utf-8"><title>${APP_NAME}</title>
 <style>html,body{height:100%;margin:0}body{display:grid;place-items:center;background:#fafaf9;color:#44403c;
 font:15px system-ui,sans-serif}@media(prefers-color-scheme:dark){body{background:#1c1917;color:#d6d3d1}}
 p{margin:.3em 0;text-align:center}small{opacity:.6}</style>
-<div><p>Opening ${escapeHtml(basename(root))}…</p><p><small>${escapeHtml(root)}</small></p></div>`;
+<div><p>${escapeHtml(message)}</p><p><small>${escapeHtml(detail)}</small></p></div>`;
   return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
+}
+
+function loadingPage(root) {
+  return statusPage(`Opening ${basename(root)}…`, root);
+}
+
+// Loads a page; a load cut short by the next one (ERR_ABORTED) is not an error.
+async function showPage(url) {
+  if (!win || win.isDestroyed()) return;
+  try {
+    await win.loadURL(url);
+  } catch (error) {
+    if (error && error.code === "ERR_ABORTED") return;
+    throw error;
+  }
 }
 
 function escapeHtml(text) {
@@ -108,7 +123,7 @@ async function startServer(root) {
 async function openProject(root) {
   stopServer();
   win.setTitle(`${APP_NAME} — ${basename(root)}`);
-  await win.loadURL(loadingPage(root));
+  await showPage(loadingPage(root));
   let started;
   try {
     started = await startServer(root);
@@ -121,7 +136,7 @@ async function openProject(root) {
   saveRecentProject(root);
   app.addRecentDocument(root);
   // A new project needs a model before the agent can write, as `inkos studio` does.
-  await win.loadURL(`${started.url}/${started.initialized ? "#/services" : ""}`);
+  await showPage(`${started.url}/${started.initialized ? "#/services" : ""}`);
 }
 
 async function showServerError(root, error, output) {
@@ -201,11 +216,11 @@ function createWindow() {
     minHeight: 480,
     title: APP_NAME,
     backgroundColor: "#fafaf9",
-    show: false,
+    show: true,
     autoHideMenuBar: false,
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
-  win.once("ready-to-show", () => win.show());
+  void showPage(statusPage(`Starting ${APP_NAME}…`));
   // Keep "plotlint Studio — <project>" rather than the page's own title.
   win.on("page-title-updated", event => event.preventDefault());
 
@@ -223,7 +238,17 @@ function createWindow() {
   win.on("closed", () => { win = null; });
 }
 
+function fatal(what, error) {
+  const text = error && error.stack ? error.stack : String(error);
+  log(`${what}: ${text}`);
+  dialog.showErrorBox(APP_NAME, `${what}.\n\n${text}\n\nDetails are in ${logFile()}`);
+}
+
+process.on("uncaughtException", error => fatal("Unexpected error", error));
+process.on("unhandledRejection", error => fatal("Unexpected error", error));
+
 if (!app.requestSingleInstanceLock()) {
+  // Another copy is already running; it brings its window to the front.
   app.quit();
 } else {
   app.setName(APP_NAME);
@@ -236,15 +261,26 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   app.whenReady().then(async () => {
+    log(`\n=== ${new Date().toISOString()} ${APP_NAME} ${app.getVersion()} starting (${process.platform}, Electron ${process.versions.electron})`);
     buildMenu();
     createWindow();
-    const root = projectFromArgs(process.argv) ?? loadRecentProject() ?? await chooseProjectFolder(true);
+    const fromArgs = projectFromArgs(process.argv);
+    const recent = fromArgs ? undefined : loadRecentProject();
+    let root = fromArgs ?? recent;
+    if (root) {
+      log(`Project from ${fromArgs ? "--project" : "the last session"}: ${root}`);
+    } else {
+      log("No recent project; asking for a folder");
+      await showPage(statusPage("Choose a folder for your writing", "Pick a plotlint project, or an empty folder to start a new one."));
+      root = await chooseProjectFolder(true);
+    }
     if (!root) {
+      log("No folder chosen; quitting");
       app.quit();
       return;
     }
     await openProject(root);
-  });
+  }).catch(error => fatal("Startup failed", error));
 
   app.on("before-quit", () => { quitting = true; });
   app.on("will-quit", stopServer);

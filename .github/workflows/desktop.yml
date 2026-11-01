@@ -90,7 +90,7 @@ jobs:
           Windows build of plotlint Studio from ${GITHUB_SHA::7}.
 
           - **plotlint-Studio-Setup-$VERSION.exe** installs it for your user (no admin needed).
-          - **plotlint-Studio-$VERSION-portable.exe** runs without installing.
+          - **plotlint-Studio-$VERSION-portable.exe** runs without installing, but unpacks itself on every start, so it can take a minute to appear.
 
           The exes are not code-signed, so Windows SmartScreen warns the first time: choose **More info → Run anyway**.
           EOF
