@@ -27,6 +27,11 @@ describe("hash route", () => {
       expect(parseHash("#/book/my-novel/boards")).toEqual({ page: "boards", bookId: "my-novel" });
     });
 
+    it("parses a chapter open in the workspace, and writes it back", () => {
+      expect(parseHash("#/book/my%20book/chapter/3")).toEqual({ page: "chapter", bookId: "my book", chapterNumber: 3 });
+      expect(routeToHash({ page: "chapter", bookId: "my book", chapterNumber: 3 })).toBe("#/book/my%20book/chapter/3");
+    });
+
     it("parses book settings route", () => {
       expect(parseHash("#/book/my-novel/settings")).toEqual({ page: "book-settings", bookId: "my-novel" });
     });
