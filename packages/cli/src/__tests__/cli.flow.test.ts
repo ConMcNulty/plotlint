@@ -92,6 +92,39 @@ describe("CLI mini-flows", () => {
     expect(run(["lint", "lint-novel"])).toContain("ch3 warning continuity/dead-entity-acts [extracted]");
   });
 
+  it("sends write next's chapter range in the shape the write action accepts", async () => {
+    run(["init"]);
+    const now = new Date().toISOString();
+    await new StateManager(projectDir).saveBookConfig("write-novel", {
+      id: "write-novel", title: "Write Novel", platform: "other", genre: "mystery", status: "active",
+      targetChapters: 3, chapterWordCount: 1000, language: "en", createdAt: now, updatedAt: now,
+    });
+    // A Work with no foundation: the action must get past parameter checks and
+    // stop at the readiness check, before any LLM call.
+    let output = "";
+    try {
+      execFileSync("node", [
+        cliEntry, "--service", "custom", "--base-url", "http://127.0.0.1:9/v1", "--api-format", "chat",
+        "--model", "test", "--no-stream", "--api-key-env", "PLOTLINT_TEST_KEY", "write", "next", "write-novel",
+      ], {
+        cwd: projectDir,
+        encoding: "utf-8",
+        timeout: 15_000,
+        stdio: "pipe",
+        env: {
+          ...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith("INKOS_"))),
+          HOME: projectDir,
+          PLOTLINT_TEST_KEY: "test",
+        },
+      });
+    } catch (error) {
+      const { stdout, stderr } = error as { stdout: string; stderr: string };
+      output = `${stdout}${stderr}`;
+    }
+    expect(output).not.toContain("expected schema");
+    expect(output).toContain("not ready for chapter writing");
+  });
+
   it("runs structural state rules under the structure layer only", async () => {
     run(["init"]);
     await saveWorkManifest(projectDir, createWorkManifest({ id: "lint-novel", title: "Lint Novel", profileId: "longform-novel", language: "en" }));
