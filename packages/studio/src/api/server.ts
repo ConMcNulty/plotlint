@@ -6894,5 +6894,9 @@ export async function startStudioServer(
 
   const hostname = options?.hostname?.trim() || "127.0.0.1";
   console.log(`InkOS Studio running on http://${hostname}:${port}`);
-  serve({ fetch: app.fetch, port, hostname });
+  // By default @hono/node-server swaps the global Request/Response for its own
+  // classes. The Response that fetch() returns is then not `instanceof
+  // Response`, and Harper's WebAssembly loader (which fetches its inlined
+  // binary on Windows) fails, so every lint request on Windows returned 500.
+  serve({ fetch: app.fetch, port, hostname, overrideGlobalObjects: false });
 }
