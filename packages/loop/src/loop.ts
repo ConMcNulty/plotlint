@@ -234,7 +234,7 @@ export async function runLoop(options: LoopOptions): Promise<LoopResult> {
       filed = safe.filed;
       gaming = safe.gaming;
     } else if (now.visible.errors === 0 && now.visible.warnings <= threshold) stop = { reason: "clean", round };
-    else if (now.blockingOpen === 0 && now.waiting.some((finding) => finding.diagnostic.severity !== "note")) stop = { reason: "escalated", round, detail: `nothing left for the author: ${now.waiting.length} finding${now.waiting.length === 1 ? "" : "s"} wait for the human` };
+    else if (now.blockingOpen === 0 && now.waiting.some((finding) => finding.diagnostic.severity !== "note")) stop = { reason: "escalated", round, detail: `nothing left for the author: ${now.waiting.length} ${now.waiting.length === 1 ? "finding waits" : "findings wait"} for the human` };
     else if (round > maxRounds) stop = { reason: "rounds", round };
     else if (options.tokenBudget !== undefined && (options.tokensUsed?.() ?? 0) >= options.tokenBudget) stop = { reason: "tokens", round };
     else if (sinceBest >= patience) stop = { reason: "stalled", round, detail: `no lower visible score in ${patience} rounds` };
