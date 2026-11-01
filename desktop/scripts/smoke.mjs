@@ -4,7 +4,8 @@
 //   node scripts/smoke.mjs <project-dir>
 // Run after `npm run dist` (Windows) or `npm run dist:dir` (Linux, under xvfb-run).
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -47,10 +48,12 @@ try {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ bookId: "harbour-lights", chapter: 1, text: "She recieved the key." }),
   });
-  const lint = await response.json();
+  const body = await response.text();
+  let lint = {};
+  try { lint = JSON.parse(body); } catch { /* reported below */ }
   const rules = (lint.diagnostics ?? []).map(d => d.ruleId);
   console.log(`Lint ${response.status}: ${rules.join(", ")}`);
-  if (response.status !== 200 || !rules.includes("mechanics/harper")) throw new Error("Lint did not flag the typo.");
+  if (response.status !== 200 || !rules.includes("mechanics/harper")) throw new Error(`Lint did not flag the typo: ${body.slice(0, 2000)}`);
 
   app.kill("SIGKILL"); // as if the app crashed: the server must not outlive it
   await sleep(4000);
@@ -60,6 +63,10 @@ try {
 } catch (error) {
   failed = true;
   console.error(error);
+  const log = process.platform === "win32"
+    ? join(process.env.APPDATA ?? "", "plotlint Studio", "logs", "server.log")
+    : join(homedir(), ".config", "plotlint Studio", "logs", "server.log");
+  if (existsSync(log)) console.error(`--- server log (${log}) ---\n${readFileSync(log, "utf-8").slice(-6000)}`);
 } finally {
   if (app.exitCode === null) app.kill("SIGKILL");
 }
