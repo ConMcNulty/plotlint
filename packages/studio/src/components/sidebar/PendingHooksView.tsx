@@ -53,7 +53,7 @@ export function PendingHooksView({ content }: PendingHooksViewProps) {
               <span className="text-[12px] text-muted-foreground/50 ml-auto">{tr("回收", "Payoff")} · {hook.payoff}</span>
             )}
           </div>
-          <p className="text-[15px] text-foreground leading-7 font-['SimSun','Songti_SC','STSong',serif]">
+          <p className="text-[15px] text-foreground leading-7">
             {hook.content}
           </p>
         </div>

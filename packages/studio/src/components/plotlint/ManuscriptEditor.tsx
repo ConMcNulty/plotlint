@@ -269,7 +269,7 @@ export function ManuscriptEditor({
       text: initialTextRef.current,
       sourceId: chapterSourceId(chapterNumber),
       lint: lint ?? chapterLinter(bookId, chapterNumber),
-      editorClass: "pl-manuscript-editor font-serif text-lg leading-[1.8] text-foreground/90",
+      editorClass: "pl-manuscript-editor font-sans text-lg leading-[1.8] text-foreground/90",
       onProblems: setProblems,
       onVerdicts: (events) => live.current.verdicts(events),
       hidden: hiddenFor(bookId),

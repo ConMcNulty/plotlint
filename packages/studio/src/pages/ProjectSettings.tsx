@@ -181,7 +181,7 @@ export function ProjectSettings({ nav, theme, t }: { nav: Nav; theme: Theme; t: 
       </div>
 
       <div className="space-y-2">
-        <h1 className="font-serif text-3xl flex items-center gap-3">
+        <h1 className="font-sans text-3xl flex items-center gap-3">
           <Settings2 size={28} className="text-primary" />
           {t("settings.title")}
         </h1>

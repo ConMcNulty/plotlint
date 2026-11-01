@@ -34,7 +34,7 @@ export function LogViewer({ nav, theme, t }: { nav: Nav; theme: Theme; t: TFunct
       </div>
 
       <div className="flex items-baseline justify-between">
-        <h1 className="font-serif text-3xl">{t("logs.title")}</h1>
+        <h1 className="font-sans text-3xl">{t("logs.title")}</h1>
         <button
           onClick={() => refetch()}
           className={`px-4 py-2.5 text-sm rounded-md ${c.btnSecondary}`}

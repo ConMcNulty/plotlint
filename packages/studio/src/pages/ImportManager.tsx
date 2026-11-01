@@ -193,7 +193,7 @@ export function ImportManager({ nav, theme, t, initialTab }: { nav: Nav; theme: 
         <span>{t("nav.import")}</span>
       </div>
 
-      <h1 className="font-serif text-3xl flex items-center gap-3">
+      <h1 className="font-sans text-3xl flex items-center gap-3">
         <FileInput size={28} className="text-primary" />
         {t("import.title")}
       </h1>

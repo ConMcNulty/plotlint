@@ -157,7 +157,7 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
       <section className="flex min-w-0 flex-1 flex-col">
         {/* Toolbar: which chapter, and the side panel's toggles. */}
         <div className="flex shrink-0 items-center gap-2 border-b border-border/40 px-4 py-2">
-          <span className="mr-2 hidden max-w-[220px] truncate font-serif text-sm font-semibold text-foreground md:inline">
+          <span className="mr-2 hidden max-w-[220px] truncate font-sans text-sm font-semibold text-foreground md:inline">
             {book.data?.book.title ?? bookId}
           </span>
           {chapters.length > 0 && current !== null && (
@@ -238,7 +238,7 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
             </div>
           ) : book.data ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 px-8 text-center" data-testid="workspace-empty">
-              <p className="font-serif text-2xl italic text-foreground">{t("workspace.noChapters")}</p>
+              <p className="font-sans text-2xl text-foreground">{t("workspace.noChapters")}</p>
               <p className="max-w-md text-sm leading-7 text-muted-foreground">{t("workspace.noChaptersHint")}</p>
               {!(panel?.open && panel.tab === "chat") && (
                 <button

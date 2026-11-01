@@ -70,7 +70,7 @@ export function RadarView({ nav, theme, t }: { nav: Nav; theme: Theme; t: TFunct
       </div>
 
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-3xl flex items-center gap-3">
+        <h1 className="font-sans text-3xl flex items-center gap-3">
           <TrendingUp size={28} className="text-primary" />
           {t("radar.title")}
         </h1>

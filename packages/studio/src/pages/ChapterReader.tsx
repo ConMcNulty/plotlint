@@ -290,7 +290,7 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
             <BookOpen size={20} />
             <div className="h-px w-12 bg-border/40" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-serif font-medium italic text-foreground tracking-tight leading-tight">
+          <h1 className="text-3xl md:text-4xl font-sans font-medium text-foreground tracking-tight leading-tight">
             {title}
           </h1>
           <div className={`${editing ? "mt-3" : "mt-8"} flex items-center justify-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60`}>
@@ -315,7 +315,7 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
         ) : (
           <article className="prose prose-zinc dark:prose-invert max-w-none">
             {paragraphs.map((para, i) => (
-              <p key={i} className="font-serif text-lg md:text-xl leading-[1.8] text-foreground/90 mb-8 first-letter:text-2xl first-letter:font-bold first-letter:text-primary/40">
+              <p key={i} className="font-sans text-lg md:text-xl leading-[1.8] text-foreground/90 mb-8 first-letter:text-2xl first-letter:font-bold first-letter:text-primary/40">
                 {para}
               </p>
             ))}

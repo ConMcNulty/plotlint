@@ -89,7 +89,7 @@ export function TruthFiles({ bookId, nav, theme, t }: { bookId: string; nav: Nav
         <span className="text-foreground">{t("truth.title")}</span>
       </div>
 
-      <h1 className="font-serif text-3xl">{t("truth.title")}</h1>
+      <h1 className="font-sans text-3xl">{t("truth.title")}</h1>
 
       <div className="grid grid-cols-[240px_1fr] gap-6">
         {/* File list */}

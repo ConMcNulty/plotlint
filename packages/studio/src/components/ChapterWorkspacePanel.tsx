@@ -146,7 +146,7 @@ export function ChapterWorkspacePanel({
     <section className="rounded-2xl border border-primary/20 bg-card/80 p-5 md:p-7 shadow-sm space-y-6">
       <header className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="flex items-center gap-2 text-xl font-serif font-semibold text-foreground">
+          <h2 className="flex items-center gap-2 text-xl font-sans font-semibold text-foreground">
             <Sparkles size={19} className="text-primary" />
             {t("reader.workspace")}
           </h2>
@@ -296,7 +296,7 @@ export function ChapterWorkspacePanel({
 
       {versionPreview && (
         <div className="rounded-xl border border-primary/15 bg-background p-4">
-          <pre className="max-h-96 overflow-auto whitespace-pre-wrap font-serif text-sm leading-7 text-foreground/90">
+          <pre className="max-h-96 overflow-auto whitespace-pre-wrap font-sans text-sm leading-7 text-foreground/90">
             {versionPreview.content}
           </pre>
         </div>

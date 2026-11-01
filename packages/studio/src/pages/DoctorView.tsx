@@ -42,7 +42,7 @@ export function DoctorView({ nav, theme, t }: { nav: Nav; theme: Theme; t: TFunc
       </div>
 
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-3xl flex items-center gap-3">
+        <h1 className="font-sans text-3xl flex items-center gap-3">
           <Stethoscope size={28} className="text-primary" />
           {t("doctor.title")}
         </h1>

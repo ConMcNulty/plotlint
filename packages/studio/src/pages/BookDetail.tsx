@@ -296,7 +296,7 @@ export function BookDetail({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border/40 pb-8">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <h1 className="text-4xl font-serif font-medium">{book.title}</h1>
+            <h1 className="text-4xl font-sans font-medium">{book.title}</h1>
             {book.language === "en" && (
               <span className="px-1.5 py-0.5 rounded border border-primary/20 text-primary text-[10px] font-bold">EN</span>
             )}
@@ -494,7 +494,7 @@ export function BookDetail({
                   <td className="px-6 py-4">
                     <button
                       onClick={() => nav.toChapter(bookId, ch.number)}
-                      className="font-serif text-lg font-medium hover:text-primary transition-colors text-left"
+                      className="font-sans text-lg font-medium hover:text-primary transition-colors text-left"
                     >
                       {ch.title || t("chapter.label").replace("{n}", String(ch.number))}
                     </button>
@@ -575,7 +575,7 @@ export function BookDetail({
             <div className="w-12 h-12 rounded-full bg-muted/20 flex items-center justify-center mb-4">
                <FileText size={20} className="text-muted-foreground/40" />
             </div>
-            <p className="text-sm italic font-serif text-muted-foreground">
+            <p className="text-sm font-sans text-muted-foreground">
               {t("book.noChapters")}
             </p>
           </div>

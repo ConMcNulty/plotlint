@@ -290,7 +290,7 @@ export function ServiceDetailPage({ serviceId, nav }: { serviceId: string; nav: 
 
       {/* Title + status */}
       <div className="flex items-center gap-3">
-        <h1 className="font-serif text-2xl">{label}</h1>
+        <h1 className="font-sans text-2xl">{label}</h1>
         {isConnected && (
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">
             {tr("已连接", "Connected")}
