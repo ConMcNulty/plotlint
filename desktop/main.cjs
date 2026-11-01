@@ -180,7 +180,13 @@ function buildMenu() {
       label: "&Help",
       submenu: [
         { label: "Open Server Log", click: () => void shell.openPath(logFile()) },
+        {
+          label: "Download the Latest Version",
+          click: () => void shell.openExternal("https://github.com/ConMcNulty/plotlint/releases/latest"),
+        },
         { label: "plotlint on GitHub", click: () => void shell.openExternal("https://github.com/ConMcNulty/plotlint") },
+        { type: "separator" },
+        { label: `Version ${app.getVersion()}`, enabled: false },
       ],
     },
   ];

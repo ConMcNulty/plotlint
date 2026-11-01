@@ -14,9 +14,12 @@ be installed) and shows Studio in its own window.
 
 ## Getting the app
 
-Every push to `master` builds it on GitHub's Windows runners: open the latest
-**Desktop app** run under Actions and download the `plotlint-Studio-windows`
-artifact. It holds:
+Every push to `master` builds it on GitHub's Windows runners, checks the
+packaged app, and publishes a GitHub Release tagged `studio-v<version>`
+(`desktop/package.json`'s major.minor plus the workflow run number). Download
+it from the repo's [latest release](https://github.com/ConMcNulty/plotlint/releases/latest),
+or from Help → Download the Latest Version in the app. Each release (and each
+PR run's `plotlint-Studio-windows` artifact) holds:
 
 - `plotlint-Studio-Setup-<version>.exe`, an installer (per user, no admin), and
 - `plotlint-Studio-<version>-portable.exe`, which runs without installing.
