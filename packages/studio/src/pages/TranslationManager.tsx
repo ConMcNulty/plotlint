@@ -274,7 +274,7 @@ export function TranslationManager({ nav, theme, t }: { nav: Nav; theme: Theme; 
 
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl flex items-center gap-3">
+          <h1 className="font-sans text-3xl flex items-center gap-3">
             <Languages size={28} className="text-primary" />
             {t("translation.title")}
           </h1>

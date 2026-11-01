@@ -344,7 +344,7 @@ export function ServiceListPage({ nav }: { nav: Nav }) {
         <span className="text-foreground">{tr("服务商管理", "Providers")}</span>
       </div>
 
-      <h1 className="font-serif text-2xl">{tr("服务商管理", "Providers")}</h1>
+      <h1 className="font-sans text-2xl">{tr("服务商管理", "Providers")}</h1>
 
       <ServiceConfigSourceCard onChange={() => { void refreshServices(); }} />
 

@@ -67,7 +67,7 @@ export function StyleManager({ nav, theme, t }: { nav: Nav; theme: Theme; t: TFu
         <span>{t("nav.style")}</span>
       </div>
 
-      <h1 className="font-serif text-3xl flex items-center gap-3">
+      <h1 className="font-sans text-3xl flex items-center gap-3">
         <Wand2 size={28} className="text-primary" />
         {t("style.title")}
       </h1>
@@ -112,7 +112,7 @@ export function StyleManager({ nav, theme, t }: { nav: Nav; theme: Theme; t: TFu
           {profile && (
             <div className={`border ${c.cardStatic} rounded-lg p-5 space-y-4`}>
               <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">{t("style.results")}</h3>
-              <article className="whitespace-pre-wrap rounded-lg bg-secondary/30 p-4 text-sm leading-7 font-serif">
+              <article className="whitespace-pre-wrap rounded-lg bg-secondary/30 p-4 text-sm leading-7 font-sans">
                 {profile.guide}
               </article>
               {/* Import to book */}

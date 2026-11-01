@@ -245,7 +245,7 @@ export function BookCreate({ nav, theme, t: _t }: { nav: Nav; theme: Theme; t: T
     <div className="h-full overflow-y-auto">
       <div className="mx-auto max-w-4xl space-y-6 p-6 md:p-10">
         <header className="space-y-2">
-          <h1 className="font-serif text-3xl font-semibold">{copy.heading}</h1>
+          <h1 className="font-sans text-3xl font-semibold">{copy.heading}</h1>
           <p className="max-w-3xl text-sm leading-7 text-muted-foreground">{copy.hint}</p>
         </header>
         <section className="space-y-5 rounded-xl border border-border/60 bg-card/80 p-6">

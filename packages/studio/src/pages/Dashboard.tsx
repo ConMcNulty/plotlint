@@ -175,7 +175,7 @@ export function Dashboard({ nav, sse, theme, t }: { nav: Nav; sse: { messages: R
         <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center mb-8">
           <BookOpen size={40} className="text-primary/20" />
         </div>
-        <h2 className="font-serif text-3xl italic text-foreground/80 mb-3">{t("dash.noBooks")}</h2>
+        <h2 className="font-sans text-3xl text-foreground/80 mb-3">{t("dash.noBooks")}</h2>
         <p className="text-sm text-muted-foreground max-w-xs leading-relaxed mb-10">
           {t("dash.createFirst")}
         </p>
@@ -208,7 +208,7 @@ export function Dashboard({ nav, sse, theme, t }: { nav: Nav; sse: { messages: R
       )}
       <div className="flex items-end justify-between border-b border-border/40 pb-8">
         <div>
-          <h1 className="font-serif text-4xl mb-2">{t("dash.title")}</h1>
+          <h1 className="font-sans text-4xl mb-2">{t("dash.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("dash.subtitle")}</p>
         </div>
         <button
@@ -237,7 +237,7 @@ export function Dashboard({ nav, sse, theme, t }: { nav: Nav; sse: { messages: R
                     </div>
                     <button
                       onClick={() => nav.toBook(book.id)}
-                      className="font-serif text-2xl hover:text-primary transition-all text-left truncate block font-medium hover:underline underline-offset-4 decoration-primary/30"
+                      className="font-sans text-2xl hover:text-primary transition-all text-left truncate block font-medium hover:underline underline-offset-4 decoration-primary/30"
                     >
                       {book.title}
                     </button>
@@ -335,7 +335,7 @@ export function Dashboard({ nav, sse, theme, t }: { nav: Nav; sse: { messages: R
       {otherWorks.length > 0 && (
         <section className="space-y-4">
           <div className="border-b border-border/40 pb-4">
-            <h2 className="font-serif text-3xl">{tr("其他创作", "Other creative Works")}</h2>
+            <h2 className="font-sans text-3xl">{tr("其他创作", "Other creative Works")}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{tr("短篇、剧本、分镜、互动世界、互动影游与翻译", "Short fiction, scripts, storyboards, interactive works, and translations")}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">

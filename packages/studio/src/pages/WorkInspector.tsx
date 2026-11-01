@@ -127,7 +127,7 @@ export function WorkInspector({ workId, onBack, onChat }: {
       </button>
       <header className="rounded-2xl border border-border/55 bg-card/65 p-7 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{data.work.profileId}</div>
-        <h1 className="mt-2 font-serif text-4xl">{data.work.title}</h1>
+        <h1 className="mt-2 font-sans text-4xl">{data.work.title}</h1>
         <div className="mt-4 flex flex-wrap gap-3 text-sm text-muted-foreground">
           <span>{data.work.id}</span><span>·</span><span>{data.work.language}</span><span>·</span><span>{data.work.status}</span>
           <span>·</span><span>{data.work.artifacts.length} {tr("项生成物", "artifacts")}</span>
