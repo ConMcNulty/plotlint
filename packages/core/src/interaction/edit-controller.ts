@@ -27,6 +27,8 @@ export type EditRequest =
       readonly chapterNumber: number;
       readonly fullText: string;
       readonly versionSource?: ChapterVersionSource;
+      /** Keep the text being replaced as a version (the default); false when a recent version already holds it. */
+      readonly archiveVersion?: boolean;
     }
   | {
       readonly kind: "chapter-local-edit";
@@ -347,12 +349,14 @@ async function executeChapterReplace(
   if (replacementContent === previousContent) {
     throw new Error(`Chapter ${request.chapterNumber} already has the supplied content.`);
   }
-  await archiveChapterVersion(
-    root,
-    request.chapterNumber,
-    previousContent,
-    request.versionSource ?? "agent",
-  );
+  if (request.archiveVersion !== false) {
+    await archiveChapterVersion(
+      root,
+      request.chapterNumber,
+      previousContent,
+      request.versionSource ?? "agent",
+    );
+  }
   await writeFile(chapterPath, replacementContent, "utf-8");
   const removedRuntimeFiles = await clearChapterRuntimeFiles(root, request.chapterNumber);
 
