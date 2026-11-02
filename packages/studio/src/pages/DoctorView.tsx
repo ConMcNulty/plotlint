@@ -2,29 +2,39 @@ import { useApi } from "../hooks/use-api";
 import type { Theme } from "../hooks/use-theme";
 import type { TFunction } from "../hooks/use-i18n";
 import { useColors } from "../hooks/use-colors";
-import { Stethoscope, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Stethoscope, CheckCircle2, XCircle, MinusCircle, Loader2 } from "lucide-react";
+import { tr } from "../lib/app-language";
+import { doctorAllPassed, doctorLlmState, type DoctorChecks } from "../lib/doctor-summary";
 
-interface DoctorChecks {
-  readonly inkosJson: boolean;
-  readonly projectEnv: boolean;
-  readonly globalEnv: boolean;
-  readonly booksDir: boolean;
-  readonly llmConnected: boolean;
-  readonly bookCount: number;
-}
+interface Nav { toDashboard: () => void; toServices?: () => void }
 
-interface Nav { toDashboard: () => void }
-
-function CheckRow({ label, ok, detail }: { label: string; ok: boolean; detail?: string }) {
+function CheckRow({ label, ok, optional, detail, action }: {
+  label: string;
+  ok: boolean;
+  /** A missing optional item is shown as neutral, not as a failure. */
+  optional?: boolean;
+  detail?: string;
+  action?: { label: string; onClick: () => void };
+}) {
   return (
     <div className="flex items-center gap-3 py-3 border-b border-border/30 last:border-0">
       {ok ? (
         <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+      ) : optional ? (
+        <MinusCircle size={18} className="text-muted-foreground shrink-0" />
       ) : (
         <XCircle size={18} className="text-destructive shrink-0" />
       )}
       <span className="text-sm font-medium flex-1">{label}</span>
       {detail && <span className="text-xs text-muted-foreground">{detail}</span>}
+      {action && (
+        <button
+          onClick={action.onClick}
+          className="px-3 py-1.5 text-xs rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shrink-0"
+        >
+          {action.label}
+        </button>
+      )}
     </div>
   );
 }
@@ -32,6 +42,8 @@ function CheckRow({ label, ok, detail }: { label: string; ok: boolean; detail?: 
 export function DoctorView({ nav, theme, t }: { nav: Nav; theme: Theme; t: TFunction }) {
   const c = useColors(theme);
   const { data, refetch } = useApi<DoctorChecks>("/doctor");
+  const llmState = data ? doctorLlmState(data) : "failed";
+  const allPassed = data ? doctorAllPassed(data) : false;
 
   return (
     <div className="space-y-8">
@@ -58,20 +70,43 @@ export function DoctorView({ nav, theme, t }: { nav: Nav; theme: Theme; t: TFunc
       ) : (
         <div className={`border ${c.cardStatic} rounded-lg p-5`}>
           <CheckRow label={t("doctor.inkosJson")} ok={data.inkosJson} />
-          <CheckRow label={t("doctor.projectEnv")} ok={data.projectEnv} />
-          <CheckRow label={t("doctor.globalEnv")} ok={data.globalEnv} />
+          <CheckRow
+            label={t("doctor.projectEnv")}
+            ok={data.projectEnv}
+            optional
+            detail={data.projectEnv ? undefined : tr("可选", "Optional")}
+          />
+          <CheckRow
+            label={t("doctor.globalEnv")}
+            ok={data.globalEnv}
+            optional
+            detail={data.globalEnv ? undefined : tr("可选", "Optional")}
+          />
           <CheckRow label={t("doctor.booksDir")} ok={data.booksDir} detail={`${data.bookCount} book(s)`} />
-          <CheckRow label={t("doctor.llmApi")} ok={data.llmConnected} detail={data.llmConnected ? t("doctor.connected") : t("doctor.failed")} />
+          <CheckRow
+            label={t("doctor.llmApi")}
+            ok={llmState === "connected"}
+            detail={
+              llmState === "connected"
+                ? t("doctor.connected")
+                : llmState === "no-key"
+                  ? tr("未设置 AI 模型或 API Key", "No AI model or API key set up")
+                  : t("doctor.failed")
+            }
+            {...(llmState !== "connected" && nav.toServices
+              ? { action: { label: tr("设置模型", "Set up model"), onClick: nav.toServices } }
+              : {})}
+          />
         </div>
       )}
 
       {data && (
         <div className={`px-4 py-3 rounded-lg text-sm font-medium ${
-          data.inkosJson && (data.projectEnv || data.globalEnv) && data.llmConnected
+          allPassed
             ? "bg-emerald-500/10 text-emerald-600"
             : "bg-amber-500/10 text-amber-600"
         }`}>
-          {data.inkosJson && (data.projectEnv || data.globalEnv) && data.llmConnected
+          {allPassed
             ? t("doctor.allPassed")
             : t("doctor.someFailed")
           }

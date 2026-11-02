@@ -158,8 +158,9 @@ async function openProject(root) {
   }
   saveRecentProject(root);
   app.addRecentDocument(root);
-  // A new project needs a model before the agent can write, as `inkos studio` does.
-  await showPage(`${started.url}/${started.initialized ? "#/services" : ""}`);
+  // Open on the home screen. If no AI model is set up yet, Studio shows a popup
+  // that explains why one is needed and links to the model settings.
+  await showPage(`${started.url}/`);
 }
 
 async function showServerError(root, error, output) {
