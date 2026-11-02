@@ -12,6 +12,11 @@ import type { LintDiagnostic, LintResponse } from "../lint-client";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
+// jsdom has no layout; ProseMirror measures ranges when it scrolls a selection into view.
+const emptyRect = () => ({ x: 0, y: 0, left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, toJSON: () => ({}) }) as DOMRect;
+Range.prototype.getClientRects ??= () => [] as unknown as DOMRectList;
+Range.prototype.getBoundingClientRect ??= emptyRect;
+
 const t = ((key: string) => key) as TFunction;
 
 const finding = (overrides: Partial<LintDiagnostic>): LintDiagnostic => ({
