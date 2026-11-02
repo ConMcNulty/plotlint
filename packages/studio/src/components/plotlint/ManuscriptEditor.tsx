@@ -59,6 +59,8 @@ export interface ManuscriptEditorProps {
   readonly suggestFrom?: string;
   /** Called with how many suggestions are still open. */
   readonly onSuggestionsChange?: (open: number) => void;
+  /** Called after every edit with the chapter text as it now stands (autosave). */
+  readonly onTextChange?: (text: string) => void;
   readonly className?: string;
 }
 
@@ -138,7 +140,7 @@ const savePreference = (key: string, value: string) => {
  * Ctrl/Cmd+click goes to where the name under the cursor is first established.
  */
 export function ManuscriptEditor({
-  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, continuation, onVerdicts, selection, onOpenLocation, suggestFrom, onSuggestionsChange, className,
+  bookId, chapterNumber, initialText, t, handleRef, lint, navigation, continuation, onVerdicts, selection, onOpenLocation, suggestFrom, onSuggestionsChange, onTextChange, className,
 }: ManuscriptEditorProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<ChapterEditor | null>(null);
@@ -162,6 +164,8 @@ export function ManuscriptEditor({
   const suggestFromRef = useRef(suggestFrom);
   const onSuggestionsChangeRef = useRef(onSuggestionsChange);
   onSuggestionsChangeRef.current = onSuggestionsChange;
+  const onTextChangeRef = useRef(onTextChange);
+  onTextChangeRef.current = onTextChange;
 
   const client = useMemo(() => navigation ?? chapterNavigation(bookId, chapterNumber), [navigation, bookId, chapterNumber]);
   // Read by the editor's callbacks, which are bound once per editor.
@@ -278,6 +282,7 @@ export function ManuscriptEditor({
         refreshStateSoon();
       },
       onChange: (text) => {
+        onTextChangeRef.current?.(text);
         if (countTimer.current) clearTimeout(countTimer.current);
         countTimer.current = setTimeout(() => { countTimer.current = undefined; setStats(writingStats(text, chapterNumber)); }, COUNT_DEBOUNCE_MS);
       },

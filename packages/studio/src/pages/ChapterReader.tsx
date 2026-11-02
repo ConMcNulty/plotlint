@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
-import { fetchJson, useApi } from "../hooks/use-api";
+import { buildApiUrl, fetchJson, useApi } from "../hooks/use-api";
 import type { Theme } from "../hooks/use-theme";
 import type { TFunction } from "../hooks/use-i18n";
 import { useColors } from "../hooks/use-colors";
 import { ChapterWorkspacePanel } from "../components/ChapterWorkspacePanel";
 import { ManuscriptEditor, type ManuscriptEditorHandle } from "../components/plotlint/ManuscriptEditor";
 import type { EvidenceLocation } from "../components/plotlint/navigate-client";
+import { ChapterAutosaver, type SaveStatus } from "../components/plotlint/autosave";
 import {
   BookOpen,
   ChevronDown,
@@ -16,6 +17,9 @@ import {
   Eye,
   GitCompare,
   SlidersHorizontal,
+  AlertCircle,
+  Check,
+  CloudUpload,
 } from "lucide-react";
 
 interface ChapterData {
@@ -51,8 +55,8 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
   nav: Nav;
   theme: Theme;
   t: TFunction;
-  /** Set to a check the workspace runs before leaving this chapter: false if the writer chose to stay with unsaved edits. */
-  canLeaveRef?: MutableRefObject<(() => boolean) | null>;
+  /** Set to what the workspace runs before leaving this chapter: saves the edits, false if that failed. */
+  canLeaveRef?: MutableRefObject<(() => Promise<boolean>) | null>;
 }) {
   useColors(theme);
   const { data, loading, error, refetch } = useApi<ChapterData>(
@@ -81,27 +85,74 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
     setEditing(true);
   }, [pendingSelect, data, editing]);
 
-  const isDirty = () => Boolean(editing && data && editorRef.current && editorRef.current.getText() !== data.content);
-  const confirmLeave = () => !isDirty() || window.confirm(t("state.leaveUnsaved"));
+  // Edits are saved as the writer works, so leaving the chapter never asks about them.
+  const chapterPath = `/books/${bookId}/chapters/${chapterNumber}`;
+  const [saveState, setSaveState] = useState<{ status: SaveStatus; error?: string }>({ status: "saved" });
+  // The editor's latest text, kept so a save can still read it once the editor has unmounted.
+  const latestTextRef = useRef<string | null>(null);
+  const saverRef = useRef<ChapterAutosaver | null>(null);
+  if (!saverRef.current && data) {
+    const saved = data.content;
+    saverRef.current = new ChapterAutosaver({
+      saved,
+      read: () => editorRef.current?.getText() ?? latestTextRef.current ?? saverRef.current?.savedText ?? saved,
+      write: async (content, autosave) => {
+        await fetchJson(chapterPath, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content, autosave }),
+        });
+      },
+      onStatus: (status, error) => setSaveState(error === undefined ? { status } : { status, error }),
+    });
+  }
+  const saver = saverRef.current;
+
+  // While an agent's edit is under review, timed saves wait: a save ends the review.
+  useEffect(() => {
+    saver?.setPaused(reviewing !== null);
+  }, [saver, reviewing]);
+
+  /** Save whatever is unsaved; false if the save failed (the writer stays to keep the edits). */
+  const flush = async () => !saver || await saver.flush();
 
   useEffect(() => {
     if (!canLeaveRef) return;
-    canLeaveRef.current = confirmLeave;
+    canLeaveRef.current = flush;
     return () => { canLeaveRef.current = null; };
   });
 
-  // Closing or reloading the tab with unsaved edits asks first.
+  // Leaving by any other route (another page, closing the window) still saves.
+  const saveOnExit = (keepalive: boolean) => {
+    const current = saverRef.current;
+    if (!current?.isDirty()) return;
+    const content = editorRef.current?.getText() ?? latestTextRef.current;
+    if (content === null) return;
+    void fetch(buildApiUrl(chapterPath) ?? chapterPath, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content, autosave: true }),
+      keepalive,
+    }).catch(() => {});
+  };
+  const saveOnExitRef = useRef(saveOnExit);
+  saveOnExitRef.current = saveOnExit;
   useEffect(() => {
-    const onBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!isDirty()) return;
-      event.preventDefault();
-      event.returnValue = "";
+    const onPageHide = () => saveOnExitRef.current(true);
+    window.addEventListener("pagehide", onPageHide);
+    return () => {
+      window.removeEventListener("pagehide", onPageHide);
+      saveOnExitRef.current(false);
+      saverRef.current?.dispose();
     };
-    window.addEventListener("beforeunload", onBeforeUnload);
-    return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  });
+  }, []);
 
-  // Ctrl/Cmd+S saves, as in any editor.
+  const onTextChange = (text: string) => {
+    latestTextRef.current = text;
+    saver?.changed();
+  };
+
+  // Ctrl/Cmd+S saves now, and keeps a version of the text it replaces.
   const saveRef = useRef<() => void>(() => {});
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -113,65 +164,71 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  /** Go to a passage in another chapter, after confirming that unsaved edits here may be left behind. */
-  const openLocation = (location: EvidenceLocation) => {
+  /** Go to a passage in another chapter, once the edits here are saved. */
+  const openLocation = async (location: EvidenceLocation) => {
     if (!nav.toChapter) return;
-    if (!confirmLeave()) return;
+    if (!await flush()) return;
     nav.toChapter(bookId, location.chapter, { start: location.start, end: location.end });
   };
 
-  const handleStartEdit = () => {
-    if (!data) return;
-    setEditContent(data.content);
+  /** Reopen the editor on `text`. */
+  const reopenEditor = (text: string) => {
+    latestTextRef.current = text;
+    setEditContent(text);
     setEditing(true);
   };
 
+  const handleStartEdit = () => {
+    if (!saver) return;
+    reopenEditor(saver.savedText);
+  };
+
+  /** Show the agent's edit as tracked changes, on the text as it stands (saved or not). */
   const handleStartReview = () => {
-    if (!data || !review.data?.pending) return;
-    if (isDirty() && !window.confirm(t("reader.discardEdits"))) return;
-    setEditContent(data.content);
-    setReviewing(review.data.pending);
-    setEditing(true);
+    const pending = review.data?.pending;
+    if (!saver || !pending) return;
+    const text = editorRef.current?.getText() ?? latestTextRef.current ?? saver.savedText;
+    setReviewing(pending);
+    reopenEditor(text);
     setEditorRevision((revision) => revision + 1);
   };
 
-  const handleCancelEdit = () => {
-    if (isDirty() && !window.confirm(t("reader.discardEdits"))) return;
+  const handlePreview = async () => {
+    if (reviewing) return;
+    if (!await flush()) return;
     setPendingSelect(undefined);
     setEditing(false);
     setEditContent(null);
-    setReviewing(null);
     setOpenSuggestions(0);
+    refetch();
   };
 
+  /** Ctrl/Cmd+S: save now, keeping a version. */
   const handleSave = async () => {
-    if (!editing || saving) return;
-    if (reviewing && openSuggestions > 0 && !window.confirm(t("suggest.saveOpen"))) return;
+    if (!editing || !saver || reviewing) return;
+    if (await saver.flush(false)) setWorkspaceRevision((revision) => revision + 1);
+  };
+
+  /** Finish reviewing an agent's edit: save the text as resolved and record the review. */
+  const handleFinishReview = async () => {
+    if (!reviewing || !saver || saving) return;
+    if (openSuggestions > 0 && !window.confirm(t("suggest.saveOpen"))) return;
     setSaving(true);
     try {
-      const content = editorRef.current?.getText() ?? editContent ?? data?.content ?? "";
-      // Keeping every change of a review leaves the file as the agent wrote it: nothing to save.
-      if (!reviewing || content !== data?.content) {
-        await fetchJson(`/books/${bookId}/chapters/${chapterNumber}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content }),
-        });
-      }
-      if (reviewing) {
-        await fetchJson(`/plotlint/review/${encodeURIComponent(bookId)}/${chapterNumber}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ versionId: reviewing.versionId }),
-        });
-        setReviewing(null);
-        setOpenSuggestions(0);
-        void review.refetch();
-        // Reopen on the saved text, without the tracked changes.
-        setEditContent(content);
-        setEditorRevision((revision) => revision + 1);
-      }
-      // Saving keeps the editor open where the writer is.
+      // Keeping every change leaves the file as the agent wrote it: nothing to save.
+      if (!await saver.flush(false)) return;
+      const content = saver.savedText;
+      await fetchJson(`/plotlint/review/${encodeURIComponent(bookId)}/${chapterNumber}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ versionId: reviewing.versionId }),
+      });
+      setReviewing(null);
+      setOpenSuggestions(0);
+      void review.refetch();
+      // Reopen on the saved text, without the tracked changes.
+      reopenEditor(content);
+      setEditorRevision((revision) => revision + 1);
       setPendingSelect(undefined);
       refetch();
       setWorkspaceRevision((revision) => revision + 1);
@@ -181,7 +238,7 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
       setSaving(false);
     }
   };
-  saveRef.current = () => { void handleSave(); };
+  saveRef.current = () => { void (reviewing ? handleFinishReview() : handleSave()); };
 
   if (loading && !data) return (
     <div className="flex flex-col items-center justify-center py-32 space-y-4">
@@ -248,21 +305,25 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
           {/* Edit / Preview toggle */}
           {editing ? (
             <>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-primary text-primary-foreground rounded-xl hover:scale-105 active:scale-95 transition-all shadow-sm disabled:opacity-50"
-              >
-                {saving ? <div className="w-3.5 h-3.5 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" /> : <Save size={14} />}
-                {saving ? t("book.saving") : reviewing ? t("suggest.finish") : t("book.save")}
-              </button>
-              <button
-                onClick={handleCancelEdit}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-secondary text-muted-foreground rounded-xl hover:text-foreground transition-all border border-border/50"
-              >
-                <Eye size={14} />
-                {t("reader.preview")}
-              </button>
+              <SaveIndicator state={saveState} t={t} onRetry={() => void flush()} />
+              {reviewing ? (
+                <button
+                  onClick={() => void handleFinishReview()}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-primary text-primary-foreground rounded-xl hover:scale-105 active:scale-95 transition-all shadow-sm disabled:opacity-50"
+                >
+                  {saving ? <div className="w-3.5 h-3.5 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" /> : <Save size={14} />}
+                  {saving ? t("book.saving") : t("suggest.finish")}
+                </button>
+              ) : (
+                <button
+                  onClick={() => void handlePreview()}
+                  className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-secondary text-muted-foreground rounded-xl hover:text-foreground transition-all border border-border/50"
+                >
+                  <Eye size={14} />
+                  {t("reader.preview")}
+                </button>
+              )}
             </>
           ) : (
             <button
@@ -309,7 +370,8 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
             handleRef={editorRef}
             t={t}
             selection={pendingSelect}
-            onOpenLocation={openLocation}
+            onOpenLocation={(location) => void openLocation(location)}
+            onTextChange={onTextChange}
             {...(reviewing ? { suggestFrom: reviewing.before, onSuggestionsChange: setOpenSuggestions } : {})}
           />
         ) : (
@@ -338,5 +400,36 @@ export function ChapterReader({ bookId, chapterNumber, select, nav, theme, t, ca
       </div>
 
     </div>
+  );
+}
+
+/** Where the chapter's saving stands: quiet while saved, a retry when a save failed. */
+function SaveIndicator({ state, t, onRetry }: { state: { status: SaveStatus; error?: string }; t: TFunction; onRetry: () => void }) {
+  if (state.status === "error") {
+    return (
+      <button
+        type="button"
+        onClick={onRetry}
+        title={state.error}
+        data-testid="save-status"
+        data-status="error"
+        className="flex items-center gap-1.5 self-center rounded-lg px-2 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
+      >
+        <AlertCircle size={13} />
+        {t("save.failed")}
+      </button>
+    );
+  }
+  const label = state.status === "saving" ? t("book.saving") : state.status === "unsaved" ? t("save.unsaved") : t("save.saved");
+  return (
+    <span
+      role="status"
+      data-testid="save-status"
+      data-status={state.status}
+      className="flex items-center gap-1.5 self-center px-2 text-xs text-muted-foreground"
+    >
+      {state.status === "saved" ? <Check size={13} /> : <CloudUpload size={13} />}
+      {label}
+    </span>
   );
 }

@@ -259,6 +259,9 @@ function createWindow() {
     event.preventDefault();
     if (/^https?:|^mailto:/.test(url)) void shell.openExternal(url);
   });
+  // Studio saves the manuscript as it goes, so a page's "leave this page?" check must never
+  // stop the window closing: Electron would otherwise cancel the close without asking.
+  win.webContents.on("will-prevent-unload", event => event.preventDefault());
   win.on("closed", () => { win = null; });
 }
 

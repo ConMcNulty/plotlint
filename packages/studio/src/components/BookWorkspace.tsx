@@ -110,10 +110,11 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
     if (panel?.open && panel.tab === "chat") setChatMounted(true);
   }, [panel]);
 
-  const canLeaveRef = useRef<(() => boolean) | null>(null);
-  const openChapter = (number: number) => {
+  // Moving to another chapter saves this one first, so the book reads as one document: nothing to confirm.
+  const canLeaveRef = useRef<(() => Promise<boolean>) | null>(null);
+  const openChapter = async (number: number) => {
     if (number === current) return;
-    if (canLeaveRef.current && !canLeaveRef.current()) return;
+    if (canLeaveRef.current && !await canLeaveRef.current()) return;
     nav.toChapter(bookId, number);
   };
 
@@ -164,7 +165,7 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
             <>
               <button
                 type="button"
-                onClick={() => previous !== null && openChapter(previous)}
+                onClick={() => previous !== null && void openChapter(previous)}
                 disabled={previous === null}
                 aria-label={t("workspace.previous")}
                 title={t("workspace.previous")}
@@ -174,7 +175,7 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
               </button>
               <select
                 value={current}
-                onChange={(event) => openChapter(Number(event.target.value))}
+                onChange={(event) => void openChapter(Number(event.target.value))}
                 aria-label={t("chapter.label").replace("{n}", "")}
                 data-testid="workspace-chapter-select"
                 className="max-w-[280px] truncate rounded-lg border border-border/50 bg-card px-2 py-1.5 text-sm text-foreground"
@@ -185,7 +186,7 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
               </select>
               <button
                 type="button"
-                onClick={() => next !== null && openChapter(next)}
+                onClick={() => next !== null && void openChapter(next)}
                 disabled={next === null}
                 aria-label={t("workspace.next")}
                 title={t("workspace.next")}
@@ -301,7 +302,7 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
           )}
           {panel?.tab === "book" && (
             <div className="min-h-0 flex-1 overflow-y-auto">
-              <BookInfoPanel bookId={bookId} theme={theme} t={t} sse={sse} onOpenChapter={openChapter} />
+              <BookInfoPanel bookId={bookId} theme={theme} t={t} sse={sse} onOpenChapter={(number) => void openChapter(number)} />
             </div>
           )}
         </aside>
