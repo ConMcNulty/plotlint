@@ -14,7 +14,7 @@ import { fetchStateAt, findDefinition, findReferences, type Definition, type Ent
 import { ProblemsPanel } from "./ProblemsPanel";
 import { ReferencesPanel } from "./ReferencesPanel";
 import { StatePanel } from "./StatePanel";
-import { problemRows, rowTarget, type ProblemRow } from "./problems-model";
+import { mentionRange, problemRows, rowTarget, type ProblemRow } from "./problems-model";
 import { recordVerdicts, type VerdictEvent } from "./verdict-client";
 import { sceneMarkers, sceneOf, writingStats, type WritingStats } from "./writing-model";
 
@@ -109,9 +109,9 @@ const STATE_DEBOUNCE_MS = 300;
 
 const readPanelPreference = () => {
   try {
-    return window.localStorage.getItem(STATE_PANEL_KEY) !== "hidden";
+    return window.localStorage.getItem(STATE_PANEL_KEY) === "shown";
   } catch {
-    return true;
+    return false;
   }
 };
 
@@ -397,11 +397,31 @@ export function ManuscriptEditor({
     return problemRows(problems.ranged, problems.unranged, lineOf);
   }, [problems]);
 
-  /** A drawn finding selects its text; an unranged one opens where its fact was established. */
+  /**
+   * Every row goes somewhere: a drawn finding selects its text; an unranged one opens where
+   * its fact was established, else the first passage in this chapter that it names, else
+   * the top of the chapter with a note that it applies to the whole chapter.
+   */
   const reveal = (row: ProblemRow) => {
+    const controller = controllerRef.current;
+    if (!controller) return;
     const target = rowTarget(row);
-    if (target?.kind === "range") controllerRef.current?.reveal(target.entryId);
-    else if (target?.kind === "established") openLocation(target.location);
+    if (target?.kind === "range") {
+      controller.reveal(target.entryId);
+      return;
+    }
+    if (target?.kind === "established") {
+      openLocation(target.location);
+      return;
+    }
+    const mention = mentionRange(row.diagnostic, controller.getText());
+    if (mention) {
+      controller.revealRange(mention);
+      return;
+    }
+    const top = { start: 0, end: 0 };
+    controller.revealRange(top);
+    showNotice(t("problems.wholeChapterHint"), top);
   };
 
   return (
@@ -484,21 +504,22 @@ export function ManuscriptEditor({
           </span>
         </div>
       )}
-      <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
-        <div ref={mountRef} className="pl-manuscript min-w-0 flex-1" data-testid="manuscript-editor" />
-        {showState && (
-          <StatePanel
-            entities={cursor.entities}
-            chapter={chapterNumber}
-            loading={cursor.loading}
-            error={cursor.error}
-            stateMissing={cursor.stateMissing}
-            t={t}
-            onOpen={openLocation}
-            className="xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:w-80 xl:shrink-0 xl:overflow-y-auto"
-          />
-        )}
-      </div>
+      <div ref={mountRef} className="pl-manuscript min-w-0" data-testid="manuscript-editor" />
+      {/* A small floating inspector, off by default; portalled so it stays put while the page scrolls. */}
+      {showState && typeof document !== "undefined" && createPortal(
+        <StatePanel
+          entities={cursor.entities}
+          chapter={chapterNumber}
+          loading={cursor.loading}
+          error={cursor.error}
+          stateMissing={cursor.stateMissing}
+          t={t}
+          onOpen={openLocation}
+          onClose={toggleState}
+          className="fixed bottom-4 right-4 z-40 flex max-h-[45vh] w-80 max-w-[calc(100vw-2rem)] flex-col"
+        />,
+        document.body,
+      )}
       {references && (
         <ReferencesPanel
           references={references}
