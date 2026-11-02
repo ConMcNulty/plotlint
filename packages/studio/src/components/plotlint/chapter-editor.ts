@@ -309,7 +309,9 @@ export function createChapterEditor(options: ChapterEditorOptions): ChapterEdito
     reveal: (id) => {
       const entry = editor.storage.diagnostics.find(id);
       if (!entry) return false;
-      editor.chain().focus().setTextSelection({ from: entry.from, to: entry.to }).scrollIntoView().run();
+      editor.chain().focus().setTextSelection({ from: entry.from, to: entry.to }).run();
+      // To the middle of the view, clear of Studio's sticky header.
+      scrollSelectionToCenter(editor.view);
       return true;
     },
     revealRange,

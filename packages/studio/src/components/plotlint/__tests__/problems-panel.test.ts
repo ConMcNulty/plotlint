@@ -7,7 +7,7 @@ import type { DiagnosticEntry } from "@plotlint/editor";
 import type { TFunction } from "../../../hooks/use-i18n";
 import { ManuscriptEditor, type ManuscriptEditorHandle } from "../ManuscriptEditor";
 import { ProblemsPanel } from "../ProblemsPanel";
-import { LAYER_ORDER, problemRows, rowTarget, visibleProblems, type ProblemRow } from "../problems-model";
+import { LAYER_ORDER, mentionRange, problemRows, rowTarget, visibleProblems, type ProblemRow } from "../problems-model";
 import type { LintDiagnostic, LintResponse } from "../lint-client";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -68,6 +68,25 @@ describe("problems model", () => {
       .toEqual(["wall"]);
   });
 
+  it("finds the passage an unranged finding names in this chapter", () => {
+    const text = "# Mira Vale\n\nThree days later, Mira Vale walked into the harbour office.";
+    const fact = (subject: string, predicate: string, object: string, chapter: number) =>
+      ({ subject, predicate, object, validFromChapter: chapter, validUntilChapter: null, sourceChapter: chapter });
+    const dead = finding({
+      ruleId: "continuity/dead-entity-acts", chapter: 3, evidence: ["death: Mira Vale · status · dead"],
+      facts: [fact("Mira Vale", "status", "dead", 2), fact("Mira Vale", "location", "harbour office", 3)],
+    });
+    // This chapter's fact first (its object), skipping the heading.
+    expect(mentionRange(dead, text)).toEqual({ start: text.indexOf("harbour office"), end: text.indexOf("harbour office") + 14 });
+    // Then any cited subject, as a whole word.
+    expect(mentionRange(finding({ chapter: 3, facts: [fact("Mira Vale", "status", "dead", 2)] }), text))
+      .toEqual({ start: text.indexOf("Mira Vale walked"), end: text.indexOf("Mira Vale walked") + 9 });
+    // Then quoted words in the evidence.
+    expect(mentionRange(finding({ chapter: 3, evidence: ["“three days”"] }), text)).toEqual({ start: 13, end: 23 });
+    expect(mentionRange(finding({ chapter: 3, evidence: ["\"arbour\""] }), text)).toBeNull();
+    expect(mentionRange(finding({ chapter: 3, evidence: ["\"nowhere\""] }), text)).toBeNull();
+  });
+
   it("filters by layer, severity and confidence", () => {
     expect(visibleProblems(rows, { layer: "style", severity: "all", confidence: "all" }, "position")).toHaveLength(1);
     expect(visibleProblems(rows, { layer: "all", severity: "error", confidence: "all" }, "position")[0]!.diagnostic.ruleId).toBe("continuity/dead-entity-acts");
@@ -97,9 +116,9 @@ describe("ProblemsPanel", () => {
     expect(html).toContain("metrics (0)");
     expect(html).toMatch(/data-testid="problem-established"[^>]*>.*state\.established.*ch.*2/);
     expect(html.match(/data-testid="problem-not-useful"/g)).toHaveLength(withLink.length);
-    // The structure row with a link is clickable; the continuity row without one is not.
+    // Every row is clickable, with or without a link.
     expect(html).toMatch(/data-rule-id="structure\/unpaid-setup" data-layer="structure" data-ranged="false"[^>]*><button type="button"(?! disabled)/);
-    expect(html).toMatch(/data-rule-id="continuity\/dead-entity-acts"[^>]*><button type="button" disabled/);
+    expect(html).toMatch(/data-rule-id="continuity\/dead-entity-acts"[^>]*><button type="button"(?! disabled)/);
   });
 
   it("shows the empty and filtered states", () => {
@@ -151,10 +170,43 @@ describe("ManuscriptEditor", () => {
     expect(container.querySelector("[data-testid=problems-suppressed]")!.textContent).toContain("1");
     expect(handle.current!.getText()).toBe(text);
 
+    const selected = () => {
+      const { state } = handle.current!.editor()!;
+      return state.doc.textBetween(state.selection.from, state.selection.to);
+    };
     const row = container.querySelector<HTMLButtonElement>("li[data-rule-id='mechanics/harper'] button")!;
     await act(async () => { row.click(); });
+    expect(selected()).toBe("teh");
+
+    // A whole-chapter finding with nothing to point at goes to the top of the chapter, with a note.
+    await act(async () => { container.querySelector<HTMLButtonElement>("li[data-rule-id='continuity/dead-entity-acts'] button")!.click(); });
+    expect(handle.current!.editor()!.state.selection.from).toBeLessThanOrEqual(2);
+    expect(document.querySelector("[data-testid=goto-notice]")!.textContent).toContain("problems.wholeChapterHint");
+  });
+
+  it("jumps to the passage an unranged finding names when it has no recorded passage", async () => {
+    const text = "# Chapter 3\n\nMira walked to the quay.";
+    const response: LintResponse = {
+      sourceId: "chapter:3",
+      diagnostics: [finding({
+        ruleId: "continuity/dead-entity-acts", layer: "continuity", confidence: "extracted", chapter: 3, summary: "dead acts", fingerprint: "d",
+        facts: [{ subject: "Mira", predicate: "location", object: "the quay", validFromChapter: 3, validUntilChapter: null, sourceChapter: 3 }],
+      })],
+      ranges: null,
+      suppressed: 0,
+      stateMissing: false,
+    };
+    const handle = createRef<ManuscriptEditorHandle>();
+    const container = document.createElement("div");
+    document.body.append(container);
+    root = createRoot(container);
+    await act(async () => {
+      root!.render(React.createElement(ManuscriptEditor, { bookId: "b", chapterNumber: 3, initialText: text, t, handleRef: handle, lint: vi.fn(async () => response) }));
+    });
+    await act(async () => { await vi.waitFor(() => expect(container.querySelector("[data-testid=problems-count]")!.textContent).toBe("1")); });
+    await act(async () => { container.querySelector<HTMLButtonElement>("li[data-rule-id='continuity/dead-entity-acts'] button")!.click(); });
     const { state } = handle.current!.editor()!;
-    expect(state.doc.textBetween(state.selection.from, state.selection.to)).toBe("teh");
+    expect(state.doc.textBetween(state.selection.from, state.selection.to)).toBe("the quay");
   });
 
   it("opens where an unranged finding's fact was established, and records Not useful from a problems row", async () => {

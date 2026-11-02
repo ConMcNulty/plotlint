@@ -45,6 +45,7 @@ describe("state panel and go to definition", () => {
     act(() => root?.unmount());
     root = undefined;
     document.body.innerHTML = "";
+    window.localStorage.clear();
   });
 
   async function mount(navigation: NavigationClient, onOpenLocation = vi.fn()) {
@@ -59,6 +60,11 @@ describe("state panel and go to definition", () => {
     });
     return { container, handle, onOpenLocation };
   }
+  /** The inspector is off by default and floats over the page (portalled to the body). */
+  const openState = async (container: HTMLElement) => {
+    expect(document.querySelector("[data-testid=state-panel]")).toBeNull();
+    await act(async () => { container.querySelector<HTMLButtonElement>("[data-testid=state-toggle]")!.click(); });
+  };
   const selected = (handle: React.RefObject<ManuscriptEditorHandle | null>) => {
     const { state } = handle.current!.editor()!;
     return state.doc.textBetween(state.selection.from, state.selection.to);
@@ -69,13 +75,15 @@ describe("state panel and go to definition", () => {
   it("shows the facts at the cursor and jumps to where each was established", async () => {
     const stateAt = vi.fn(async (offset: number) => ({ chapter: 2, offset, entities: ENTITIES, stateMissing: false }));
     const { container, handle, onOpenLocation } = await mount({ stateAt, definition: vi.fn() });
-    await act(async () => { await vi.waitFor(() => expect(container.querySelector("[data-entity='Mira Vale']")).not.toBeNull()); });
+    expect(stateAt).not.toHaveBeenCalled();
+    await openState(container);
+    await act(async () => { await vi.waitFor(() => expect(document.querySelector("[data-entity='Mira Vale']")).not.toBeNull()); });
 
     expect(stateAt).toHaveBeenCalledWith(expect.any(Number), TEXT);
-    const mira = container.querySelector("[data-entity='Mira Vale']")!;
+    const mira = document.querySelector("[data-entity='Mira Vale']")!;
     expect([...mira.querySelectorAll("li")].map((li) => li.getAttribute("data-kind"))).toEqual(["location", "possession", "age"]);
     expect(mira.textContent).toContain("location→lantern house");
-    expect(container.querySelectorAll("[data-testid=state-unanchored]")).toHaveLength(1);
+    expect(document.querySelectorAll("[data-testid=state-unanchored]")).toHaveLength(1);
 
     const links = mira.querySelectorAll<HTMLButtonElement>("[data-testid=state-established]");
     expect([...links].map((link) => link.textContent)).toEqual(["state.established ch2", "state.established ch1"]);
@@ -88,18 +96,29 @@ describe("state panel and go to definition", () => {
     expect(onOpenLocation).toHaveBeenCalledWith(expect.objectContaining({ chapter: 1, start: 40, end: 60 }));
   });
 
-  it("asks again when the cursor moves, and hides with the toggle", async () => {
+  it("asks again when the cursor moves, and hides with the toggle, its close button or Escape", async () => {
     const stateAt = vi.fn(async (offset: number) => ({ chapter: 2, offset, entities: [], stateMissing: false }));
     const { container, handle } = await mount({ stateAt, definition: vi.fn() });
+    await openState(container);
     await act(async () => { await vi.waitFor(() => expect(stateAt).toHaveBeenCalledTimes(1)); });
-    expect(container.querySelector("[data-testid=state-panel]")!.textContent).toContain("state.none");
+    expect(document.querySelector("[data-testid=state-panel]")!.textContent).toContain("state.none");
 
     await act(async () => { handle.current!.revealRange({ start: 20, end: 20 }); });
     await act(async () => { await vi.waitFor(() => expect(stateAt).toHaveBeenCalledTimes(2)); });
     expect(stateAt).toHaveBeenLastCalledWith(20, TEXT);
 
     await act(async () => { container.querySelector<HTMLButtonElement>("[data-testid=state-toggle]")!.click(); });
-    expect(container.querySelector("[data-testid=state-panel]")).toBeNull();
+    expect(document.querySelector("[data-testid=state-panel]")).toBeNull();
+
+    await openState(container);
+    await act(async () => { document.querySelector<HTMLButtonElement>("[data-testid=state-close]")!.click(); });
+    expect(document.querySelector("[data-testid=state-panel]")).toBeNull();
+
+    await openState(container);
+    await act(async () => {
+      document.querySelector("[data-testid=state-panel] input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    });
+    expect(document.querySelector("[data-testid=state-panel]")).toBeNull();
   });
 
   it("goes to the first definition of the name at the cursor on F12", async () => {

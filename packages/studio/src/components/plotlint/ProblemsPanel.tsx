@@ -10,7 +10,6 @@ import {
   LAYER_ORDER,
   SEVERITY_ORDER,
   countBy,
-  rowTarget,
   visibleProblems,
   type ProblemFilter,
   type ProblemRow,
@@ -24,7 +23,7 @@ export interface ProblemsPanelProps {
   readonly error: string | null;
   readonly stateMissing: boolean;
   readonly t: TFunction;
-  /** Called for a row with somewhere to go (see `rowTarget`): its text, or where its fact was established. */
+  /** Called when a row is clicked: go to its text, where its fact was established, or the passage it names. */
   readonly onSelect?: (row: ProblemRow) => void;
   /** Called to mark a finding as intentional. */
   readonly onSuppress?: (row: ProblemRow) => void;
@@ -117,14 +116,14 @@ export function ProblemsPanel({ rows, suppressed, linting, error, stateMissing, 
         {visible.slice(0, MAX_ROWS).map((row) => {
           const { diagnostic } = row;
           const Icon = severityIcon[diagnostic.severity];
-          const target = rowTarget(row);
-          const clickable = target !== null && onSelect !== undefined;
+          const clickable = onSelect !== undefined;
           return (
             <li key={row.key} data-scenes={sceneIdsIn(diagnostic).join(" ") || undefined} data-rule-id={diagnostic.ruleId} data-layer={diagnostic.layer} data-ranged={row.entryId !== null} className="group flex items-start">
               <button
                 type="button"
                 disabled={!clickable}
                 onClick={() => clickable && onSelect!(row)}
+                title={clickable ? t("problems.goTo") : undefined}
                 className={cn(
                   "flex min-w-0 flex-1 items-start gap-2 px-4 py-1.5 text-left transition-colors",
                   clickable ? "hover:bg-secondary/60 cursor-pointer" : "cursor-default",

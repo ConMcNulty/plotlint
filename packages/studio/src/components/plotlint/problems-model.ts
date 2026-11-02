@@ -24,6 +24,39 @@ export function rowTarget(row: ProblemRow): { kind: "range"; entryId: string } |
   return row.established ? { kind: "established", location: row.established } : null;
 }
 
+/**
+ * For an unranged finding with no recorded passage: the first place in this chapter's
+ * text that names what it is about, so clicking the row still lands somewhere.
+ * Tries what this chapter's cited facts say (object, then subject), then any cited
+ * subject, then quoted words in the evidence. Null when none of them appear.
+ */
+export function mentionRange(diagnostic: LintDiagnostic, text: string): { start: number; end: number } | null {
+  const facts = diagnostic.facts ?? [];
+  const here = facts.filter((fact) => fact.sourceChapter === diagnostic.chapter);
+  const quoted = diagnostic.evidence.flatMap((line) => [...line.matchAll(/["“]([^"”]{3,80})["”]/g)].map((match) => match[1]!));
+  const candidates = [
+    ...here.flatMap((fact) => [fact.object, fact.subject]),
+    ...facts.map((fact) => fact.subject),
+    ...quoted,
+  ];
+  // Skip the chapter heading line, which often repeats a name.
+  const bodyStart = text.startsWith("#") ? Math.max(0, text.indexOf("\n") + 1) : 0;
+  const lower = text.toLowerCase();
+  for (const candidate of candidates) {
+    const needle = candidate.trim().toLowerCase();
+    const chinese = /\p{Script=Han}/u.test(needle);
+    if (needle.length < (chinese ? 2 : 3)) continue;
+    const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // Whole words only, except in Chinese, which has no spaces between words.
+    const pattern = chinese
+      ? new RegExp(escaped, "u")
+      : new RegExp(`(?<![\\p{L}\\p{N}])${escaped}(?![\\p{L}\\p{N}])`, "u");
+    const match = pattern.exec(lower.slice(bodyStart));
+    if (match) return { start: bodyStart + match.index, end: bodyStart + match.index + needle.length };
+  }
+  return null;
+}
+
 export type ProblemSort = "position" | "severity" | "layer" | "confidence";
 
 export interface ProblemFilter {
