@@ -426,6 +426,15 @@ const DOCTOR_LLM_PROBE_BUDGET_MS = 9_000;
 const MAX_DISCOVERED_MODELS_TO_PING = 2;
 const MAX_GENERIC_FALLBACK_MODELS_TO_PING = 2;
 
+export function isDoctorLlmConfigured(llm: {
+  readonly provider?: string;
+  readonly baseUrl?: string;
+  readonly apiKey?: string;
+}): boolean {
+  if ((llm.apiKey ?? "").trim().length > 0) return true;
+  return isApiKeyOptionalForEndpoint({ provider: llm.provider, baseUrl: llm.baseUrl });
+}
+
 function isTextChatModelId(modelId: string): boolean {
   const normalized = modelId.trim().toLowerCase();
   if (!normalized) return false;
@@ -6494,6 +6503,8 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
       projectEnv: existsSync(join(root, ".env")),
       globalEnv: existsSync(GLOBAL_ENV_PATH),
       booksDir: existsSync(join(root, "works")),
+      // A model provider with a key (or a local, key-free endpoint) is set up.
+      llmConfigured: false,
       llmConnected: false,
       bookCount: 0,
     };
@@ -6506,6 +6517,10 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
     try {
       const currentConfig = await loadCurrentProjectConfig({ requireApiKey: false });
       const service = currentConfig.llm.service ?? currentConfig.llm.provider;
+      checks.llmConfigured = isDoctorLlmConfigured(currentConfig.llm);
+      // Without a key there is nothing to test. Some providers list their models
+      // without auth, so probing anyway could report a false "connected".
+      if (!checks.llmConfigured) return c.json(checks);
       // Hard overall budget so the diagnostics page never hangs on a slow /
       // rate-limited upstream — if we can't confirm connectivity quickly, report
       // it as not-connected rather than spinning.
