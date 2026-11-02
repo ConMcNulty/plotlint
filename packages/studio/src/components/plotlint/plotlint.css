@@ -38,3 +38,20 @@
 
 /* A problems row a scene marker pointed at. */
 .pl-problem-flash { background: color-mix(in srgb, var(--primary, currentColor) 12%, transparent); transition: background 300ms; }
+
+/* A chapter of the continuous manuscript not open in the editor: set like the editor, without its frame. */
+.pl-manuscript-passage {
+  padding: 1.5rem 1.5rem 1.5rem 2.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  transition: border-color 150ms;
+}
+section:hover > .pl-manuscript-passage {
+  border-color: color-mix(in srgb, var(--border, currentColor) 30%, transparent);
+}
+.pl-manuscript-passage p {
+  margin: 0;
+  min-height: 1.8em;
+}

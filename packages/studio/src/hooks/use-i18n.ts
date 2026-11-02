@@ -133,6 +133,7 @@ const strings = {
   "refs.none": { zh: "书中没有找到", en: "Not found in the book" },
   "state.noDefinition": { zh: "未找到定义", en: "No definition found" },
   "reader.chapterTools": { zh: "章节工具：提示词、重写、版本", en: "Chapter tools: brief, rewrite, versions" },
+  "manuscript.clickToEdit": { zh: "点击编辑本章", en: "Click to edit this chapter" },
   "save.saved": { zh: "已保存", en: "Saved" },
   "save.unsaved": { zh: "未保存", en: "Unsaved" },
   "save.failed": { zh: "保存失败，点此重试", en: "Couldn't save. Retry" },

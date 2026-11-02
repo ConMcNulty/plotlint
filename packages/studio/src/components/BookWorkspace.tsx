@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BarChart3, ChevronLeft, ChevronRight, Download, LayoutGrid, MessageSquare, MoreHorizontal, NotebookText, PanelRightClose, Plus, Settings } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { useApi } from "../hooks/use-api";
@@ -9,6 +9,8 @@ import { useChatStore } from "../store/chat";
 import { ChatPage } from "../pages/ChatPage";
 import { ChapterReader } from "../pages/ChapterReader";
 import { BookInfoPanel } from "./chat/BookSidebar";
+import { ChapterPassage, type PassageClick } from "./plotlint/ChapterPassage";
+import { passageTitle } from "./plotlint/manuscript-model";
 import {
   SIDE_PANEL_STORAGE_KEY,
   chapterToOpen,
@@ -110,13 +112,51 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
     if (panel?.open && panel.tab === "chat") setChatMounted(true);
   }, [panel]);
 
-  // Moving to another chapter saves this one first, so the book reads as one document: nothing to confirm.
+  // The book is one continuous manuscript: every chapter in one scroll, the current one open in
+  // the editor. Moving to another chapter saves this one first, so there is nothing to confirm.
   const canLeaveRef = useRef<(() => Promise<boolean>) | null>(null);
-  const openChapter = async (number: number) => {
-    if (number === current) return;
-    if (canLeaveRef.current && !await canLeaveRef.current()) return;
-    nav.toChapter(bookId, number);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLDivElement>(null);
+  // Where the writer clicked to open a chapter, kept so the text under the pointer stays put.
+  const anchorRef = useRef<{ chapter: number; clientY: number } | null>(null);
+  const openChapter = async (number: number, select?: { start: number; end: number }) => {
+    if (number === current) {
+      if (!select) activeRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+      return;
+    }
+    if (canLeaveRef.current && !await canLeaveRef.current()) {
+      anchorRef.current = null;
+      return;
+    }
+    nav.toChapter(bookId, number, select);
   };
+  const activatePassage = (number: number, click: PassageClick) => {
+    anchorRef.current = { chapter: number, clientY: click.clientY };
+    void openChapter(number, { start: click.offset, end: click.offset });
+  };
+
+  // A chapter opened from the toolbar or the notes starts at its top; one opened by a click in its
+  // text keeps the clicked line where it was on screen, once the editor has put the cursor there.
+  // Chapters above load and change height for a moment, so the place is held until the page
+  // settles or the writer scrolls.
+  const inManuscript = current !== null && chapters.some((chapter) => chapter.number === current);
+  useLayoutEffect(() => {
+    const container = scrollRef.current;
+    if (current === null || !container) return;
+    const anchor = anchorRef.current?.chapter === current ? anchorRef.current : null;
+    anchorRef.current = null;
+    const offBy = (): number | null => {
+      const active = activeRef.current;
+      if (!active) return null;
+      if (!anchor) return active.getBoundingClientRect().top - container.getBoundingClientRect().top;
+      const editor = active.querySelector(".pl-manuscript-editor");
+      const selection = window.getSelection();
+      if (!editor || !selection || selection.rangeCount === 0 || !editor.contains(selection.anchorNode)) return null;
+      const rect = selection.getRangeAt(0).getBoundingClientRect();
+      return rect.height > 0 ? rect.top - anchor.clientY : null;
+    };
+    return holdPlace(container, offBy);
+  }, [current, inManuscript]);
 
   const [width, setWidth] = useState(defaultPanelWidth);
   const onResizeStart = (event: React.MouseEvent) => {
@@ -220,22 +260,34 @@ export function BookWorkspace({ bookId, chapterNumber, select, nav, theme, t, ss
         </div>
 
         {/* The manuscript. */}
-        <div className="min-h-0 flex-1 overflow-y-auto scroll-smooth">
+        <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
           {book.error && !current ? (
             <div className="m-8 rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-destructive">Error: {book.error}</div>
           ) : current !== null ? (
-            <div className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-10 2xl:px-12">
-              {/* Keyed so another chapter opens a fresh reader (and editor) on it. */}
-              <ChapterReader
-                key={`${bookId}:${current}`}
-                bookId={bookId}
-                chapterNumber={current}
-                {...(select && current === chapterNumber ? { select } : {})}
-                nav={nav}
-                theme={theme}
-                t={t}
-                canLeaveRef={canLeaveRef}
-              />
+            <div className="mx-auto w-full max-w-[1400px] space-y-10 px-4 py-8 sm:px-6 lg:px-10 2xl:px-12" data-testid="manuscript">
+              {(inManuscript ? chapters : [{ number: current, title: "" }]).map((chapter) => chapter.number === current ? (
+                <div key={`open:${bookId}:${current}`} ref={activeRef} data-chapter={current} className="scroll-mt-4">
+                  {/* Keyed so another chapter opens a fresh reader (and editor) on it. */}
+                  <ChapterReader
+                    bookId={bookId}
+                    chapterNumber={current}
+                    {...(select && current === chapterNumber ? { select } : {})}
+                    nav={nav}
+                    theme={theme}
+                    t={t}
+                    canLeaveRef={canLeaveRef}
+                  />
+                </div>
+              ) : (
+                <ChapterPassage
+                  key={`passage:${bookId}:${chapter.number}`}
+                  bookId={bookId}
+                  chapterNumber={chapter.number}
+                  title={passageTitle(chapter, t("bread.chapter"))}
+                  t={t}
+                  onActivate={(click) => activatePassage(chapter.number, click)}
+                />
+              ))}
             </div>
           ) : book.data ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 px-8 text-center" data-testid="workspace-empty">
@@ -360,4 +412,32 @@ function ChatSessionPicker({ bookId, t }: { bookId: string; t: TFunction }) {
       </button>
     </div>
   );
+}
+
+/** How long a newly opened chapter is held in place while the page around it settles. */
+const HOLD_MS = 2500;
+
+/**
+ * Keep scrolling `container` by `offBy()` each frame until the page has settled, the
+ * writer scrolls or types, or HOLD_MS passes. Returns a function that stops it.
+ */
+function holdPlace(container: HTMLElement, offBy: () => number | null): () => void {
+  let frame = 0;
+  let stopped = false;
+  const started = performance.now();
+  const stop = () => {
+    stopped = true;
+    cancelAnimationFrame(frame);
+    for (const type of ["wheel", "touchmove", "keydown", "pointerdown"] as const) container.removeEventListener(type, stop);
+  };
+  for (const type of ["wheel", "touchmove", "keydown", "pointerdown"] as const) container.addEventListener(type, stop, { passive: true });
+  const step = () => {
+    if (stopped) return;
+    const delta = offBy();
+    if (delta !== null && Math.abs(delta) > 1) container.scrollBy({ top: delta, behavior: "instant" });
+    if (performance.now() - started > HOLD_MS) stop();
+    else frame = requestAnimationFrame(step);
+  };
+  step();
+  return stop;
 }
