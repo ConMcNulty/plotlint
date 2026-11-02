@@ -31,3 +31,9 @@ export function savedChapterText(content: string): string {
   const trimmed = content.trim();
   return trimmed.endsWith("\n") ? trimmed : `${trimmed}\n`;
 }
+
+/** Whether saving `content` over the file text `before` would change nothing but line endings. */
+export function unchangedBySave(content: string, before: string): boolean {
+  const lf = (text: string) => text.replace(/\r\n?/g, "\n");
+  return savedChapterText(lf(content)) === savedChapterText(lf(before));
+}

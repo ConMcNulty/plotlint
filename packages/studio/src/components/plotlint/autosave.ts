@@ -21,6 +21,15 @@ export interface AutosaverOptions {
 
 export const AUTOSAVE_DELAY_MS = 1000;
 
+/**
+ * Whether two chapter texts save to the same file: the server trims the text and
+ * ends it with one newline, and a file written on Windows may use CRLF.
+ */
+export function sameChapterText(a: string, b: string): boolean {
+  const normal = (text: string) => text.replace(/\r\n?/g, "\n").trim();
+  return a === b || normal(a) === normal(b);
+}
+
 export class ChapterAutosaver {
   private saved: string;
   private timer: ReturnType<typeof setTimeout> | undefined;
@@ -43,7 +52,7 @@ export class ChapterAutosaver {
   }
 
   isDirty(): boolean {
-    return this.options.read() !== this.saved;
+    return !sameChapterText(this.options.read(), this.saved);
   }
 
   /** The editor changed: save after a pause, unless paused (an agent's edit under review). */
@@ -91,7 +100,7 @@ export class ChapterAutosaver {
   private save(autosave: boolean): Promise<boolean> {
     this.chain = this.chain.then(async () => {
       const text = this.options.read();
-      if (text === this.saved) {
+      if (sameChapterText(text, this.saved)) {
         if (this.status !== "saved") this.setStatus("saved");
         return true;
       }
@@ -100,7 +109,7 @@ export class ChapterAutosaver {
         await this.options.write(text, autosave);
         this.saved = text;
         // Typing during the save leaves more to save.
-        if (this.options.read() !== this.saved) {
+        if (!sameChapterText(this.options.read(), this.saved)) {
           this.setStatus("unsaved");
           if (!this.paused && !this.disposed) this.changed();
         } else {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AUTOSAVE_VERSION_WINDOW_MS, archiveOnSave, savedChapterText } from "../plotlint-autosave.js";
+import { AUTOSAVE_VERSION_WINDOW_MS, archiveOnSave, savedChapterText, unchangedBySave } from "../plotlint-autosave.js";
 
 const now = new Date("2026-11-02T12:00:00Z");
 const ago = (ms: number) => new Date(now.getTime() - ms).toISOString();
@@ -30,5 +30,12 @@ describe("savedChapterText", () => {
   it("normalises like the edit transaction", () => {
     expect(savedChapterText("# One\n\nText")).toBe("# One\n\nText\n");
     expect(savedChapterText("\n# One\n\nText\n\n")).toBe("# One\n\nText\n");
+  });
+});
+
+describe("unchangedBySave", () => {
+  it("ignores line endings and the trailing newline", () => {
+    expect(unchangedBySave("# One\n\nText", "# One\r\n\r\nText\r\n")).toBe(true);
+    expect(unchangedBySave("# One\n\nText", "# One\n\nText two\n")).toBe(false);
   });
 });

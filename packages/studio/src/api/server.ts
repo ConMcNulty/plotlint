@@ -173,7 +173,7 @@ import {
 } from "./plotlint-lint.js";
 import { chapterFiles } from "./plotlint-chapters.js";
 import { provenanceView, recordStudioEdit } from "./plotlint-provenance.js";
-import { archiveOnSave, savedChapterText } from "./plotlint-autosave.js";
+import { archiveOnSave, unchangedBySave } from "./plotlint-autosave.js";
 import { markReviewed, pendingAgentEdit } from "./plotlint-review.js";
 import { continueText, parseContinueBody } from "./plotlint-continue.js";
 import { branchDiff, branchesView, manuscriptFile, newBranch, outlineFile, provenanceFile } from "./plotlint-publish.js";
@@ -3226,7 +3226,7 @@ export function createStudioServer(initialConfig: ProjectConfig, root: string, o
       // plotlint: what the file held before the save, so the edit can be attributed to the writer.
       const before = (await chapterFiles(state.bookDir(id))).get(num);
       // plotlint: Studio saves as the writer types; a save that changes nothing is not an error.
-      if (before !== undefined && savedChapterText(content) === before) {
+      if (before !== undefined && unchangedBySave(content, before)) {
         return c.json({ ok: true, chapterNumber: num, unchanged: true });
       }
       const archiveVersion = archiveOnSave(await listChapterVersions(state.bookDir(id), num), autosave === true);

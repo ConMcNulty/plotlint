@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ChapterAutosaver, type SaveStatus } from "../autosave";
+import { ChapterAutosaver, sameChapterText, type SaveStatus } from "../autosave";
 
 describe("ChapterAutosaver", () => {
   let text: string;
@@ -122,5 +122,13 @@ describe("ChapterAutosaver", () => {
     release();
     await vi.advanceTimersByTimeAsync(0);
     expect(writes.map((write) => write.text)).toEqual(["one two", "one two three"]);
+  });
+});
+
+describe("sameChapterText", () => {
+  it("treats a file with CRLF line endings or a trailing newline as the editor's text", () => {
+    expect(sameChapterText("# One\n\nText", "# One\r\n\r\nText\r\n")).toBe(true);
+    expect(sameChapterText("# One\n\nText", "# One\n\nText\n")).toBe(true);
+    expect(sameChapterText("# One\n\nText", "# One\n\nTexts\n")).toBe(false);
   });
 });
